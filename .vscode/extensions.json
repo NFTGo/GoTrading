@@ -1,7 +1,5 @@
 {
   "recommendations": [
-    "styled-components.vscode-styled-components",
-    "cpylua.language-postcss",
     "EditorConfig.editorconfig",
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
@@ -10,7 +8,6 @@
     "codezombiech.gitignore",
     "aaron-bond.better-comments",
     "jasonnutter.search-node-modules",
-    "jock.svg",
     "andrejunges.handlebars",
     "mikestead.dotenv",
     "gruntfuggly.todo-tree",

@@ -1,5 +1,2 @@
-*.scss.d.ts
-next*.config.js
 commitlint.config.js
 .eslintcache
-public/charting-library/**/**
