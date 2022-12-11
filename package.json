@@ -1,0 +1,62 @@
+{
+  "name": "NFTGo-Aggregator-JS-SDK",
+  "packageManager": "yarn@3.2.4",
+  "scripts": {
+    "dev": "rimraf dist types && cross-env NODE_ENV=development VERSION=1.0.0 webpack --config ./config/webpack/webpack.dev.js",
+    "build": "npm run lint && npm run test && rimraf dist types && cross-env NODE_ENV=production VERSION=1.0.0 webpack --config ./config/webpack/webpack.prod.js",
+    "typedoc": "rimraf docs && typedoc",
+    "test": "jest",
+    "lint": "eslint src test",
+    "release": "standard-version",
+    "release-major": "standard-version --release-as major",
+    "release-minor": "standard-version --release-as minor",
+    "release-patch": "standard-version --release-as patch"
+  },
+  "lint-staged": {
+    "*.{ts}": [
+      "node --max_old_space_size=8192 ./node_modules/eslint/bin/eslint.js --fix --color --cache --quiet"
+    ],
+    "*.{js,mjs,cjs}": [
+      "node --max_old_space_size=8192 ./node_modules/eslint/bin/eslint.js --fix --color --cache --quiet"
+    ]
+  },
+  "standard-version": {
+    "skip": {
+      "commit": true
+    }
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.5",
+    "@babel/eslint-parser": "^7.18.0",
+    "@babel/eslint-plugin": "^7.17.7",
+    "@babel/plugin-transform-runtime": "^7.19.6",
+    "@babel/preset-env": "^7.20.2",
+    "@commitlint/cli": "^17.3.0",
+    "@commitlint/config-conventional": "^17.3.0",
+    "@types/jest": "^29.2.4",
+    "babel-loader": "^9.1.0",
+    "eslint": "^8.15.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-filenames": "^1.3.2",
+    "eslint-plugin-import": "^2.24.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-promise": "^5.1.0",
+    "eslint-plugin-react": "^7.30.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "husky": "^6.0.0",
+    "jest": "^29.3.1",
+    "lint-staged": "^11.2.6",
+    "rimraf": "^3.0.2",
+    "standard-version": "^9.5.0",
+    "ts-jest": "^29.0.3",
+    "ts-loader": "^9.4.2",
+    "typescript": "^4.9.4",
+    "webpack": "^5.75.0",
+    "webpack-bundle-analyzer": "^4.7.0",
+    "webpack-cli": "^5.0.1",
+    "webpackbar": "^5.0.2"
+  }
+}

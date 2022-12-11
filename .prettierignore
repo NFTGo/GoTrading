@@ -1,0 +1,11 @@
+*ignore
+*.json
+*.yml
+*.md
+.husky/*
+.next/*
+.vscode/*
+node_modules
+yarn.lock
+.json2xsl.js
+.prettierrc
