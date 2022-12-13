@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1670924463706" clover="3.2.0">
-  <project timestamp="1670924463706" name="All files">
+<coverage generated="1670925350605" clover="3.2.0">
+  <project timestamp="1670925350605" name="All files">
     <metrics statements="5" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0" elements="5" coveredelements="0" complexity="0" loc="5" ncloc="5" packages="1" files="1" classes="1"/>
-    <file name="index.ts" path="/Users/yijian/work/aggregator-sdk/NFTGo-Aggregator-JS-SDK/src/index.ts">
+    <file name="index.ts" path="/Users/kyaruary/nftgo/NFTGo-Aggregator-JS-SDK/src/index.ts">
       <metrics statements="5" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       <line num="1" count="0" type="stmt"/>
       <line num="3" count="0" type="stmt"/>

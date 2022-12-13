@@ -1,9 +1,8 @@
 {
   "name": "NFTGo-Aggregator-JS-SDK",
-  "packageManager": "yarn@3.2.4",
   "scripts": {
     "dev": "rimraf dist types && cross-env NODE_ENV=development webpack --config ./config/webpack/webpack.dev.js",
-    "build": "npm run lint && npm run test && rimraf dist types && cross-env NODE_ENV=production webpack --config ./config/webpack/webpack.prod.js",
+    "build": "rollup -c rollup.config.js ",
     "typedoc": "rimraf docs && typedoc",
     "test": "jest",
     "lint": "eslint src test",
@@ -11,14 +10,6 @@
     "release-major": "standard-version --release-as major",
     "release-minor": "standard-version --release-as minor",
     "release-patch": "standard-version --release-as patch"
-  },
-  "lint-staged": {
-    "*.{ts}": [
-      "node --max_old_space_size=8192 ./node_modules/eslint/bin/eslint.js --fix --color --cache --quiet"
-    ],
-    "*.{js,mjs,cjs}": [
-      "node --max_old_space_size=8192 ./node_modules/eslint/bin/eslint.js --fix --color --cache --quiet"
-    ]
   },
   "standard-version": {
     "skip": {
@@ -54,17 +45,19 @@
     "jest": "^29.3.1",
     "lint-staged": "^11.2.6",
     "prettier": "^2.8.1",
-    "rimraf": "^3.0.2",
     "standard-version": "^9.5.0",
     "ts-jest": "^29.0.3",
-    "ts-loader": "^9.4.2",
-    "typescript": "^4.9.4",
-    "webpack": "^5.75.0",
-    "webpack-bundle-analyzer": "^4.7.0",
-    "webpack-cli": "^5.0.1",
-    "webpackbar": "^5.0.2"
+    "typescript": "^4.9.4"
   },
   "dependencies": {
-    "axios": "^1.2.1"
-  }
+    "@rollup/plugin-commonjs": "^23.0.4",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "axios": "^1.2.1",
+    "eslint-config-airbnb": "^19.0.4",
+    "rollup": "^3.7.4",
+    "rollup-plugin-dts": "^5.0.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-typescript2": "^0.34.1"
+  },
+  "version": "0.0.0"
 }
