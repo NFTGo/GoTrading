@@ -1,17 +1,19 @@
 node_modules
 .DS_store
 package-lock.json
-# branch.config.ts
-.eslintcache
+yarn-error.log
+
 # zero-installs
-.yarn/install-state.gz
-.yarn/cache
-.yarn/patches
-.yarn/plugins
-.yarn/sdks
-.yarn/versions
+.yarn/*
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
 # intell
 .idea
 .idea/**/**
 
-coverage
+/coverage

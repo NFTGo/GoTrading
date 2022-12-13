@@ -1,34 +1,27 @@
 {
   "compilerOptions": {
     "downlevelIteration": true,
-    "target": "es5",
+    "target": "es6",
     "lib": [
       "dom",
       "dom.iterable",
       "esnext"
     ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": false,
+    "allowJs": false,
+    "skipLibCheck": false,
+    "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": false,
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    // "strictNullChecks": true,
+    "isolatedModules": false,
+    "strictNullChecks": true,
     "jsx": "preserve",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": [
-        "./*"
-      ],
-    },
-    "incremental": true
+    "incremental": true,
+    "declaration": true,
+    "declarationDir": "dist/declaration"
   },
-  "include": ["src/**/*", "test/**/*", "utils/nftgo-init.ts"],
-  "exclude": [
-    "node_modules",
-  ]
+  "include": ["src"]
 }

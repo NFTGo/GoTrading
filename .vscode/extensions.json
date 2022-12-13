@@ -12,6 +12,7 @@
     "mikestead.dotenv",
     "gruntfuggly.todo-tree",
     "vscode-icons-team.vscode-icons",
-    "OBKoro1.koroFileHeader"
+    "OBKoro1.koroFileHeader",
+    "arcanis.vscode-zipfs"
   ]
 }

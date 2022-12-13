@@ -1,11 +1,11 @@
 {
   "fileheader.customMade": {
-    "autoAdd":false
+    "autoAdd": false
   },
   "fileheader.cursorMode": {
     "description": "",
     "param": "",
-    "return": "",
+    "return": ""
   },
   "files.associations": {
     ".code-workspace": "jsonc",
@@ -26,15 +26,23 @@
     "**/*.pid": true,
     "**/.git": true,
     "**/node_modules": true,
-    "**/bower_components": true
+    "**/bower_components": true,
+    "**/.yarn": true,
+    "**/.pnp.*": true
   },
   //
-  "editor.rulers": [80, 120],
+  "editor.rulers": [
+    80,
+    120
+  ],
   "files.eol": "\n",
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
   //
-  "todo-tree.general.tags": ["TODO:", "FIXME:"],
+  "todo-tree.general.tags": [
+    "TODO:",
+    "FIXME:"
+  ],
   "todo-tree.highlights.defaultHighlight": {
     "gutterIcon": true
   },
@@ -125,11 +133,14 @@
     "editor.formatOnSave": true
   },
   "emmet.triggerExpansionOnTab": true,
-  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.tsdk": ".yarn/sdks/typescript/lib",
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
-   "explorer.fileNesting.patterns": {
+  "explorer.fileNesting.patterns": {
     "*.js": "${capture}.js.map, ${capture}.min.js, ${capture}.d.ts, ${capture}.d.ts.map",
     "package.json": ".browserslist*, .circleci*, .codecov, .commitlint*, .cz-config.js, .czrc, .dlint.json, .dprint.json, .editorconfig, .eslint*, .firebase*, .flowconfig, .github*, .gitlab*, .gitpod*, .huskyrc*, .jslint*, .lighthouserc.*, .lintstagedrc*, .markdownlint*, .mocha*, .node-version, .nodemon*, .npm*, .nvmrc, .pm2*, .pnp.*, .pnpm*, .prettier*, .releaserc*, .sentry*, .stackblitz*, .styleci*, .stylelint*, .tazerc*, .textlint*, .tool-versions, .travis*, .versionrc*, .vscode*, .watchman*, .xo-config*, .yamllint*, .yarnrc*, Procfile, api-extractor.json, apollo.config.*, appveyor*, ava.config.*, azure-pipelines*, bower.json, build.config.*, commitlint*, crowdin*, cypress.*, dangerfile*, dlint.json, dprint.json, firebase.json, grunt*, gulp*, histoire.config.*, jasmine.*, jenkins*, jest.config.*, jsconfig.*, karma*, lerna*, lighthouserc.*, lint-staged*, nest-cli.*, netlify*, nodemon*, nx.*, package-lock.json, package.nls*.json, phpcs.xml, playwright.config.*, pm2.*, pnpm*, prettier*, pullapprove*, puppeteer.config.*, pyrightconfig.json, release-tasks.sh, renovate*, rollup.config.*, stylelint*, tsconfig.*, tsdoc.*, tslint*, tsup.config.*, turbo*, typedoc*, unlighthouse*, vercel*, vetur.config.*, vitest.config.*, webpack*, workspace.json, xo.config.*, yarn*, .babelrc*, .drone.yml*, .gitignore*, dockerfile*, next.*, next-i18*"
-  }
+  },
+  "eslint.nodePath": ".yarn/sdks",
+  "prettier.prettierPath": ".yarn/sdks/prettier/index.js",
+  "typescript.enablePromptUseWorkspaceTsdk": true
 }

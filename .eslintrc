@@ -1,4 +1,4 @@
 {
   "root": true,
-  "extends": ["./config/eslint-config", "plugin:jest/recommended"]
+  "extends": ["airbnb", "plugin:jest/recommended"]
 }

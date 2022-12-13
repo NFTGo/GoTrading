@@ -1,8 +1,3 @@
-import NFTGoInit from '@/utils/nftgo-init';
+export { initV1 } from './core/factory';
 
-import NFTGoApi from './apis';
-
-NFTGoInit.onCreate();
-
-export * from './common/types';
-export { NFTGoApi };
+export * from './core/interface';
