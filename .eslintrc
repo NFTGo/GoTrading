@@ -1,4 +1,4 @@
 {
   "root": true,
-  "extends": ["./common/eslint-config", "plugin:jest/recommended"]
+  "extends": ["./config/eslint-config", "plugin:jest/recommended"]
 }

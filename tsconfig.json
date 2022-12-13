@@ -21,24 +21,14 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "@src": ["src/*"],
-      "@docs": ["docs/*"],
-      "@config": ["config/*"],
-      "@test": ["test/*"],
       "@/*": [
         "./*"
       ],
     },
     "incremental": true
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "**/**/*.tsx",
-  ],
+  "include": ["src/**/*", "test/**/*", "utils/nftgo-init.ts"],
   "exclude": [
     "node_modules",
-    "public/charting-library/**/**"
   ]
 }

@@ -1,4 +1,4 @@
-const { resolve, PROJECT_PATH, VERSION } = require('./constants');
+const { resolve, PROJECT_PATH } = require('./constants');
 const WebpackBar = require('webpackbar');
 
 module.exports = {
@@ -28,10 +28,7 @@ module.exports = {
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, '../../src'),
-      '@docs': resolve(__dirname, '../../docs'),
-      '@config': resolve(__dirname, '../'),
-      '@test': resolve(__dirname, '../../test'),
+      '@': resolve(PROJECT_PATH, './src'),
     },
     extensions: ['.ts', '.tsx', '.js'],
   },
