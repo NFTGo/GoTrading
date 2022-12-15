@@ -16,17 +16,17 @@ To use our APIs, You need to register an account on [NFTGo developer platform](h
 `yarn add nftgo-aggregator-sdk` or `npm install nftgo-aggregator-sdk`
 
 ```ts
-import { initV1 } from 'nftgo-aggregator-sdk'
+import { init } from 'nftgo-aggregator-sdk'
 
 
 // create a sdk client
-const sdk = initV1({
+const sdk = init({
     apiKey: 'your-api-key',
     baseUrl: 'https://data-api.nftgo.dev/eth' // use our public endpoints
 });
 
 // e.g. get ones listing on eth chain
-const listings = await sdk.getListingsOfSingleAddress("0xff");
+const listings = await sdk.api.getListingsOfSingleAddress("0xff");
 
 ```
 

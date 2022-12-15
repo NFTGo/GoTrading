@@ -4,13 +4,10 @@ package-lock.json
 yarn-error.log
 
 # zero-installs
-.yarn/*
-!.yarn/cache
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
+.yarn/cache
+.yarn/versions
+.yarn/install-state.gz
+.yarn/unplugged
 
 # intell
 .idea

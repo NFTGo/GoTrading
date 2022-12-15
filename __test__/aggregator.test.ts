@@ -1,12 +1,14 @@
-import { initV1 } from '../src';
+import { init } from '../src';
 import { AggregatorException } from '../src/core/exception';
 import { Simulator } from './simulator';
+import { EVMChain } from '../src/core/interface';
 
 describe('Aggregator v1 Test', () => {
-  const aggregator = initV1({
+  const aggregator = init({
     baseUrl: Simulator.baseURL,
     apiKey: Simulator.apiKey,
-  });
+    chain: EVMChain.ETH,
+  }).api;
 
   it('all methods should be contain in aggregator', () => {
     expect('getFilteredNFTs' in aggregator).toBe(true);

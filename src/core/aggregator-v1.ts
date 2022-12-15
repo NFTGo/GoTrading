@@ -74,7 +74,7 @@ export class AggregatorV1 implements Aggregator {
   }
 
   private get url() {
-    return this.config.baseUrl + '/v1';
+    return this.config.baseUrl + this.config.chain + '/v1';
   }
 
   private post<R, P = undefined>(path: string, params: P) {

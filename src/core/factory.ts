@@ -7,6 +7,10 @@ import { InternalHTTPClient } from './internal-http-client';
  * @param config init client config {@link Config}
  * @returns sdk-client {@link Aggregator}
  */
-export function initV1(config: Config): Aggregator {
-  return new AggregatorV1(new InternalHTTPClient(), config);
+export function init(config: Config): {
+  api: Aggregator;
+} {
+  return {
+    api: new AggregatorV1(new InternalHTTPClient(), config),
+  };
 }

@@ -1,5 +1,5 @@
-import axios, { Axios, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { AggregatorException } from './exception';
+import { Axios, AxiosResponse, AxiosRequestConfig } from 'axios';
 
 import { HTTPClient } from './interface';
 

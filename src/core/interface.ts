@@ -1,4 +1,7 @@
 // # user-land interface , core  should implement this
+export enum EVMChain {
+  ETH = 'eth',
+}
 export interface Aggregator {
   /**
    * Return a list of listing info about a single NFT.
@@ -43,6 +46,7 @@ export interface HTTPClient {
 
 export interface Config {
   apiKey: string;
+  chain: EVMChain;
   baseUrl: string;
 }
 
