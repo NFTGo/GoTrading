@@ -41,6 +41,6 @@ enum ExceptionType {
   API_CHAIN_ERROR = 'api_chain_error',
   REQUEST_ERROR = 'request_error',
   RESPONSE_DATA_EMPTY = 'response_data_empty',
-  NFT_SCAN_DATA_EMPTY = 'nftgo_data_empty',
+  NFTGo_DATA_EMPTY = 'nftgo_data_empty',
   PARAM_ERROR = 'param_error',
 }

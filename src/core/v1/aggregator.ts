@@ -1,5 +1,5 @@
-import { isInvalidParam } from '../helpers/is-invalid-param';
-import { AggregatorException } from './exception';
+import { isInvalidParam } from '../../helpers/is-invalid-param';
+import { AggregatorException } from '../exception';
 import {
   Aggregator,
   HTTPClient,
@@ -10,13 +10,13 @@ import {
   AggregateResponse,
   SingleAddressListingsResponse,
   SingleNFTListingsResponse,
-} from './interface';
+} from '../interface';
 
 /**
  * @description
  * implement aggregator version 1 for nftgo-aggregator
  */
-export class AggregatorV1 implements Aggregator {
+export class AggregatorStable implements Aggregator {
   constructor(private client: HTTPClient, private config: Config) {}
 
   getListingsOfSingleNFT(contract: string, tokenId: string): Promise<SingleNFTListingsResponse> {

@@ -46,7 +46,7 @@ export interface HTTPClient {
 
 export interface Config {
   apiKey: string;
-  chain: EVMChain;
+  chain?: EVMChain;
   baseUrl: string;
 }
 

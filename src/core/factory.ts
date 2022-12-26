@@ -1,5 +1,5 @@
-import { Aggregator, Config } from './interface';
-import { AggregatorV1 } from './aggregator-v1';
+import { Aggregator, Config, EVMChain } from './interface';
+import { AggregatorStable } from './v1/aggregator';
 import { InternalHTTPClient } from './internal-http-client';
 
 /**
@@ -11,6 +11,6 @@ export function init(config: Config): {
   api: Aggregator;
 } {
   return {
-    api: new AggregatorV1(new InternalHTTPClient(), config),
+    api: new AggregatorStable(new InternalHTTPClient(), { ...config, chain: config?.chain || EVMChain.ETH }),
   };
 }

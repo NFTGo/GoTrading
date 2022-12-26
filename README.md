@@ -22,7 +22,7 @@ import { init } from 'nftgo-aggregator-sdk'
 // create a sdk client
 const sdk = init({
     apiKey: 'your-api-key',
-    baseUrl: 'https://data-api.nftgo.dev/eth' // use our public endpoints
+    baseUrl: 'https://data-api.nftgo.dev/', // use our public endpoints
 });
 
 // e.g. get ones listing on eth chain
