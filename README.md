@@ -7,11 +7,20 @@
 
 <!-- Introduction -->
 
-The nftgo-aggregator-sdk  helps you build your own marketplace or other apps with NFT trading needs. We’ve included orders from over 10 major marketplaces, so you can get access to full amount of listings, find the lowest price and complete your purchase directly through our Trading Aggregator SDK.
+The nftgo-aggregator-sdk  helps you build your own marketplace or other apps with NFT trading needs. We’ve included orders from over 10 major marketplaces, so you can get access to full amount of listings, find the lowest price and complete your purchase directly through our Trading Aggregator SDK.  
 
-Up-to-date listings and sales aggregated from major marketplaces. We also refresh their validity to make sure that you can always buy at the best price.
-Complete the purchase and list behavior instantly at any time you want. You can also customized the fees as you wish.
-Comprehensive indicators and charts aid you in making trading decisions quicker and more reasonable than others.
+<br>Real- time listing & sale feed<br>
+
+Up-to-date listings and sales aggregated from major marketplaces. We also refresh their validity to make sure that you can always buy at the best price.  
+
+Instant buy & sell at major marketplaces. 
+
+Complete the purchase and list behavior instantly at any time you want. You can also customized the fees as you wish.  
+Global trading analysis and insights. 
+
+Comprehensive indicators and charts aid you in making trading decisions quicker and more reasonable than others.  
+Robust and flexible smart contract. 
+
 Reliable, secure and highly forfending trading contract protect your transactions.
 
 To use our SDK, You need to contact with us on [NFTGo developer platform](https://developer.nftgo.io/)  and get your private key.
