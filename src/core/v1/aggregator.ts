@@ -19,7 +19,7 @@ import {
 export class AggregatorStable implements Aggregator {
   constructor(private client: HTTPClient, private config: Config) {}
 
-  getListingsOfSingleNFT(contract: string, tokenId: string): Promise<SingleNFTListingsResponse> {
+  getListingOfNFT(contract: string, tokenId: string): Promise<SingleNFTListingsResponse> {
     if (isInvalidParam(contract)) {
       throw AggregatorException.missingParamError('collection contract');
     }
@@ -31,7 +31,7 @@ export class AggregatorStable implements Aggregator {
     return this.get(`/nft/${contract}/${tokenId}/listing`);
   }
 
-  getListingsOfSingleAddress(address: string): Promise<SingleAddressListingsResponse> {
+  getListingsOfWallet(address: string): Promise<SingleAddressListingsResponse> {
     if (isInvalidParam(address)) {
       throw AggregatorException.missingParamError('address');
     }
@@ -51,7 +51,7 @@ export class AggregatorStable implements Aggregator {
     return this.post('/nft-aggregate/aggregate', params);
   }
 
-  getFilteredNFTs(contract: string, params: FilteredNFTsParam): Promise<FilteredNFTsResponse> {
+  getListingsOfCollection(contract: string, params: FilteredNFTsParam): Promise<FilteredNFTsResponse> {
     if (isInvalidParam(contract)) {
       throw AggregatorException.missingParamError('collection contract');
     }

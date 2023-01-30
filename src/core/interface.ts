@@ -10,7 +10,7 @@ export interface Aggregator {
    * @param tokenId The token id of the nft
    * @returns Promise<{@link SingleNFTListingsResponse}>
    */
-  getListingsOfSingleNFT(contract: string, tokenId: string): Promise<SingleNFTListingsResponse>;
+  getListingOfNFT(contract: string, tokenId: string): Promise<SingleNFTListingsResponse>;
 
   /**
    * Return a list of listing info about a Ethereum address.
@@ -19,7 +19,7 @@ export interface Aggregator {
    * @param address The address of an account
    * @returns Promise<{@link SingleAddressListingsResponse}>
    */
-  getListingsOfSingleAddress(address: string): Promise<SingleAddressListingsResponse>;
+  getListingsOfWallet(address: string): Promise<SingleAddressListingsResponse>;
 
   /**
    * Return a list of listing info about a single NFT.
@@ -36,7 +36,11 @@ export interface Aggregator {
    * @param params The query params {@link FilteredNFTsParam}
    * @returns Promise<{@link FilteredNFTsResponse}>
    */
-  getFilteredNFTs(contract: string, params: FilteredNFTsParam): Promise<FilteredNFTsResponse>;
+  getListingsOfCollection(contract: string, params: FilteredNFTsParam): Promise<FilteredNFTsResponse>;
+}
+
+export interface GoTrading {
+  aggregator: Aggregator;
 }
 
 export interface HTTPClient {
@@ -169,9 +173,9 @@ export interface ListingInfo {
 }
 
 /**
- * _NFT_pro
+ * NFT Info
  */
-export interface NFTPro {
+export interface NFT {
   /**
    * Animation Url，The url of animation associated with the NFT
    */
@@ -230,7 +234,7 @@ export interface NFTPro {
    */
   name?: string;
   /**
-   * Owner Addresses，List of owner addresses currently holding the NFT.         A list of one
+   * Owner Addresses，List of owner addresses currently holding the NFT.A list of one
    * address if it's an ERC721 NFT. A list of addresses if it's an ERC1155 NFT.
    */
   owner_addresses?: string[];
@@ -333,10 +337,6 @@ export interface FilteredNFTsParam {
    */
   sort_by?: SortBy;
   /**
-   * Whether the asset is listing
-   */
-  is_listing?: boolean;
-  /**
    * The index of data segments. The returned data is divided into many segments. One segment is returned at a time. {offset} parameter indicates the index of data segments.
    */
   offset?: number;
@@ -359,13 +359,13 @@ export interface FilteredNFTsParam {
 }
 
 /**
- * _NFT_pro_list，如果 Model 可能只包含部分数据， 则它应该继承 Total
+ * NFT_list
  */
 export interface FilteredNFTsResponse {
   /**
    * Nfts，List of NFTs in the collection
    */
-  nfts: NFTPro[];
+  nfts: NFT[];
   /**
    * Total，Total number of items
    */
@@ -373,7 +373,7 @@ export interface FilteredNFTsResponse {
 }
 
 /**
- * NftListing，如果 Model 的数据存在有效期， 则它应该继承 LastUpdatedModel
+ * NftListing
  */
 export interface SingleNFTListingsResponse {
   /**
@@ -387,7 +387,7 @@ export interface SingleNFTListingsResponse {
 }
 
 /**
- * NftListing，如果 Model 的数据存在有效期， 则它应该继承 LastUpdatedModel
+ * NftListing
  */
 export interface SingleAddressListingsResponse {
   /**
