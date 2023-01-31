@@ -161,8 +161,8 @@ export interface ListingInfo {
    */
   seller_address?: string;
   /**
-   * Token Id，The token ID for this NFT. Each item in an NFT collection     will be assigned a
-   * unique id, the value generally ranges from 0 to     N,  with N being the total number of
+   * Token Id，The token ID for this NFT. Each item in an NFT collection will be assigned a
+   * unique id, the value generally ranges from 0 to N, with N being the total number of
    * NFTs in a collection.
    */
   token_id?: string;
@@ -173,7 +173,7 @@ export interface ListingInfo {
 }
 
 /**
- * NFT Info
+ * NFT
  */
 export interface NFT {
   /**

@@ -36,9 +36,9 @@ const goTradingSDK = init(configs);
 > ***Get your own NFTGo DEVELOPERS API Key***
 >
 > To get your own API key, please contact with us on [NFTGo developer platform](https://developer.nftgo.io/)  and get your API key from our customer managers.
-## Usage Example
+## GoTrading aggregator API
 
-***Do trading***
+- ***Do trading***
 
 You can use the aggregator to do trading, and the request will return the data you use to generate the transaction with metamask.
 ```ts
@@ -50,10 +50,10 @@ console.log(result);
 
 > ***How to get orderIds?***
 >
-> GoTrading SDk approval three methods to get orderIds from listing info;
+> GoTrading SDk suppoort the following three methods to get orderIds from listing info;
 
 
-***Get the listing info of a single nft.***
+  - ***Get the listing info of a single nft.***
 
 ```ts
 // Get the listing info of BAYC No.1
@@ -64,7 +64,7 @@ const listingInfo = goTradingSDK.aggregator.getListingOfNFT(baycContract, tokenI
 console.log(listingInfo.order_id)
 ```
 
-***Get the listing info of a Wallet address.***
+  - ***Get the listing info of a Wallet address.***
 ```ts
 // rollbot wallet address.
 const walletAddress = "0x8ae57a027c63fca8070d1bf38622321de8004c67";
@@ -75,7 +75,7 @@ for (const listing_data in listingInfo) {
 }
 ```
 
-***Get listing info of the Collection.***
+  - ***Get listing info of the Collection.***
 ```ts
 import { init } from 'GoTrading-js';
 
@@ -95,7 +95,7 @@ for (const nft in result.nfts) {
 
 
 ## interface example
-***AggregateResponse***
+  - ***AggregateResponse***
 ```ts
 export interface AggregateResponse {
   /**
@@ -113,7 +113,7 @@ export interface AggregateResponse {
   used_gas: number;
 }
 ```
-***TxInfo***
+  - ***TxInfo***
 ```ts
 export interface TXInfo {
   /**
@@ -135,8 +135,54 @@ export interface TXInfo {
 }
 ```
 
+  - ***ListingInfo***
+```ts
+export interface ListingInfo {
+  /**
+   * Contract，Address of the contract for this NFT collection, beginning with 0x
+   */
+  contract?: string;
+  /**
+   * Eth Price，The price(eth) of the NFT
+   */
+  eth_price?: number;
+  /**
+   * Expired Time，The listing expire time of the NFT
+   */
+  expired_time?: number;
+  /**
+   * Listing Time，The listing time of the NFT
+   */
+  listing_time?: number;
+  /**
+   * Market Link，The listing market link the NFT
+   */
+  market_link?: string;
+  /**
+   * Market Name，The listing market name the NFT
+   */
+  market_name?: string;
+  /**
+   * Order Id，ID for aggregate
+   */
+  order_id?: string;
+  /**
+   * Seller Address，The seller address of the NFT
+   */
+  seller_address?: string;
+  /**
+   * Token Id，The token ID for this NFT. Each item in an NFT collection will be assigned a
+   * unique id, the value generally ranges from 0 to N, with N being the total number of
+   * NFTs in a collection.
+   */
+  token_id?: string;
+  /**
+   * Usd Price，The usd price(usd) of the NFT
+   */
+  usd_price?: number;
+}
+```
+
 ## Questions & Feedback
-???
 
-
-If you have any questions, issues, or feedback, please file an issue on GitHub, or drop us a message on our Discord channel for the SDK?
+> If you have any questions, issues, or feedback, please file an issue on GitHub, or drop us a message on our [Discord](https://discord.gg/wtbFBuhh) channel for the SDK?
