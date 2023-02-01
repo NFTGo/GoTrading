@@ -13,12 +13,12 @@ The GoTrading-js helps you build your own marketplace or other apps with NFT tra
 
 > With `npm` :
 ```shell
-npm install gotrading-js
+npm install gotrading
 ```
 
 > With `yarn` :
 ```shell
-yarn add gotrading-js
+yarn add gotrading
 ```
 
 ### 2. Import and init the SDK.
@@ -77,12 +77,6 @@ for (const listing_data in listingInfo) {
 
   - ***Get listing info of the Collection.***
 ```ts
-import { init } from 'GoTrading-js';
-
-const goTradingSDK = init({
-  apiKey: 'YOUR-API-KEY', // Replace with your own API Key.
-});
-
 // Bored Ape Yacht Club contract address.
 const baycContract = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
 
