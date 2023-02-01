@@ -95,16 +95,16 @@ export interface AggregateResponse {
   /**
    * Gas Limit，The gas limit
    */
-  gas_limit: number;
+  gasLimit: number;
   /**
    * Saving Gas，The saving gas
    */
-  saving_gas: number;
-  tx_info: TXInfo;
+  savingGas: number;
+  txInfo: TXInfo;
   /**
    * Used Gas，The used gas
    */
-  used_gas: number;
+  usedGas: number;
 }
 ```
   - ***TxInfo***
@@ -117,11 +117,11 @@ export interface TXInfo {
   /**
    * From Address，The address of the from
    */
-  from_address: string;
+  fromAddress: string;
   /**
    * To Address，The address of the to
    */
-  to_address: string;
+  toAddress: string;
   /**
    * Value，The price(eth) of the NFT
    */
@@ -139,41 +139,41 @@ export interface ListingInfo {
   /**
    * Eth Price，The price(eth) of the NFT
    */
-  eth_price?: number;
+  ethPrice?: number;
   /**
    * Expired Time，The listing expire time of the NFT
    */
-  expired_time?: number;
+  expiredTime?: number;
   /**
    * Listing Time，The listing time of the NFT
    */
-  listing_time?: number;
+  listingTime?: number;
   /**
    * Market Link，The listing market link the NFT
    */
-  market_link?: string;
+  marketLink?: string;
   /**
    * Market Name，The listing market name the NFT
    */
-  market_name?: string;
+  marketName?: string;
   /**
    * Order Id，ID for aggregate
    */
-  order_id?: string;
+  orderId?: string;
   /**
    * Seller Address，The seller address of the NFT
    */
-  seller_address?: string;
+  sellerAddress?: string;
   /**
    * Token Id，The token ID for this NFT. Each item in an NFT collection will be assigned a
    * unique id, the value generally ranges from 0 to N, with N being the total number of
    * NFTs in a collection.
    */
-  token_id?: string;
+  tokenId?: string;
   /**
    * Usd Price，The usd price(usd) of the NFT
    */
-  usd_price?: number;
+  usdPrice?: number;
 }
 ```
 

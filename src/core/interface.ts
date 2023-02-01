@@ -69,11 +69,11 @@ export interface Sale {
   /**
    * Price Token，Trade price quoted in transaction token
    */
-  price_token: number;
+  priceToken: number;
   /**
    * Price Usd，The transaction price converted to USD
    */
-  price_usd: number;
+  priceUsd: number;
   /**
    * Time，Transaction timestamp in seconds
    */
@@ -81,19 +81,19 @@ export interface Sale {
   /**
    * Token Contract Address，Contract address of the token the sale was transacted in
    */
-  token_contract_address: string;
+  tokenContractAddress: string;
   /**
    * Token Symbol，Symbol of the token the sale was transacted in
    */
-  token_symbol: string;
+  tokenSymbol: string;
   /**
    * Tx Hash，Transaction Hash
    */
-  tx_hash: string;
+  txHash: string;
   /**
    * Tx Url，Transaction url
    */
-  tx_url: string;
+  txUrl: string;
 }
 
 /**
@@ -107,7 +107,7 @@ export interface Price {
   /**
    * Crypto Unit，The crypto unit of measurement, e.g. ETH, USDC, DAI.
    */
-  crypto_unit: string;
+  cryptoUnit: string;
   /**
    * Quantity，(Deprecated) This field is deprecated and will be removed in the future. Use
    * {value} instead. Total value in the measure of {crypto_unit}
@@ -135,41 +135,41 @@ export interface ListingInfo {
   /**
    * Eth Price，The price(eth) of the NFT
    */
-  eth_price?: number;
+  ethPrice?: number;
   /**
    * Expired Time，The listing expire time of the NFT
    */
-  expired_time?: number;
+  expiredTime?: number;
   /**
    * Listing Time，The listing time of the NFT
    */
-  listing_time?: number;
+  listingTime?: number;
   /**
    * Market Link，The listing market link the NFT
    */
-  market_link?: string;
+  marketLink?: string;
   /**
    * Market Name，The listing market name the NFT
    */
-  market_name?: string;
+  marketName?: string;
   /**
    * Order Id，ID for aggregate
    */
-  order_id?: string;
+  orderId?: string;
   /**
    * Seller Address，The seller address of the NFT
    */
-  seller_address?: string;
+  sellerAddress?: string;
   /**
    * Token Id，The token ID for this NFT. Each item in an NFT collection will be assigned a
    * unique id, the value generally ranges from 0 to N, with N being the total number of
    * NFTs in a collection.
    */
-  token_id?: string;
+  tokenId?: string;
   /**
    * Usd Price，The usd price(usd) of the NFT
    */
-  usd_price?: number;
+  usdPrice?: number;
 }
 
 /**
@@ -179,7 +179,7 @@ export interface NFT {
   /**
    * Animation Url，The url of animation associated with the NFT
    */
-  animation_url?: string;
+  animationUrl?: string;
   /**
    * Blockchain，Name of the blockchain the NFT belongs to
    */
@@ -187,19 +187,19 @@ export interface NFT {
   /**
    * Collection Name，Name of the collection the NFT belongs to
    */
-  collection_name?: string;
+  collectionName?: string;
   /**
    * Collection Opensea Slug，Opensea Slug of the collection the NFT belongs to
    */
-  collection_opensea_slug?: string;
+  collectionOpenseaSlug?: string;
   /**
    * Collection Slug，NFTGo Slug of the collection the NFT belongs to
    */
-  collection_slug?: string;
+  collectionSlug?: string;
   /**
    * Contract Address，Contract address of the collection the NFT belongs to
    */
-  contract_address: string;
+  contractAddress: string;
   /**
    * Description，The description of the NFT
    */
@@ -211,16 +211,16 @@ export interface NFT {
   /**
    * Last Sale，Last sale price of the NFT
    */
-  last_sale?: Sale;
-  listing_data?: ListingInfo;
+  lastSale?: Sale;
+  listingData?: ListingInfo;
   /**
    * Listing Price，Listing price of the NFT
    */
-  listing_price?: Price;
+  listingPrice?: Price;
   /**
    * Listing Time，Listing time of the NFT, formatted as timestamp in second.
    */
-  listing_time?: number;
+  listingTime?: number;
   /**
    * Marketplace，Listing marketplace of the NFT
    */
@@ -228,7 +228,7 @@ export interface NFT {
   /**
    * Marketplace Link，Marketplace link of the NFT
    */
-  marketplace_link?: string;
+  marketplaceLink?: string;
   /**
    * Name，The name of the NFT
    */
@@ -237,7 +237,7 @@ export interface NFT {
    * Owner Addresses，List of owner addresses currently holding the NFT.A list of one
    * address if it's an ERC721 NFT. A list of addresses if it's an ERC1155 NFT.
    */
-  owner_addresses?: string[];
+  ownerAddresses?: string[];
   /**
    * Rarity，NFT Rarity score. Calculation methods can be seen as below:
    * https://mirror.xyz/nftgoio.eth/kHWaMtNY6ZOvDzr7PR99D03--VNu6-ZOjYuf6E9-QH0
@@ -246,7 +246,7 @@ export interface NFT {
   /**
    * Token Id，The token ID of the NFT
    */
-  token_id: string;
+  tokenId: string;
   /**
    * Traits，The list of NFT traits. Traits consist of a series of types and values, referring
    * to the feature of an NFT. For example, if a project has avatar NFTs, the traits may
@@ -307,11 +307,11 @@ export interface TXInfo {
   /**
    * From Address，The address of the from
    */
-  from_address: string;
+  fromAddress: string;
   /**
    * To Address，The address of the to
    */
-  to_address: string;
+  toAddress: string;
   /**
    * Value，The price(eth) of the NFT
    */
@@ -335,7 +335,7 @@ export interface FilteredNFTsParam {
   /**
    * Sort by listing_price_low_to_high / listing_price_high_to_low / last_price_low_to_high / last_price_high_to_low / rarity_low_to_high / rarity_high_to_low / sales_time
    */
-  sort_by?: SortBy;
+  sortBy?: SortBy;
   /**
    * The index of data segments. The returned data is divided into many segments. One segment is returned at a time. {offset} parameter indicates the index of data segments.
    */
@@ -347,19 +347,19 @@ export interface FilteredNFTsParam {
   /**
    * Queries can be searched with this keyword.
    */
-  key_word?: string;
+  keyWord?: string;
   /**
    * Queries can be bounded by a Min price and Max Price.
    */
-  min_price?: number;
+  minPrice?: number;
   /**
    * Queries can be bounded by a Min price and Max Price.
    */
-  max_price?: number;
+  maxPrice?: number;
 }
 
 /**
- * NFT_list
+ * NFTList
  */
 export interface FilteredNFTsResponse {
   /**
@@ -379,11 +379,11 @@ export interface SingleNFTListingsResponse {
   /**
    * Last Updated，Last updated timestamp in seconds
    */
-  last_updated: number;
+  lastUpdated: number;
   /**
    * Nft List
    */
-  nft_list: ListingInfo[];
+  nftList: ListingInfo[];
 }
 
 /**
@@ -393,11 +393,11 @@ export interface SingleAddressListingsResponse {
   /**
    * Last Updated，Last updated timestamp in seconds
    */
-  last_updated: number;
+  lastUpdated: number;
   /**
    * Nft List
    */
-  nft_list: ListingInfo[];
+  nftList: ListingInfo[];
 }
 
 /**
@@ -407,15 +407,15 @@ export interface AggregateParams {
   /**
    * Buyer Address，Address of buyer.
    */
-  buyer_address: string;
+  buyerAddress: string;
   /**
    * Is Safe，Is it safe mode? true or false
    */
-  is_safe?: boolean;
+  isSafe?: boolean;
   /**
    * Order Ids，A list of orderIds.order id is from listing API.
    */
-  order_ids: string[];
+  orderIds: string[];
 }
 
 /**
@@ -425,14 +425,14 @@ export interface AggregateResponse {
   /**
    * Gas Limit，The gas limit
    */
-  gas_limit: number;
+  gasLimit: number;
   /**
    * Saving Gas，The saving gas
    */
-  saving_gas: number;
-  tx_info: TXInfo;
+  savingGas: number;
+  txInfo: TXInfo;
   /**
    * Used Gas，The used gas
    */
-  used_gas: number;
+  usedGas: number;
 }

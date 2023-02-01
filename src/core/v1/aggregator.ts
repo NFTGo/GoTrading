@@ -40,12 +40,12 @@ export class AggregatorStable implements Aggregator {
   }
 
   getAggregateInfo(params: AggregateParams): Promise<AggregateResponse> {
-    if (isInvalidParam(params.buyer_address)) {
-      throw AggregatorException.missingParamError('buyer_address');
+    if (isInvalidParam(params.buyerAddress)) {
+      throw AggregatorException.missingParamError('buyerAddress');
     }
 
-    if (isInvalidParam(params.order_ids)) {
-      throw AggregatorException.missingParamError('order_ids');
+    if (isInvalidParam(params.orderIds)) {
+      throw AggregatorException.missingParamError('orderIds');
     }
 
     return this.post('/nft-aggregate/aggregate', params);
