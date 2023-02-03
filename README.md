@@ -70,8 +70,8 @@ console.log(listingInfo.order_id)
 const walletAddress = "0x8ae57a027c63fca8070d1bf38622321de8004c67";
 const listingInfo = goTradingSDK.aggregator.getListingsOfWallet(walletAddress);
 
-for (const listing_data in listingInfo) {
-    console.log(listing_data.order_id)
+for (const listingData in listingInfo) {
+    console.log(listingData.order_id)
 }
 ```
 
@@ -83,7 +83,7 @@ const baycContract = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
 const result = goTradingSDK.aggregator.getListingsOfCollection(baycContract);
 
 for (const nft in result.nfts) {
-    console.log(nft.listing_data.order_id)
+    console.log(nft.listingData.order_id)
 }
 ```
 
