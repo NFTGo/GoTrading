@@ -1,6 +1,6 @@
-- ***AggregateParams***
+- ***TradeAggregatorParams***
 ```ts
-export interface AggregateParams {
+export interface TradeAggregatorParams {
   /**
    * Buyer Address，Address of buyer.
    */

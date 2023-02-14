@@ -4,11 +4,11 @@ export interface SingleAddressListingsResponse {
   /**
    * Last Updated，Last updated timestamp in seconds
    */
-  lastUpdated: number;
+  last_updated: number;
   /**
    * Nft List
    */
-  nftList: ListingInfo[];
+  nft_list: ListingInfo[];
 }
 ```
 

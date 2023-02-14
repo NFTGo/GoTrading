@@ -1,6 +1,6 @@
-- ***AggregateResponse***
+- ***TradeAggregatorResponse***
 ```ts
-export interface AggregateResponse {
+export interface TradeAggregatorResponse {
   /**
    * Gas Limit，The gas limit
    */
