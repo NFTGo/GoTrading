@@ -1,0 +1,36 @@
+# name，也就是当前 workflow 的名称
+name: buildAndPublishLibrary
+
+# 下文的意思是：当监听到tag的变更时，执行脚本，比如我们在 github 内新建一个tag
+on:
+  push:
+    tags:
+      - 'v*'
+
+# jobs 也就是任务的意思
+jobs:
+  publish:
+    # name: 在 Github 中显示的 job 名称
+    name: buildLibrary
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout    # 获取分支的代码和提交记录
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js v16.14.0 # 设置 Node.js 的环境
+        uses: actions/setup-node@v1
+        with:
+          node-version: 'v16.14.0'
+
+      - name: Install
+        run: npm install # 安装依赖
+
+      - name: Build
+        run: npm run build # 打包
+
+      - name: Publish to NPM  # 推送到 NPM 上
+        run: |
+          npm config set //registry.npmjs.org/:_authToken=$NPM_TOKEN
+          npm publish
+        env:
+          NPM_TOKEN: ${{ secrets.PUBLISH }}
