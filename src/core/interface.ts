@@ -48,6 +48,7 @@ export interface Aggregator {
 export type TransactionHashHandler = ((hash: string) => void) | null | undefined;
 export type ReceiptHandler = ((receipt: TransactionReceipt) => void) | null | undefined;
 export type ErrorHandler = ((error: Error) => void) | null | undefined;
+export type FinallyHandler = (() => void) | null | undefined;
 export interface BuyNFTsWithOrderIdsParams {
   buyer_address: string;
   order_ids: string[];
@@ -65,7 +66,7 @@ export interface Transaction {
     type: 'error' | 'receipt' | 'transaction_hash',
     handler: (receipt: Error | TransactionReceipt | string | object) => void
   ): Transaction;
-  finally(): void;
+  finally(handler: FinallyHandler): void;
 }
 
 export interface DecodeLogRes {

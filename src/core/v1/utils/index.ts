@@ -7,6 +7,7 @@ import { DecodeLogInterface, PUNK_CONTRACT_ADDRESS } from './consts';
 import { AggregatorUtilsException } from '../../exception';
 import {
   ErrorHandler,
+  FinallyHandler,
   inspectTransactionParams as InspectTransactionParams,
   ReceiptHandler,
   Transaction,
@@ -233,7 +234,7 @@ class SendTransaction implements Transaction {
   public transaction_hash_handler: TransactionHashHandler = null;
   public receipt_handler: ReceiptHandler = null;
   public error_handler: ErrorHandler = null;
-  public finally_handler: (() => void) | null | undefined = null;
+  public finally_handler: FinallyHandler = null;
   on(type: 'transaction_hash', handler: TransactionHashHandler): Transaction;
   on(type: 'receipt', handler: ReceiptHandler): Transaction;
   on(type: 'error', handler: ErrorHandler): Transaction;
@@ -244,7 +245,7 @@ class SendTransaction implements Transaction {
     this[`${type}_handler`] = handler;
     return this;
   }
-  finally(onfinally?: (() => void) | null | undefined): void {
+  finally(onfinally?: FinallyHandler): void {
     this.finally_handler = onfinally;
   }
 }
