@@ -100,7 +100,7 @@ export interface HTTPClient {
 export interface Config {
   api_key: string;
   chain?: EVMChain;
-  base_url: string;
+  base_url?: string;
   web3_provider?: provider;
 }
 
@@ -262,7 +262,10 @@ export interface NFT {
    * Last Sale，Last sale price of the NFT
    */
   last_sale?: Sale;
-  listing_data?: ListingInfo;
+  listing_data?: {
+    last_updated: number;
+    nft_list: ListingInfo[];
+  };
   /**
    * Listing Price，Listing price of the NFT
    */
@@ -389,11 +392,11 @@ export interface FilteredNFTsParam {
   /**
    * The index of data segments. The returned data is divided into many segments. One segment is returned at a time. {offset} parameter indicates the index of data segments.
    */
-  offset?: number;
+  offset?: number; // default: 0
   /**
    * The size of a returned data segment
    */
-  limit?: number;
+  limit?: number; // default: 10
   /**
    * Queries can be searched with this keyword.
    */

@@ -42,10 +42,14 @@ export class InternalHTTPClient implements HTTPClient {
     if (params.length !== 0) {
       actualUrl = `${url}?${params.join('&')}`;
     }
-    return this.fetch<R>(actualUrl, { ...headers, method: 'GET' });
+    return this.fetch<R>(actualUrl, { headers, method: 'GET' });
   }
 
   post<R, P = Object>(url: string, data: P, headers: HeadersInit): Promise<R> {
-    return this.fetch<R>(url, {method: 'POST', body: JSON.stringify(data), headers: {...headers, 'Content-Type': 'application/json'}});
+    return this.fetch<R>(url, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: { ...headers, 'Content-Type': 'application/json' },
+    });
   }
 }

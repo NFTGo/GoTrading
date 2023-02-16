@@ -15,7 +15,7 @@ import {
 } from '../../interface';
 
 export class AggregatorUtils implements Utils {
-  constructor(private api: AggregatorStable, private provider: provider) {}
+  constructor(private provider: provider) {}
   private web3 = new Web3(this.provider);
   private TRANSFER_TOPIC = this.web3.eth.abi.encodeEventSignature(DecodeLogInterface.Transfer721);
   private TRANSFER_BATCH_TOPIC = this.web3.eth.abi.encodeEventSignature(DecodeLogInterface.BatchTransfer1155);
@@ -38,7 +38,7 @@ export class AggregatorUtils implements Utils {
         transactionInstance.finally?.();
       }
     }, interval);
-    return { on: transactionInstance.on, finally: transactionInstance.finally };
+    return transactionInstance;
   }
   decodeLog(log: Log) {
     if (!log) {
@@ -145,37 +145,39 @@ export class AggregatorUtils implements Utils {
       transactionConfig.nonce = nonce;
       transactionConfig.type = 2;
       const priorityFee = BigNumber.from(2000000000);
-      transactionConfig.maxFeePerGas = priorityFee.add(BigNumber.from(this.web3.eth.getGasPrice()));
-      transactionConfig.maxPriorityFeePerGas = priorityFee;
-      // eth_sign only accetp 32byte data
-      const unsignedTransactionHash = this.web3.utils.keccak256(ethers.utils.serializeTransaction(transactionConfig));
+      this.web3.eth.getGasPrice().then((gasPrice) => {
+        transactionConfig.maxFeePerGas = priorityFee.add(BigNumber.from(gasPrice));
+        transactionConfig.maxPriorityFeePerGas = priorityFee;
+        // eth_sign only accetp 32byte data
+        const unsignedTransactionHash = this.web3.utils.keccak256(ethers.utils.serializeTransaction(transactionConfig));
 
-      this.web3.eth
-        .sign(unsignedTransactionHash, transactionConfig.from as string)
-        .then(async (signedTransaction) => {
-          const signedTrx = ethers.utils.serializeTransaction(transactionConfig, signedTransaction);
-          const trueRpc = 'https://rpc.flashbots.net';
-          const flashBots = new Web3(trueRpc);
-          flashBots.eth
-            .sendSignedTransaction(signedTrx)
-            .on('transactionHash', (hash) => {
-              transactionInstance.transaction_hash_handler?.(hash);
-            })
-            .on('receipt', (receipt) => {
-              transactionInstance.receipt_handler?.(receipt);
-            })
-            .on('error', (error) => {
-              transactionInstance.error_handler?.(error);
-            });
-        })
-        .catch((error) => {
-          transactionInstance.error_handler?.(error);
-        })
-        .finally(() => {
-          transactionInstance.finally_handler?.();
-        });
+        this.web3.eth
+          .sign(unsignedTransactionHash, transactionConfig.from as string)
+          .then(async (signedTransaction) => {
+            const signedTrx = ethers.utils.serializeTransaction(transactionConfig, signedTransaction);
+            const trueRpc = 'https://rpc.flashbots.net';
+            const flashBots = new Web3(trueRpc);
+            flashBots.eth
+              .sendSignedTransaction(signedTrx)
+              .on('transactionHash', (hash) => {
+                transactionInstance.transaction_hash_handler?.(hash);
+              })
+              .on('receipt', (receipt) => {
+                transactionInstance.receipt_handler?.(receipt);
+              })
+              .on('error', (error) => {
+                transactionInstance.error_handler?.(error);
+              });
+          })
+          .catch((error) => {
+            transactionInstance.error_handler?.(error);
+          })
+          .finally(() => {
+            transactionInstance.finally_handler?.();
+          });
+      });
     });
-    return { on: transactionInstance.on, finally: transactionInstance.finally };
+    return transactionInstance;
   }
   sendTransaction(transactionConfig: TransactionConfig) {
     const transactionInstance = new SendTransaction();
@@ -223,7 +225,7 @@ export class AggregatorUtils implements Utils {
             });
         }
       });
-    return { on: transactionInstance.on, finally: transactionInstance.finally };
+    return transactionInstance;
   }
 }
 
