@@ -5,20 +5,22 @@
 import { BigNumber } from "ethers";
 import { AggregateParams, AggregateResponse, init } from "gotrading-js";
 
+const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io')
+
 const configs = {
   api_key: 'YOUR-API-KEY', // Replace with your own API Key.
-  web3_provider: 'your provider', //window.ethereum or any other provider,
+  web3_provider: provider, // Replace with your provider,
 };
 // create a goTrading sdk client
 const {aggregator, utils} = init(configs);
 
-// Get the listing info of BAYC
-const baycContract = '0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D';
+// Get the listing info of BAYC.
+const baycContract = '0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D'; // Replace with your test collection
 
 const collectionResponse = await aggregator.getListingsOfCollection(baycContract);
 let orderIds:string[] = [];
-for (let nft of collectionResponse.nfts) {
-  orderIds.push(nft.listing_data?.order_id as string);
+for (const nft of collectionResponse.nfts) {
+  orderIds.push(nft.listing_data?.nft_list[0].order_id as string);
 }
 
 // without safe mode
@@ -29,14 +31,15 @@ const params: AggregateParams = ({
 });
 
 const aggregateResponse = await aggregator.getAggregateInfo(params);
+
 utils?.sendTransaction({
   from: aggregateResponse.tx_info.from_address,
   to: aggregateResponse.tx_info.to_address,
   data: aggregateResponse.tx_info.data,
-  value: BigNumber.from(aggregateResponse.tx_info.value).toHexString()
-}).on('transaction_hash', (hash) {
+  value: BigNumber.from(aggregateResponse.tx_info.value.toString()).toHexString()
+}).on('transaction_hash', (hash)=>{
   console.log(hash);
-}).on('receipt', (receipt) {
+}).on('receipt', (receipt)=>{
   if (receipt.logs.length) {
     for (const log of receipt.logs) {
       // not every log with useful info
@@ -63,14 +66,14 @@ utils
     from: aggregateResponse.tx_info.from_address,
     to: aggregateResponse.tx_info.to_address,
     data: aggregateResponse.tx_info.data,
-    value: BigNumber.from(aggregateResponse.tx_info.value),
+    value: BigNumber.from(aggregateResponse.tx_info.value.toString()),
     chainId: 1,
-    gasLimit: BigNumber.from(aggregateResponse.gas_limit),
+    gasLimit: BigNumber.from(aggregateResponse.gas_limit.toString()),
   })
-  .on('transaction_hash', (hash) {
+  .on('transaction_hash', (hash)=>{
     console.log(hash);
   })
-  .on('receipt', (receipt) {
+  .on('receipt', (receipt)=>{
     if (receipt.logs.length) {
       for (const log of receipt.logs) {
         // not every log with useful info
@@ -80,7 +83,7 @@ utils
       console.log('transaction fail for some unknown reason');
     }
   })
-  .on('error', (error) {
+  .on('error', (error)=>{
     console.log('transaction fail: ', error);
   });
 ```
