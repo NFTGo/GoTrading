@@ -2,30 +2,90 @@
 - ***complete example***
 ```ts
 // init sdk client
-import { init, AggregateParams, AggregateResponse, FilteredNFTsResponse } from 'gotrading-js';
+import { BigNumber } from "ethers";
+import { AggregateParams, AggregateResponse, init } from "gotrading-js";
+
+const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io')
+
 const configs = {
-  apiKey: 'YOUR-API-KEY', // Replace with your own API Key.
+  api_key: 'YOUR-API-KEY', // Replace with your own API Key.
+  web3_provider: provider, // Replace with your provider,
 };
 // create a goTrading sdk client
-const goTradingSDK = init(configs);
+const {aggregator, utils} = init(configs);
 
-// Get the listing info of BAYC
-const baycContract = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
+// Get the listing info of BAYC.
+const baycContract = '0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D'; // Replace with your test collection
 
-const result: FilteredNFTsResponse = goTradingSDK.tradeAggregator.getListingsOfCollection(baycContract);
-let orderIds = [];
-for (let nft in result.nfts) {
-  orderIds.push(nft.listingData.order_id)
+const collectionResponse = await aggregator.getListingsOfCollection(baycContract);
+let orderIds:string[] = [];
+for (const nft of collectionResponse.nfts) {
+  orderIds.push(nft.listing_data?.nft_list[0].order_id as string);
 }
-const params:AggregateParams = AggregateParams({
-    buyer_address: "buyerAddress", // Replace with buyer address.
-    is_safe: "False",
-    order_ids: orderIds
-})
 
-const result: AggregateResponse = goTradingSDK.tradeAggregator.getAggregateInfo(params);
-console.log(result);
-// you can use this result info to request METAMASK.
+// without safe mode
+const params: AggregateParams = ({
+  buyer_address: 'buyerAddress', // Replace with buyer address.
+  is_safe: false,
+  order_ids: orderIds,
+});
+
+const aggregateResponse = await aggregator.getAggregateInfo(params);
+
+utils?.sendTransaction({
+  from: aggregateResponse.tx_info.from_address,
+  to: aggregateResponse.tx_info.to_address,
+  data: aggregateResponse.tx_info.data,
+  value: BigNumber.from(aggregateResponse.tx_info.value.toString()).toHexString()
+}).on('transaction_hash', (hash)=>{
+  console.log(hash);
+}).on('receipt', (receipt)=>{
+  if (receipt.logs.length) {
+    for (const log of receipt.logs) {
+      // not every log with useful info
+      const decodedLog = utils.decodeLog(log);
+    }
+  }else {
+    console.log('transaction fail for some unknown reason')
+  }
+}).on('error', (error) {
+  console.log('transaction fail: ', error);
+});
+
+// with safe mode
+const params: AggregateParams = {
+  buyer_address: 'buyerAddress', // Replace with buyer address.
+  is_safe: true,
+  order_ids: orderIds,
+};
+
+const aggregateResponse = await aggregator.getAggregateInfo(params);
+
+utils
+  ?.sendSafeModeTransaction({
+    from: aggregateResponse.tx_info.from_address,
+    to: aggregateResponse.tx_info.to_address,
+    data: aggregateResponse.tx_info.data,
+    value: BigNumber.from(aggregateResponse.tx_info.value.toString()),
+    chainId: 1,
+    gasLimit: BigNumber.from(aggregateResponse.gas_limit.toString()),
+  })
+  .on('transaction_hash', (hash)=>{
+    console.log(hash);
+  })
+  .on('receipt', (receipt)=>{
+    if (receipt.logs.length) {
+      for (const log of receipt.logs) {
+        // not every log with useful info
+        const decodedLog = utils.decodeLog(log);
+      }
+    } else {
+      console.log('transaction fail for some unknown reason');
+    }
+  })
+  .on('error', (error)=>{
+    console.log('transaction fail: ', error);
+  });
 ```
 
 - ***interface***

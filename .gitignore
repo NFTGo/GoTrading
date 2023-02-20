@@ -14,3 +14,7 @@ yarn-error.log
 .idea/**/**
 
 /coverage
+
+tsconfig.build.tsbuildinfo
+
+dist/*

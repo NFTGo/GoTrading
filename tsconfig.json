@@ -21,7 +21,11 @@
     "jsx": "preserve",
     "incremental": true,
     "declaration": true,
-    "declarationDir": "dist/declaration"
+    "outDir": "dist",
   },
-  "include": ["src"]
+  "include": [
+    "src",
+    "./node_modules/types-bn/index.d.ts",
+    "./node_modules/types-ethereumjs-util/index.d.ts"
+  ]
 }

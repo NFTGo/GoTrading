@@ -1,3 +1,9 @@
+import { ethers } from 'ethers';
+import Web3 from 'web3';
+import { Log, provider, TransactionConfig, TransactionReceipt } from 'web3-core';
+import { AggregatorUtils } from './v1/utils';
+import { AggregatorStable } from './v1/aggregator';
+
 // # user-land interface , core  should implement this
 export enum EVMChain {
   ETH = 'eth',
@@ -36,11 +42,55 @@ export interface Aggregator {
    * @param params The query params {@link FilteredNFTsParam}
    * @returns Promise<{@link FilteredNFTsResponse}>
    */
-  getListingsOfCollection(contract: string, params: FilteredNFTsParam): Promise<FilteredNFTsResponse>;
+  getListingsOfCollection(contract: string, params?: FilteredNFTsParam): Promise<FilteredNFTsResponse>;
+}
+
+export type TransactionHashHandler = ((hash: string) => void) | null | undefined;
+export type ReceiptHandler = ((receipt: TransactionReceipt) => void) | null | undefined;
+export type ErrorHandler = ((error: Error) => void) | null | undefined;
+export type FinallyHandler = (() => void) | null | undefined;
+export interface BuyNFTsWithOrderIdsParams {
+  buyer_address: string;
+  order_ids: string[];
+  is_safe_mode?: boolean;
+}
+
+export interface Transaction {
+  on(type: 'transaction_hash', handler: TransactionHashHandler): Transaction;
+
+  on(type: 'receipt', handler: ReceiptHandler): Transaction;
+
+  on(type: 'error', handler: ErrorHandler): Transaction;
+
+  on(
+    type: 'error' | 'receipt' | 'transaction_hash',
+    handler: (receipt: Error | TransactionReceipt | string | object) => void
+  ): Transaction;
+  finally(handler: FinallyHandler): void;
+}
+
+export interface DecodeLogRes {
+  contract?: string;
+  token_id?: string;
+  amount?: number;
+  is1155?: boolean;
+  to?: string;
+}
+
+export interface inspectTransactionParams {
+  hash: string;
+  interval?: number;
+}
+export interface Utils {
+  decodeLog(log: Log): DecodeLogRes | null;
+  sendSafeModeTransaction(transactionConfig: Partial<ethers.Transaction>): Transaction;
+  sendTransaction(transactionConfig: TransactionConfig): Transaction;
+  inspectTransaction(params: inspectTransactionParams): Transaction;
 }
 
 export interface GoTrading {
-  aggregator: Aggregator;
+  aggregator: AggregatorStable;
+  utils?: AggregatorUtils | null;
 }
 
 export interface HTTPClient {
@@ -49,9 +99,10 @@ export interface HTTPClient {
 }
 
 export interface Config {
-  apiKey: string;
+  api_key: string;
   chain?: EVMChain;
-  baseUrl: string;
+  base_url?: string;
+  web3_provider?: provider;
 }
 
 // # all below is POJO for response
@@ -212,7 +263,10 @@ export interface NFT {
    * Last Sale，Last sale price of the NFT
    */
   last_sale?: Sale;
-  listing_data?: ListingInfo;
+  listing_data?: {
+    last_updated: number;
+    nft_list: ListingInfo[];
+  };
   /**
    * Listing Price，Listing price of the NFT
    */
@@ -339,11 +393,11 @@ export interface FilteredNFTsParam {
   /**
    * The index of data segments. The returned data is divided into many segments. One segment is returned at a time. {offset} parameter indicates the index of data segments.
    */
-  offset?: number;
+  offset?: number; // default: 0
   /**
    * The size of a returned data segment
    */
-  limit?: number;
+  limit?: number; // default: 10
   /**
    * Queries can be searched with this keyword.
    */
