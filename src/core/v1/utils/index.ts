@@ -59,7 +59,6 @@ export class AggregatorUtils implements Utils {
             // one punk sale will trigger both Transfer721 and PunkBought
             break;
           } else {
-            debugger;
             // 721
             decodedEventLog = this.web3.eth.abi.decodeLog(
               DecodeLogInterface.Transfer721.inputs ?? [],
