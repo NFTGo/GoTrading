@@ -1,12 +1,20 @@
 {
-  "name": "@nftgo/aggregator-sdk",
+  "name": "@nftgo/gotrading-js",
+  "version": "0.0.1",
+  "license": "MIT",
+  "author": "NFTGo Developers",
+  "homepage": "https://github.com/NFTGo/GoTrading-js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NFTGo/GoTrading-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/NFTGo/GoTrading-js/issues"
+  },
   "main": "dist/index.js",
-  "version": "0.0.3",
   "types": "dist/index.d.ts",
   "files": [
-    "dist/index.js",
-    "dist/index.esm.js",
-    "dist/index.d.ts"
+    "dist"
   ],
   "scripts": {
     "dev": "rimraf dist types && cross-env NODE_ENV=development webpack --config ./config/webpack/webpack.dev.js",
