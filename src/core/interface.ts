@@ -451,7 +451,7 @@ export interface SingleAddressListingsResponse {
   /**
    * Nft List
    */
-  nft_list: ListingInfo[];
+  nft_list: NFT[];
 }
 
 /**

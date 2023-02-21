@@ -1,31 +1,61 @@
 # Buy by NFT listings
-- ***complete example***
+## ***complete example***
 ```ts
 // init sdk client
-import { init, AggregateParams, AggregateResponse, SingleNFTListingsResponse } from 'gotrading-js';
+import { BigNumber } from "ethers";
+import { init, AggregateParams, AggregateResponse, SingleNFTListingsResponse } from 'gotrading';
+
+const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io')
+
 const configs = {
-  apiKey: 'YOUR-API-KEY', // Replace with your own API Key.
+  api_key: 'YOUR-API-KEY', // Replace with your own API Key.
+  web3_provider: provider, // Replace with your provider,
 };
-// create a goTrading sdk client
-const goTradingSDK = init(configs);
+
+// create tradeAggregator client
+const {aggregator, utils} = init(configs);
 
 // Get the listing info of BAYC No.1
 const baycContract = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
 const tokenId = 1;
 
-const listingInfo: SingleNFTListingsResponse = goTradingSDK.tradeAggregator.getListingOfNFT(baycContract, tokenId)
-const orderIds = "orderIds";
-const params = AggregateParams({
-    buyer_address="buyerAddress", // Replace with buyer address.
-    is_safe="False",
-    order_ids=[listingInfo]
-})
+const listingInfo: SingleNFTListingsResponse = aggregator.getListingOfNFT(baycContract, tokenId)
+let orderIds: string[] = [];
+orderIds.push(listingInfo.nft_list[0].order_id as string);
 
-const result: AggregateResponse = goTradingSDK.tradeAggregator.getAggregateInfo(params);
-console.log(result);
-// you can use this result info to request METAMASK.
+// without safe mode
+const params: AggregateParams = ({
+  buyer_address: 'buyerAddress', // Replace with buyer address.
+  is_safe: false,
+  order_ids: orderIds,
+});
+
+const aggregateResponse = await aggregator.getAggregateInfo(params);
+
+utils?.sendTransaction({
+  from: aggregateResponse.tx_info.from_address,
+  to: aggregateResponse.tx_info.to_address,
+  data: aggregateResponse.tx_info.data,
+  value: BigNumber.from(aggregateResponse.tx_info.value.toString()).toHexString()
+}).on('transaction_hash', (hash)=>{
+  console.log(hash);
+}).on('receipt', (receipt)=>{
+  if (receipt.logs.length) {
+    for (const log of receipt.logs) {
+      // not every log with useful info
+      const decodedLog = utils.decodeLog(log);
+    }
+  }else {
+    console.log('transaction fail for some unknown reason')
+  }
+}).on('error', (error) {
+  console.log('transaction fail: ', error);
+});
 ```
+>
+> This is [Safe Mode Example](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/BuyByCollectionListings.md).
 
+## ***interface***
 - ***interface***
   - [***SingleNFTListingsResponse***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/SingleNftListingResponse.md)
   - [***AggregateParams***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/TradeAggregatorParams.md)

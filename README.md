@@ -8,6 +8,8 @@
 The GoTrading-js helps you build your own marketplace or other apps with NFT trading needs. We’ve included orders from over 10 major marketplaces, so you can get access to full amount of listings, find the lowest price and complete your purchase directly through GoTrading SDK. Our functionality is based on Reservior and has many improvements over the original functions.
 
 
+## Process
+![image info](./process.jpg)
 ## Quickstart
 ### 1. Install the SDK.
 
@@ -24,14 +26,16 @@ yarn add gotrading
 ### 2. Import and init the SDK.
 
 ```ts
-import { init } from 'gotrading-js';
+import { init } from 'gotrading';
 
+const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io')
 const configs = {
-  apiKey: 'YOUR-API-KEY', // Replace with your own API Key.
+  api_key: 'YOUR-API-KEY', // Replace with your own API Key.
+  web3_provider: provider, // Replace with your provider,
 };
 
-// create a goTrading sdk client
-const goTradingSDK = init(configs);
+// create tradeAggregator client
+const {aggregator, utils} = init(configs);
 ```
 > ***Get your own NFTGo DEVELOPERS API Key***
 >
@@ -44,7 +48,7 @@ You can use the aggregator to do trading, and the request will return the data y
 ```ts
 const orderIds = "orderIds";
 
-const result = goTradingSDK.aggregator.getListingsOfCollection(baycContract);
+const result = aggregator.getListingsOfCollection(baycContract);
 console.log(result);
 ```
 
@@ -60,7 +64,7 @@ console.log(result);
 const baycContract = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
 const tokenId = 1;
 
-const listingInfo = goTradingSDK.aggregator.getListingOfNFT(baycContract, tokenId)
+const listingInfo = aggregator.getListingOfNFT(baycContract, tokenId)
 console.log(listingInfo.order_id)
 ```
 
@@ -68,7 +72,7 @@ console.log(listingInfo.order_id)
 ```ts
 // rollbot wallet address.
 const walletAddress = "0x8ae57a027c63fca8070d1bf38622321de8004c67";
-const listingInfo = goTradingSDK.aggregator.getListingsOfWallet(walletAddress);
+const listingInfo = aggregator.getListingsOfWallet(walletAddress);
 
 for (const listingData in listingInfo) {
     console.log(listingData.order_id)
@@ -80,102 +84,28 @@ for (const listingData in listingInfo) {
 // Bored Ape Yacht Club contract address.
 const baycContract = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
 
-const result = goTradingSDK.aggregator.getListingsOfCollection(baycContract);
+const result = aggregator.getListingsOfCollection(baycContract);
 
 for (const nft in result.nfts) {
     console.log(nft.listingData.order_id)
 }
 ```
+## Complete example
+  - [***BuyByCollectionListings***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/tradeAggregator/BuyByCollectionListings.md)
+
+  - [***BuyByNFTListings***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/tradeAggregator/BuyByNFTListings.md)
+
+  - [***BuyByWalletListings.***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/tradeAggregator/BuyByWalletListings..md)
 
 
-## interface example
-  - ***AggregateResponse***
-```ts
-export interface AggregateResponse {
-  /**
-   * Gas Limit，The gas limit
-   */
-  gas_limit: number;
-  /**
-   * Saving Gas，The saving gas
-   */
-  saving_gas: number;
-  tx_info: TXInfo;
-  /**
-   * Used Gas，The used gas
-   */
-  used_gas: number;
-}
-```
-  - ***TxInfo***
-```ts
-export interface TXInfo {
-  /**
-   * Data，The price(eth) of the NFT
-   */
-  data: string;
-  /**
-   * From Address，The address of the from
-   */
-  from_address: string;
-  /**
-   * To Address，The address of the to
-   */
-  to_address: string;
-  /**
-   * Value，The price(eth) of the NFT
-   */
-  value: number;
-}
-```
+## Interface example
+  - [***SingleAddressListingsResponse***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/SingleAddressListingsResponse.md)
+  - [***SingleNFTListingsResponse***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/SingleNftListingResponse.md)
+  - [***FilteredNFTsParam***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/FilteredNFTsParam.md)
+  - [***FilteredNFTsResponse***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/FilteredNFTsResponse.md)
+  - [***AggregateParams***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/TradeAggregatorParams.md)
+  - [***AggregateResponse***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/TradeAggregatorResponse.md)
 
-  - ***ListingInfo***
-```ts
-export interface ListingInfo {
-  /**
-   * Contract，Address of the contract for this NFT collection, beginning with 0x
-   */
-  contract?: string;
-  /**
-   * Eth Price，The price(eth) of the NFT
-   */
-  eth_price?: number;
-  /**
-   * Expired Time，The listing expire time of the NFT
-   */
-  expired_time?: number;
-  /**
-   * Listing Time，The listing time of the NFT
-   */
-  listing_time?: number;
-  /**
-   * Market Link，The listing market link the NFT
-   */
-  market_link?: string;
-  /**
-   * Market Name，The listing market name the NFT
-   */
-  market_name?: string;
-  /**
-   * Order Id，ID for aggregate
-   */
-  order_id?: string;
-  /**
-   * Seller Address，The seller address of the NFT
-   */
-  seller_address?: string;
-  /**
-   * Token Id，The token ID for this NFT. Each item in an NFT collection will be assigned a
-   * unique id, the value generally ranges from 0 to N, with N being the total number of
-   * NFTs in a collection.
-   */
-  token_id?: string;
-  /**
-   * Usd Price，The usd price(usd) of the NFT
-   */
-  usd_price?: number;
-}
-```
 
 ## Questions & Feedback
 
