@@ -1,13 +1,15 @@
 import { AggregatorApiException } from './exception';
 // import { Axios, AxiosResponse, AxiosRequestConfig } from 'axios';
 
-import { HTTPClient } from './interface';
+import { HTTPClient, HTTPAgentOption } from './interface';
+import HttpsProxyAgent from 'https-proxy-agent';
 
 export class InternalHTTPClient implements HTTPClient {
-  constructor() {}
+  constructor(private agent?: HTTPAgentOption) {}
   fetch<R>(input: RequestInfo | URL, init?: RequestInit | undefined) {
+    const agentOption = this.agent ? { agent: new (HttpsProxyAgent as any)({ ...this.agent }) } : {};
     return new Promise<R>((resolve, reject) => {
-      fetch(input, { ...init })
+      fetch(input, { ...init, ...agentOption })
         .then((res) => {
           if (res.status !== 200) {
             throw new AggregatorApiException(res.status, res.statusText);

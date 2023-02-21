@@ -53,7 +53,7 @@ utils?.sendTransaction({
   }else {
     console.log('transaction fail for some unknown reason')
   }
-}).on('error', (error) {
+}).on('error', (error)=>{
   console.log('transaction fail: ', error);
 });
 ```

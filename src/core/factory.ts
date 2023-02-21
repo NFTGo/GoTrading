@@ -10,7 +10,7 @@ import { AggregatorUtils } from './v1/utils';
  *
  */
 export function init(config: Config): GoTrading {
-  const aggregatorApi = new AggregatorStable(new InternalHTTPClient(), {
+  const aggregatorApi = new AggregatorStable(new InternalHTTPClient(config.agent), {
     ...config,
     base_url: config?.base_url || 'https://aggregator.data-api.nftgo.io/',
     chain: config?.chain || EVMChain.ETH,

@@ -98,11 +98,17 @@ export interface HTTPClient {
   post<R, P = undefined>(url: string, data: P, headers?: HeadersInit): Promise<R>;
 }
 
+export interface HTTPAgentOption {
+  host: string;
+  port: string;
+}
+
 export interface Config {
   api_key: string;
   chain?: EVMChain;
   base_url?: string;
   web3_provider?: provider;
+  agent?: HTTPAgentOption;
 }
 
 // # all below is POJO for response
