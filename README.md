@@ -5,7 +5,7 @@
 
 <!-- Introduction -->
 
-The GoTrading-js helps you build your own marketplace or other apps with NFT trading needs. We’ve included orders from over 10 major marketplaces, so you can get access to full amount of listings, find the lowest price and complete your purchase directly through GoTrading SDK. Our functionality is based on Reservior and has many improvements over the original functions.
+GoTrading is an open-source development kit that enables you to build your own NFT trading aggregator and marketplace. The SDK provides a comprehensive set of tools and APIs that greatly simplify the development process of a general trading aggregator like Gem.xyz or blur.io, and allow developers to access real-time order feed and NFT transaction data. We implement our aggregated orderbook based on Reservoir Protocol, and provide hight-level functions to help you to build your unified interface for retrieving listing data, bulk buying&listing NFTs, and selling NFTs instantly(accept bids) across all mainstream marketplaces, such as Opensea, Looksrare, Blur, x2y2, Sudoswap, etc.
 
 
 ## Process
