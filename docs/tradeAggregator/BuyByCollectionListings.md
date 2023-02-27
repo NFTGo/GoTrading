@@ -58,7 +58,7 @@ utils?.sendTransaction({
 });
 ```
 >
-> This is [Safe Mode Example](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/BuyByCollectionListings.md).
+> This is [Safe Mode Example](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/tradeAggregator/tradeWithSafeMode.md).
 
 ## ***interface***
   - [***FilteredNFTsParam***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/FilteredNFTsParam.md)

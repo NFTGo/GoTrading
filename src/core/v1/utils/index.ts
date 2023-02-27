@@ -1,28 +1,37 @@
 import { BigNumber, ethers } from 'ethers';
 import Web3 from 'web3';
 
-import { Log, provider, TransactionConfig } from 'web3-core';
-import { AggregatorStable } from '../aggregator';
-import { DecodeLogInterface, PUNK_CONTRACT_ADDRESS } from './consts';
+import { Log, provider, TransactionConfig, TransactionReceipt } from 'web3-core';
+import { PUNK_CONTRACT_ADDRESS } from './consts';
 import { AggregatorUtilsException } from '../../exception';
 import {
   ErrorHandler,
   FinallyHandler,
-  inspectTransactionParams as InspectTransactionParams,
+  InspectTransactionParams as InspectTransactionParams,
+  NFTBaseInfo,
+  NFTInfoForTrade,
   ReceiptHandler,
   Transaction,
   TransactionHashHandler,
   Utils,
 } from '../../interface';
+import { CryptoPunkAbi, ERC721Abi } from '../abi/ERC721';
+import { ERC1155Abi } from '../abi/ERC1155';
 
 export class AggregatorUtils implements Utils {
-  constructor(private provider: provider) {}
-  private web3 = new Web3(this.provider);
-  private TRANSFER_TOPIC = this.web3.eth.abi.encodeEventSignature(DecodeLogInterface.Transfer721);
-  private TRANSFER_BATCH_TOPIC = this.web3.eth.abi.encodeEventSignature(DecodeLogInterface.BatchTransfer1155);
-  private TRANSFER_SINGLE_TOPIC = this.web3.eth.abi.encodeEventSignature(DecodeLogInterface.SingleTransfer1155);
-  private PUNK_TRANSFER_TOPIC = this.web3.eth.abi.encodeEventSignature(DecodeLogInterface.PunkTransfer);
-  private PUNK_SINGLE_TOPIC = this.web3.eth.abi.encodeEventSignature(DecodeLogInterface.PunkBought);
+  constructor(private provider: provider) {
+    this.web3 = new Web3(this.provider);
+    this.web3.eth.getAccounts().then((accounts) => {
+      this.account = accounts[0];
+    });
+  }
+  private web3: Web3 = new Web3(this.provider);
+  public account: string = '';
+  private TRANSFER_TOPIC = this.web3.eth.abi.encodeEventSignature(ERC721Abi.transfer);
+  private TRANSFER_BATCH_TOPIC = this.web3.eth.abi.encodeEventSignature(ERC1155Abi.batchTransfer);
+  private TRANSFER_SINGLE_TOPIC = this.web3.eth.abi.encodeEventSignature(ERC1155Abi.singleTransfer);
+  private PUNK_TRANSFER_TOPIC = this.web3.eth.abi.encodeEventSignature(CryptoPunkAbi.transfer);
+  private PUNK_SINGLE_TOPIC = this.web3.eth.abi.encodeEventSignature(CryptoPunkAbi.bought);
   inspectTransaction({ hash, interval = 1000 }: InspectTransactionParams) {
     const transactionInstance = new SendTransaction();
     const intervalId = setInterval(async () => {
@@ -56,14 +65,14 @@ export class AggregatorUtils implements Utils {
       switch (topic) {
         case this.TRANSFER_TOPIC:
           if (log.address.toLowerCase() === PUNK_CONTRACT_ADDRESS) {
-            // one punk sale will trigger both Transfer721 and PunkBought
+            // A punk sale will trigger both Transfer721 and PunkBought. We take PunkBought into count rather than Transfer721.
             break;
           } else {
             // 721
             decodedEventLog = this.web3.eth.abi.decodeLog(
-              DecodeLogInterface.Transfer721.inputs ?? [],
+              ERC721Abi.transfer.inputs ?? [],
               log.data,
-              log.topics.slice(1)
+              log.topics.slice(1) // without the topic[0] if its a non-anonymous event, otherwise with topic[0].
             );
             contract = log.address;
             tokenId = decodedEventLog.tokenId.toString();
@@ -74,7 +83,7 @@ export class AggregatorUtils implements Utils {
         case this.TRANSFER_BATCH_TOPIC:
           // batch 1155
           decodedEventLog = this.web3.eth.abi.decodeLog(
-            DecodeLogInterface.BatchTransfer1155.inputs ?? [],
+            ERC1155Abi.batchTransfer.inputs ?? [],
             log.data,
             log.topics.slice(1)
           );
@@ -87,7 +96,7 @@ export class AggregatorUtils implements Utils {
         case this.TRANSFER_SINGLE_TOPIC:
           // single 1155
           decodedEventLog = this.web3.eth.abi.decodeLog(
-            DecodeLogInterface.SingleTransfer1155.inputs ?? [],
+            ERC1155Abi.singleTransfer.inputs ?? [],
             log.data,
             log.topics.slice(1)
           );
@@ -100,7 +109,7 @@ export class AggregatorUtils implements Utils {
         case this.PUNK_TRANSFER_TOPIC:
           // punk
           decodedEventLog = this.web3.eth.abi.decodeLog(
-            DecodeLogInterface.PunkTransfer.inputs ?? [],
+            CryptoPunkAbi.transfer.inputs ?? [],
             log.data,
             log.topics.slice(1)
           );
@@ -111,9 +120,8 @@ export class AggregatorUtils implements Utils {
           break;
         case this.PUNK_SINGLE_TOPIC:
           decodedEventLog = this.web3.eth.abi.decodeLog(
-            DecodeLogInterface.PunkBought.inputs ?? [],
+            CryptoPunkAbi.bought.inputs ?? [],
             log.data,
-            // without the topic[0] if its a non-anonymous event, otherwise with topic[0].
             log.topics.slice(1)
           );
           contract = log.address;
@@ -121,7 +129,7 @@ export class AggregatorUtils implements Utils {
           to = decodedEventLog.toAddress;
           break;
         default:
-          return null;
+          amount = 0;
       }
       return {
         contract,
@@ -133,6 +141,40 @@ export class AggregatorUtils implements Utils {
     } catch (error) {
       throw AggregatorUtilsException.decodeLogError(error?.toString());
     }
+  }
+  genUniqueKeyForNFT({ contract, tokenId }: NFTBaseInfo): string {
+    return `${contract}_${tokenId}`;
+  }
+  parseTransactedNFTs(receipt: TransactionReceipt): Map<string, NFTInfoForTrade> | undefined {
+    if (receipt?.logs.length === 0 || !receipt?.status) {
+      return undefined;
+    }
+    // Use set to prevent duplication.
+    // Because there will be multiple logs for one nft transaction
+    // multiple identical nft information may be parsed
+    const successList = new Map<string, NFTInfoForTrade>();
+    for (let i = 0; i < receipt?.logs.length; i++) {
+      const log = receipt.logs[i];
+      const { contract, tokenId, is1155, amount, to } = this.decodeLog(log);
+      // Not every log can parse contract and tokenId
+      // Only Log whose destination address equal to buyer address is useful
+      if ((!contract && !tokenId) || to?.toLowerCase() !== this.account?.toLowerCase()) {
+        continue;
+      }
+      const key = this.genUniqueKeyForNFT({ contract, tokenId });
+      if (is1155) {
+        if (successList.has(key)) {
+          const old1155 = successList.get(key) as NFTInfoForTrade;
+          old1155.amount += amount ?? 0;
+          successList.set(key, old1155);
+        } else {
+          successList.set(key, { contract, tokenId, amount });
+        }
+      } else {
+        successList.set(key, { contract, tokenId, amount });
+      }
+    }
+    return successList;
   }
   sendSafeModeTransaction(transactionConfig: Partial<ethers.Transaction>) {
     const transactionInstance = new SendTransaction();

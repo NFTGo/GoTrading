@@ -1,5 +1,4 @@
 import { AggregatorApiException } from './exception';
-// import { Axios, AxiosResponse, AxiosRequestConfig } from 'axios';
 
 import { HTTPClient, HTTPAgentOption } from './interface';
 import HttpsProxyAgent from 'https-proxy-agent';
@@ -12,16 +11,16 @@ export class InternalHTTPClient implements HTTPClient {
       fetch(input, { ...init, ...agentOption })
         .then((res) => {
           if (res.status !== 200) {
-            throw new AggregatorApiException(res.status, res.statusText);
+            reject(new AggregatorApiException(res.status, res.statusText));
           }
           return res.json();
         })
         .catch((e) => {
-          reject(`Request Error:${e}`);
+          reject(AggregatorApiException.requestError(e));
         })
         .then((res) => {
           if (!res) {
-            reject(`[URL=${input}]`);
+            reject(AggregatorApiException.emptyResponseError());
           } else {
             resolve(res);
           }

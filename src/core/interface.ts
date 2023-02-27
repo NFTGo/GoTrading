@@ -12,11 +12,46 @@ export interface Aggregator {
   /**
    * Return a list of listing info about a single NFT.
    * - details: {@link }
-   * @param collectionContract The contract address of the collection
+   * @param contract The contract address of the collection
    * @param tokenId The token id of the nft
    * @returns Promise<{@link SingleNFTListingsResponse}>
    */
   getListingOfNFT(contract: string, tokenId: string): Promise<SingleNFTListingsResponse>;
+
+  /**
+   * Return a list of listing info about batch of NFTs.
+   * - details: {@link }
+   * @param nfts The list of nfts that you want to get listing info
+   * @returns Promise<{@link MultiNFTListingsResponse}>
+   */
+  getListingsOfNFTs(nfts: NFTBaseInfo[]): Promise<MultiNFTListingsResponse>;
+
+  /**
+   * Bulk buy nfts. If you know clearly about the nfts you want to buy, just put them into bulk buy, and you will get a result.
+   * - details: {@link }
+   * @param nfts The list of nfts and amount that you want to buy
+   * @param callback the callbacks on every stage of buying nfts
+   * @param config config your own trade strategy
+   * @returns void
+   */
+  bulkBuy(
+    nfts: NFTInfoForTrade[],
+    callback: {
+      onSendingTransaction?: (hash: string) => void;
+      onFinishTransaction?: (
+        successNFTs: NFTBaseInfo[],
+        failNFTs: NFTBaseInfo[],
+        nftsListingInfo: NftsListingInfo
+      ) => void;
+      onError?: (error: Error, nftsListingInfo?: NftsListingInfo) => void;
+    },
+    config: {
+      ignoreUnListedNFTs: boolean;
+      ignoreInvalidOrders: boolean;
+      ignoreSuspiciousOrders: boolean;
+      withSafeMode: boolean;
+    }
+  ): void;
 
   /**
    * Return a list of listing info about a Ethereum address.
@@ -77,15 +112,56 @@ export interface DecodeLogRes {
   to?: string;
 }
 
-export interface inspectTransactionParams {
+export interface InspectTransactionParams {
   hash: string;
   interval?: number;
 }
+
+export type UniqueNFTKey = string;
 export interface Utils {
+  /**
+   * Return a unique key for a NFT.
+   * - details: {@link }
+   * @param contract The contract address of the collection
+   * @param tokenId The token id of the nft
+   * @returns string
+   */
+  genUniqueKeyForNFT({ contract, tokenId }: NFTBaseInfo): UniqueNFTKey;
+  /**
+   * Decode transaction log, return contract, token id, trading amount, buyer
+   * - details: {@link }
+   * @param log {@link Log} single log returned by send transaction method
+   * @returns res {@link DecodeLogRes}
+   */
   decodeLog(log: Log): DecodeLogRes | null;
+  /**
+   * Parse transacted NFTs from a transaction receipt
+   * - details: {@link }
+   * @param receipt {@link TransactionReceipt} transaction receipt returned by send transaction method
+   * @returns Map<{@link UniqueNFTKey}, {@link NFTInfoForTrade}>
+   */
+  parseTransactedNFTs(receipt: TransactionReceipt): Map<UniqueNFTKey, NFTInfoForTrade> | undefined;
+  /**
+   * Send transaction with safe mode, using flash bot
+   * - details: {@link }
+   * @param transactionConfig {@link https://docs.ethers.io/v5/api/providers/types/#providers-TransactionRequest} transaction config
+   * @returns transaction {@link Transaction}
+   */
   sendSafeModeTransaction(transactionConfig: Partial<ethers.Transaction>): Transaction;
+  /**
+   * Send transaction
+   * - details: {@link }
+   * @param transactionConfig {@link https://web3js.readthedocs.io/en/v1.8.2/web3-eth.html#sendtransaction} transaction config
+   * @returns transaction {@link Transaction}
+   */
   sendTransaction(transactionConfig: TransactionConfig): Transaction;
-  inspectTransaction(params: inspectTransactionParams): Transaction;
+  /**
+   * inspect a transaction
+   * - details: {@link }
+   * @param params {@link InspectTransactionParams} transaction hash, inspect interval
+   * @returns transaction {@link Transaction}
+   */
+  inspectTransaction(params: InspectTransactionParams): Transaction;
 }
 
 export interface GoTrading {
@@ -212,7 +288,7 @@ export interface ListingInfo {
   /**
    * Order Id，ID for aggregate
    */
-  order_id?: string;
+  order_id: string;
   /**
    * Seller Address，The seller address of the NFT
    */
@@ -227,6 +303,11 @@ export interface ListingInfo {
    * Usd Price，The usd price(usd) of the NFT
    */
   usd_price?: number;
+}
+
+export interface NftListing {
+  last_updated: number;
+  nft_list: ListingInfo[];
 }
 
 /**
@@ -257,6 +338,7 @@ export interface NFT {
    * Contract Address，Contract address of the collection the NFT belongs to
    */
   contract_address: string;
+  contract_type: 'ERC1155' | 'ERC721';
   /**
    * Description，The description of the NFT
    */
@@ -269,10 +351,7 @@ export interface NFT {
    * Last Sale，Last sale price of the NFT
    */
   last_sale?: Sale;
-  listing_data?: {
-    last_updated: number;
-    nft_list: ListingInfo[];
-  };
+  listing_data?: NftListing;
   /**
    * Listing Price，Listing price of the NFT
    */
@@ -307,6 +386,7 @@ export interface NFT {
    * Token Id，The token ID of the NFT
    */
   token_id: string;
+  suspicious: boolean;
   /**
    * Traits，The list of NFT traits. Traits consist of a series of types and values, referring
    * to the feature of an NFT. For example, if a project has avatar NFTs, the traits may
@@ -447,6 +527,37 @@ export interface SingleNFTListingsResponse {
 }
 
 /**
+ * OrderInfo
+ */
+export interface MultiNFTListingsResponse {
+  /**
+   * Orders
+   */
+  orders: OrderInfo[];
+}
+
+/**
+ * _OrderInfo
+ */
+export interface OrderInfo {
+  /**
+   * Blockchain，The blockchain the collection belongs to
+   */
+  blockchain: string;
+  /**
+   * Contract，Address of the contract for this NFT collection, beginning with 0x
+   */
+  contract: string;
+  listing_data?: NftListing;
+  /**
+   * Token Id，The token ID for this NFT. Each item in an NFT collection     will be assigned a
+   * unique id, the value generally ranges from 0 to     N,  with N being the total number of
+   * NFTs in a collection.
+   */
+  token_id: string;
+}
+
+/**
  * NftListing
  */
 export interface SingleAddressListingsResponse {
@@ -490,9 +601,31 @@ export interface AggregateResponse {
    * Saving Gas，The saving gas
    */
   saving_gas: number;
+  /**
+   * Invalid Ids，The Invalid IDs
+   */
+  invalid_ids: string[];
   tx_info: TXInfo;
   /**
    * Used Gas，The used gas
    */
   used_gas: number;
+}
+
+export interface NFTBaseInfo {
+  contract?: string;
+  tokenId?: string;
+}
+
+export interface NFTInfoForTrade extends NFTBaseInfo {
+  amount: number; // The amount of ERC721 nft should only be 1
+}
+export interface NftsListingInfo {
+  validOrders: ListingInfo[];
+  expireNFTs: NFTBaseInfo[];
+  expireOrders: ListingInfo[];
+  unListNFTs: NFTBaseInfo[];
+  yourOwnNFTs: NFTBaseInfo[];
+  suspiciousNFTs: NFTBaseInfo[];
+  suspiciousOrders: ListingInfo[];
 }
