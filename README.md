@@ -31,7 +31,7 @@ import { init } from 'gotrading';
 const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io')
 const configs = {
   api_key: 'YOUR-API-KEY', // Replace with your own API Key.
-  web3_provider: provider, // Replace with your provider,
+  web3_provider: provider, // Replace with your provider.
 };
 
 // create tradeAggregator client
@@ -40,24 +40,40 @@ const {aggregator, utils} = init(configs);
 > ***Get your own NFTGo DEVELOPERS API Key***
 >
 > To get your own API key, please contact with us on [NFTGo developer platform](https://developer.nftgo.io/)  and get your API key from our customer managers.
-## GoTrading aggregator API
-
-- ***Do trading***
-
-You can use the aggregator to do trading, and the request will return the data you use to generate the transaction with metamask.
+###  3. BulkBuy NFTs
 ```ts
-const orderIds = "orderIds";
+// buy some NFTs
+let nfts: NFTInfoForTrade[] = [
+  {
+  contract: "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D",
+  tokenId: 608,
+  limit: 1
+},
+  {
+  contract: "0xED5AF388653567Af2F388E6224dC7C4b3241C544",
+  tokenId: 4666,
+  limit: 1
+},
+]
 
-const result = aggregator.getListingsOfCollection(baycContract);
-console.log(result);
+let config = {
+      ignoreUnListedNFTs: false, // Do you want to ignore unlisted NFTs?
+      ignoreInvalidOrders: false, // Do you want to ignore invalid orders?
+      ignoreSuspiciousOrders: false, // Do you want to ignore suspicious NFTs?
+      withSafeMode: false, // Use Safe Mode or Without Safe Mode.
+    }
+
+aggregator.bulkBuy(
+  nfts,
+  {},
+  configs
+  )
+
 ```
 
-> ***How to get orderIds?***
->
-> GoTrading SDk suppoort the following three methods to get orderIds from listing info;
-
-
-  - ***Get the listing info of a single nft.***
+## GoTrading Complete Process
+### Step1 Get Listing Info
+  - ***1.1 Get the listing info of a single nft.***
 
 ```ts
 // Get the listing info of BAYC No.1
@@ -68,18 +84,7 @@ const listingInfo = aggregator.getListingOfNFT(baycContract, tokenId)
 console.log(listingInfo.order_id)
 ```
 
-  - ***Get the listing info of a Wallet address.***
-```ts
-// rollbot wallet address.
-const walletAddress = "0x8ae57a027c63fca8070d1bf38622321de8004c67";
-const listingInfo = aggregator.getListingsOfWallet(walletAddress);
-
-for (const listingData in listingInfo) {
-    console.log(listingData.order_id)
-}
-```
-
-  - ***Get listing info of the Collection.***
+  - ***1.2 Get listing info of the Collection.***
 ```ts
 // Bored Ape Yacht Club contract address.
 const baycContract = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
@@ -90,6 +95,43 @@ for (const nft in result.nfts) {
     console.log(nft.listingData.order_id)
 }
 ```
+
+  - ***1.3 Get the listing info of a Wallet address.***
+```ts
+// rollbot wallet address.
+const walletAddress = "0x8ae57a027c63fca8070d1bf38622321de8004c67";
+const listingInfo = aggregator.getListingsOfWallet(walletAddress);
+
+for (const listingData in listingInfo) {
+    console.log(listingData.order_id)
+}
+```
+### Step2 Select target NFT
+```ts
+// get all listing NFT order ids of a wallet address.
+const orderIds = [];
+for (const nft of result.nfts) {
+  orderIds.push(nft.listing_data?.nft_list[0].order_id as string);
+}
+```
+
+### Step3 Get transaction data
+>
+> You can use the aggregator to do trading, and the request will return the data you use to generate the transaction with metamask.
+```ts
+const orderIds = "orderIds"; // Replace with Step2 OrderIds.
+
+const params: AggregateParams = ({
+  buyer_address: 'buyerAddress', // Replace with buyer address.
+  is_safe: false,
+  order_ids: orderIds,
+});
+
+const aggregateResponse = await aggregator.getAggregateInfo(params);
+
+console.log(result);
+```
+
 ## Complete example
   - [***BuyByCollectionListings***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/tradeAggregator/BuyByCollectionListings.md)
 
