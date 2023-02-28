@@ -132,7 +132,7 @@ const aggregateResponse = await aggregator.getAggregateInfo(params);
 console.log(result);
 ```
 
-### Step4 Invoke Contract to Purchase
+### Step4 Invoke Contract to purchase
 ```ts
 utils?.sendTransaction({
   from: aggregateResponse.tx_info.from_address,
