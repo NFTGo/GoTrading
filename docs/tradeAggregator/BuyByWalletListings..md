@@ -3,7 +3,7 @@
 ```ts
 // init sdk client
 import { BigNumber } from "ethers";
-import { init, AggregateParams, AggregateResponse, SingleAddressListingsResponse } from 'gotrading-js';
+import { init, AggregateParams, AggregateResponse, SingleAddressListingsResponse } from '@nftgo/gotrading';
 const configs = {
   apiKey: 'YOUR-API-KEY', // Replace with your own API Key.
 };

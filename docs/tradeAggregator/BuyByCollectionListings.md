@@ -3,7 +3,7 @@
 ```ts
 // init sdk client
 import { BigNumber } from "ethers";
-import { FilteredNFTsParam, AggregateParams, AggregateResponse, init } from "gotrading";
+import { FilteredNFTsParam, AggregateParams, AggregateResponse, init } from "@nftgo/gotrading";
 
 const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io')
 

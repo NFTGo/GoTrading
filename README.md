@@ -26,7 +26,7 @@ yarn add @nftgo/gotrading
 ### 2. Import and init the SDK.
 
 ```ts
-import { init } from 'gotrading';
+import { init } from '@nftgo/gotrading';
 
 const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io')
 const configs = {
