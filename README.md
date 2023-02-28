@@ -132,6 +132,29 @@ const aggregateResponse = await aggregator.getAggregateInfo(params);
 console.log(result);
 ```
 
+### Step4 Do TradeAggretor
+```ts
+utils?.sendTransaction({
+  from: aggregateResponse.tx_info.from_address,
+  to: aggregateResponse.tx_info.to_address,
+  data: aggregateResponse.tx_info.data,
+  value: BigNumber.from(aggregateResponse.tx_info.value.toString()).toHexString()
+}).on('transaction_hash', (hash)=>{
+  console.log(hash);
+}).on('receipt', (receipt)=>{
+  if (receipt.logs.length) {
+    for (const log of receipt.logs) {
+      // not every log with useful info
+      const decodedLog = utils.decodeLog(log);
+    }
+  }else {
+    console.log('transaction fail for some unknown reason')
+  }
+}).on('error', (error)=>{
+  console.log('transaction fail: ', error);
+});
+```
+
 ## Complete example
   - [***BuyByCollectionListings***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/tradeAggregator/BuyByCollectionListings.md)
 
