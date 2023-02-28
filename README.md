@@ -39,7 +39,7 @@ const {aggregator, utils} = init(configs);
 ```
 > ***Get your own NFTGo DEVELOPERS API Key***
 >
-> To get your own API key, please contact with us on [NFTGo developer platform](https://developer.nftgo.io/)  and get your API key from our customer managers.
+> To get your own API key, please submit the [form](https://forms.monday.com/forms/7fd30cd3cef08cf3b3dbccd1c72892b5), and on [NFTGo developer platform](https://developer.nftgo.io/) get your API key from our customer managers.
 ###  3. BulkBuy NFTs
 ```ts
 // buy some NFTs
