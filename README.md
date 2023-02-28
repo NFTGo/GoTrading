@@ -15,12 +15,12 @@ GoTrading is an open-source development kit that enables you to build your own N
 
 > With `npm` :
 ```shell
-npm install gotrading
+npm install @nftgo/gotrading
 ```
 
 > With `yarn` :
 ```shell
-yarn add gotrading
+yarn add @nftgo/gotrading
 ```
 
 ### 2. Import and init the SDK.
