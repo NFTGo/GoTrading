@@ -1,5 +1,5 @@
 # GoTrading-js
-[![node](https://img.shields.io/badge/node-%3E%3D%2016-brightgreen.svg)](https://nodejs.org/en/) [![Discord][discord-image]][discord-url] [![Twitter][twitter-image]][twitter-url]
+[![node](https://img.shields.io/badge/node-%3E%3D%2016.14-brightgreen.svg)](https://nodejs.org/en/) [![Discord][discord-image]][discord-url] [![Twitter][twitter-image]][twitter-url]
 
 
 
@@ -16,13 +16,15 @@ GoTrading is an open-source development kit that enables you to build your own N
 ## Process
 ![image info](./process.jpg)
 
-## Prerequisites
+## Requirements
 
-To use this project, you need to install the web3 library and use Node.js version greater than 16. You can do this by running the following commands:
+- Node.js >= 16.14
+- web3
+- ethers
+
+You can do this by running the following commands:
 ```bash
-nvm install 16 (if nvm is installed)
-nvm use 16
-npm install web3
+npm install web3 ethers
 ```
 
 ## Quickstart
@@ -201,7 +203,7 @@ This project is licensed under the [BSD-3-Clause license](LICENSE).
 
 
 
-[discord-image]: https://img.shields.io/discord/1040195071401787413?color=green&label=Discord&logo=discord&logoColor=blue
+[discord-image]: https://img.shields.io/discord/1040195071401787413?color=brightgreen&label=Discord&logo=discord&logoColor=blue
 [discord-url]:  https://discord.gg/xQEmETVwcw
 [twitter-image]: https://img.shields.io/twitter/follow/NFTGo?label=NFTGo&style=social
 [twitter-url]:  https://twitter.com/NFTGoDevs
