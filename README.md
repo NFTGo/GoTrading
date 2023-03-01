@@ -1,4 +1,6 @@
 # GoTrading-js
+[![node](https://img.shields.io/badge/node-%3E%3D%2016-brightgreen.svg)](https://nodejs.org/en/) [![Discord][discord-image]][discord-url] [![Twitter][twitter-image]][twitter-url]
+
 
 
 ## Introduction
@@ -7,9 +9,22 @@
 
 GoTrading is an open-source development kit that enables you to build your own NFT trading aggregator and marketplace. The SDK provides a comprehensive set of tools and APIs that greatly simplify the development process of a general trading aggregator like Gem.xyz or blur.io, and allow developers to access real-time order feed and NFT transaction data. We implement our aggregated orderbook based on [Reservoir Protocol](https://reservoir.tools/), and provide hight-level functions to help you to build your unified interface for retrieving listing data, bulk buying & listing NFTs, and selling NFTs instantly(accept bids) across all mainstream marketplaces, such as Opensea, Looksrare, Blur, x2y2, Sudoswap, etc.
 
-
+## Key Features
+ - Simple and easy-to-use API
+ - Real-time market data access
+ - Code is easy to customize and extend
 ## Process
 ![image info](./process.jpg)
+
+## Prerequisites
+
+To use this project, you need to install the web3 library and use Node.js version greater than 16. You can do this by running the following commands:
+```bash
+nvm install 16 (if nvm is installed)
+nvm use 16
+npm install web3
+```
+
 ## Quickstart
 ### 1. Install the SDK.
 
@@ -39,7 +54,10 @@ const {aggregator, utils} = init(configs);
 ```
 > ***Get your own NFTGo DEVELOPERS API Key***
 >
-> To get your own API key, please submit the [form](https://forms.monday.com/forms/7fd30cd3cef08cf3b3dbccd1c72892b5), and on [NFTGo developer platform](https://developer.nftgo.io/) get your API key from our customer managers.
+
+> If you need to obtain an API key or a custom plan, please contact our support team. You can reach us by submitting a [form](https://forms.monday.com/forms/7fd30cd3cef08cf3b3dbccd1c72892b5), and we will respond to you within 1-2 business days.
+>
+> Please note that we may need to understand your use case and requirements in order to provide you with the API key and custom plan that best suits your needs. Thank you for your interest in our service, and we look forward to working with you.
 ###  3. BulkBuy NFTs
 ```ts
 // buy some NFTs
@@ -174,8 +192,16 @@ utils?.sendTransaction({
 
 ## Questions & Feedback
 
-> If you have any questions, issues, or feedback, please file an issue on GitHub, or drop us a message on our [Discord](https://discord.gg/wtbFBuhh) channel for the SDK.
+> If you have any questions, issues, or feedback, please file an issue on GitHub, or drop us a message on our [Discord][discord-url] channel for the SDK.
 
 ##  License
 
 This project is licensed under the [BSD-3-Clause license](LICENSE).
+
+
+
+
+[discord-image]: https://img.shields.io/discord/1040195071401787413?color=green&label=Discord&logo=discord&logoColor=blue
+[discord-url]:  https://discord.gg/xQEmETVwcw
+[twitter-image]: https://img.shields.io/twitter/follow/NFTGo?label=NFTGo&style=social
+[twitter-url]:  https://twitter.com/NFTGoDevs
