@@ -1,7 +1,8 @@
 # Trade with safe mode
 ```ts
+const buyerAddress = "0x1234567890123456789012345678901234567890";// Replace with buyer address.
 const params: AggregateParams = {
-  buyer_address: 'buyerAddress', // Replace with buyer address.
+  buyer_address: buyerAddress,
   is_safe: true,
   order_ids: orderIds,
 };

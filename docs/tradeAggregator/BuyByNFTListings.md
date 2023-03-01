@@ -23,9 +23,10 @@ const listingInfo: SingleNFTListingsResponse = aggregator.getListingOfNFT(baycCo
 let orderIds: string[] = [];
 orderIds.push(listingInfo.nft_list[0].order_id as string);
 
+const buyerAddress = "0x1234567890123456789012345678901234567890";// Replace with buyer address.
 // without safe mode
 const params: AggregateParams = ({
-  buyer_address: 'buyerAddress', // Replace with buyer address.
+  buyer_address: buyerAddress,
   is_safe: false,
   order_ids: orderIds,
 });
@@ -48,7 +49,7 @@ utils?.sendTransaction({
   }else {
     console.log('transaction fail for some unknown reason')
   }
-}).on('error', (error) {
+}).on('error', (error)=>{
   console.log('transaction fail: ', error);
 });
 ```

@@ -17,20 +17,16 @@ const {aggregator, utils} = init(configs);
 // Get the listing info of BAYC.
 const baycContract = '0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D'; // Replace with your test collection
 
-params = FilteredNFTsParam({
-  limit: 10,
-  offset: 0
-})
 const collectionResponse = await aggregator.getListingsOfCollection(baycContract);
 
 let orderIds:string[] = [];
 for (const nft of collectionResponse.nfts) {
   orderIds.push(nft.listing_data?.nft_list[0].order_id as string);
 }
-
+const buyerAddress = "0x1234567890123456789012345678901234567890";// Replace with buyer address.
 // without safe mode
 const params: AggregateParams = ({
-  buyer_address: 'buyerAddress', // Replace with buyer address.
+  buyer_address: buyerAddress,
   is_safe: false,
   order_ids: orderIds,
 });

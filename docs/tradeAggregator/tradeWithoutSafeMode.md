@@ -1,8 +1,9 @@
 # Trade without safe mode
 ```ts
 // without safe mode
+const buyerAddress = "0x1234567890123456789012345678901234567890";// Replace with buyer address.
 const params: AggregateParams = ({
-  buyer_address: 'buyerAddress', // Replace with buyer address.
+  buyer_address: buyerAddress,
   is_safe: false,
   order_ids: orderIds,
 });
@@ -25,7 +26,7 @@ utils?.sendTransaction({
   }else {
     console.log('transaction fail for some unknown reason')
   }
-}).on('error', (error) {
+}).on('error', (error)=>{
   console.log('transaction fail: ', error);
 });
 ```

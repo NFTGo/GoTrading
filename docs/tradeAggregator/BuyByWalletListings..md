@@ -14,13 +14,15 @@ const walletAddress = "0x8ae57a027c63fca8070d1bf38622321de8004c67";
 const listingInfo:SingleAddressListingsResponse  = aggregator.getListingsOfWallet(walletAddress);
 
 const orderIds = [];
-for (const nft of result.nfts) {
+for (const nft of listingInfo.nfts) {
   orderIds.push(nft.listing_data?.nft_list[0].order_id as string);
 }
 
+const buyerAddress = "0x1234567890123456789012345678901234567890";// Replace with buyer address.
+
 // without safe mode
 const params: AggregateParams = ({
-  buyer_address: 'buyerAddress', // Replace with buyer address.
+  buyer_address: buyerAddress,
   is_safe: false,
   order_ids: orderIds,
 });
@@ -43,7 +45,7 @@ utils?.sendTransaction({
   }else {
     console.log('transaction fail for some unknown reason')
   }
-}).on('error', (error) {
+}).on('error', (error)=>{
   console.log('transaction fail: ', error);
 });
 ```

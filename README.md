@@ -31,12 +31,12 @@ npm install web3 ethers
 ### 1. Install the SDK.
 
 > With `npm` :
-```shell
+```bash
 npm install @nftgo/gotrading
 ```
 
 > With `yarn` :
-```shell
+```bash
 yarn add @nftgo/gotrading
 ```
 
@@ -44,6 +44,7 @@ yarn add @nftgo/gotrading
 
 ```ts
 import { init } from '@nftgo/gotrading';
+import Web3 from 'web3';
 
 const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io')
 const configs = {
@@ -62,12 +63,14 @@ const {aggregator, utils} = init(configs);
 > Please note that we may need to understand your use case and requirements in order to provide you with the API key and custom plan that best suits your needs. Thank you for your interest in our service, and we look forward to working with you.
 ###  3. BulkBuy NFTs
 ```ts
+import { NFTInfoForTrade } from '@nftgo/gotrading';
+
 // buy some NFTs
-let nfts: NFTInfoForTrade[] = [
+const nfts: NFTInfoForTrade[] = [
   {
   contract: "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D",
   tokenId: 608,
-  limit: 1
+  amount: 1
 },
   {
   contract: "0xED5AF388653567Af2F388E6224dC7C4b3241C544",
@@ -76,7 +79,7 @@ let nfts: NFTInfoForTrade[] = [
 },
 ]
 
-let config = {
+const config = {
       ignoreUnListedNFTs: false, // Do you want to ignore unlisted NFTs?
       ignoreInvalidOrders: false, // Do you want to ignore invalid orders?
       ignoreSuspiciousOrders: false, // Do you want to ignore suspicious NFTs?
