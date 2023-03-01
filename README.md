@@ -13,8 +13,7 @@ GoTrading is an open-source development kit that enables you to build your own N
  - Simple and easy-to-use API
  - Real-time market data access
  - Code is easy to customize and extend
-## Process
-![image info](./process.jpg)
+
 
 ## Requirements
 
@@ -95,6 +94,7 @@ aggregator.bulkBuy(
 ```
 
 ## GoTrading Complete Process
+![image info](process.jpg)
 ### Step1 Get Listing Info
   - ***1.1 Get the listing info of a single nft.***
 
