@@ -12,9 +12,7 @@ enum ExceptionType {
  */
 export class AggregatorBaseException extends Error {
   constructor(public code: number | string, public message: string = '') {
-    super(message, {
-      cause: '',
-    });
+    super(message);
   }
 
   static missingParam(paramName: string) {
@@ -26,19 +24,19 @@ export class AggregatorBaseException extends Error {
   }
 
   static invalidParamError(paramName: string, extMsg?: string) {
-    return new AggregatorApiException(ExceptionType.PARAM_ERROR, this.invalidParam(paramName, extMsg));
+    return new AggregatorBaseException(ExceptionType.PARAM_ERROR, this.invalidParam(paramName, extMsg));
   }
 
   static paramErrorDefault(msg?: string) {
-    return new AggregatorApiException(ExceptionType.PARAM_ERROR, msg);
+    return new AggregatorBaseException(ExceptionType.PARAM_ERROR, msg);
   }
 
   static missingParamError(paramName: string) {
-    return new AggregatorApiException(ExceptionType.PARAM_ERROR, this.missingParam(paramName));
+    return new AggregatorBaseException(ExceptionType.PARAM_ERROR, this.missingParam(paramName));
   }
 
   static emptyResponseError() {
-    return new AggregatorApiException(ExceptionType.RESPONSE_DATA_EMPTY, 'response is empty');
+    return new AggregatorBaseException(ExceptionType.RESPONSE_DATA_EMPTY, 'response is empty');
   }
 }
 
@@ -52,20 +50,24 @@ enum ApiExceptionType {
  * NFTGo API's wrapper error object
  */
 export class AggregatorApiException extends AggregatorBaseException {
-  constructor(public code: number | string, public message: string = '') {
-    super(message, '');
+  constructor(public code: number | string, public message: string = '', public url?: string) {
+    super(message);
   }
 
   static missApiKeyError() {
     return new AggregatorApiException(ApiExceptionType.API_KEY_ERROR, this.missingParam('api_key'));
   }
 
-  static invalidLimitError(max: number) {
-    return new AggregatorApiException(ExceptionType.PARAM_ERROR, this.invalidParam('limit', `capped at ${max}`));
+  static invalidLimitError(url: string, max: number) {
+    return new AggregatorApiException(ExceptionType.PARAM_ERROR, this.invalidParam('limit', `capped at ${max}`), url);
   }
 
-  static requestError(msg: string) {
-    return new AggregatorApiException(ApiExceptionType.REQUEST_ERROR, msg);
+  static requestError(url: string, msg: string) {
+    return new AggregatorApiException(ApiExceptionType.REQUEST_ERROR, msg, url);
+  }
+
+  static apiEmptyResponseError(url: string) {
+    return new AggregatorApiException(ExceptionType.RESPONSE_DATA_EMPTY, 'response is empty', url);
   }
 }
 
@@ -75,7 +77,7 @@ enum UtilsExceptionType {
 
 export class AggregatorUtilsException extends AggregatorBaseException {
   constructor(public code: number | string, public message: string = '') {
-    super(message, '');
+    super(message);
   }
   static initApiFirst() {
     return new AggregatorUtilsException(ExceptionType.PARAM_ERROR, this.missingParam('api instance'));
@@ -99,7 +101,7 @@ enum BulkBuyExceptionType {
 
 export class AggregatorBulkBuyException extends AggregatorBaseException {
   constructor(public code: number | string, public message: string = '') {
-    super(message, '');
+    super(message);
   }
   static hasUnListedNFT(nft: NFTBaseInfo) {
     return new AggregatorBulkBuyException(

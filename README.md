@@ -45,7 +45,25 @@ yarn add @nftgo/gotrading
 import { init } from '@nftgo/gotrading';
 import Web3 from 'web3';
 
-const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io')
+// server
+const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io') //Replace with your own provider
+
+const web3Instance = new Web3(provider); // replace with your provider
+web3Instance.eth.accounts.wallet.add({
+  address: "your wallet address",
+  privateKey: "your private key",
+});
+const configs = {
+  api_key: "YOUR-API-KEY", // Replace with your own API Key.
+  web3_provider: web3Instance.currentProvider, // Replace with your provider.
+  agent: new HttpsProxyAgent({ // if you have problem connect to our api end point, please config your http agent
+    host: "your host ip",
+    port: "your agent port",
+  }),
+};
+
+// client
+const provider = window.ethereum;
 const configs = {
   api_key: 'YOUR-API-KEY', // Replace with your own API Key.
   web3_provider: provider, // Replace with your provider.
@@ -64,32 +82,43 @@ const {aggregator, utils} = init(configs);
 ```ts
 import { NFTInfoForTrade } from '@nftgo/gotrading';
 
-// buy some NFTs
-const nfts: NFTInfoForTrade[] = [
+// list some NFTs you want to buy
+// we recommend you using our aggregator.getListingOfNFT method to check whether your nfts have valid listings
+const nfts: NFTInfoForTrade[] = [ // replace with your own nft list
   {
-  contract: "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D",
-  tokenId: 608,
-  amount: 1
-},
-  {
-  contract: "0xED5AF388653567Af2F388E6224dC7C4b3241C544",
-  tokenId: 4666,
-  amount: 1
-},
+    contract: "0xcfff4c8c0df0e2431977eba7df3d3de857f4b76e",
+    tokenId: "16",
+    amount: 1
+  },
+    {
+    contract: "0xcfff4c8c0dF0E2431977EbA7dF3D3De857f4B76e",
+    tokenId: "18",
+    amount: 1
+  }
 ]
 
-const config = {
-      ignoreUnListedNFTs: false, // Do you want to ignore unlisted NFTs?
-      ignoreInvalidOrders: false, // Do you want to ignore invalid orders?
-      ignoreSuspiciousOrders: false, // Do you want to ignore suspicious NFTs?
-      withSafeMode: false, // Use Safe Mode or Without Safe Mode.
-    }
+// config your bulk
+const bulkBuyConfig = {
+  ignoreUnListedNFTs: false, // Do you want to ignore unlisted NFTs?
+  ignoreInvalidOrders: false, // Do you want to ignore invalid orders?
+  ignoreSuspiciousOrders: false, // Do you want to ignore suspicious NFTs?
+  withSafeMode: false, // Use Safe Mode or Without Safe Mode.
+};
 
-aggregator.bulkBuy(
+// buy nfts
+aggregator.bulkBuy({
   nfts,
-  {},
-  configs
-  )
+  onSendingTransaction: (hash: string) => console.log(hash), // callback on sending a transaction
+  onFinishTransaction: ( // callback on a transaction finished
+    successNFTs: NFTBaseInfo[],
+    failNFTs: NFTBaseInfo[],
+    nftsListingInfo: NftsListingInfo
+  ) => console.log(successNFTs, failNFTs, nftsListingInfo),
+  onError: (error: Error, nftsListingInfo?: NftsListingInfo) =>
+    console.log(error, nftsListingInfo), // callback on any error occurs
+  config: bulkBuyConfig,
+});
+
 
 ```
 
@@ -101,10 +130,10 @@ aggregator.bulkBuy(
 ```ts
 // Get the listing info of BAYC No.1
 const baycContract = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
-const tokenId = 1;
+const tokenId = "1";
 
-const listingInfo = aggregator.getListingOfNFT(baycContract, tokenId)
-console.log(listingInfo.order_id)
+const {nft_list: listingsInfo} = await aggregator.getListingOfNFT(baycContract, tokenId);
+console.log(listingsInfo[0].order_id)
 ```
 
   - ***1.2 Get listing info of the Collection.***
@@ -112,10 +141,10 @@ console.log(listingInfo.order_id)
 // Bored Ape Yacht Club contract address.
 const baycContract = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
 
-const result = aggregator.getListingsOfCollection(baycContract);
+const { nfts } = await aggregator.getListingsOfCollection(baycContract);
 
-for (const nft in result.nfts) {
-    console.log(nft.listingData.order_id)
+for (const nft of nfts) {
+  console.log(nft.listing_data?.nft_list[0].order_id)
 }
 ```
 
@@ -123,26 +152,26 @@ for (const nft in result.nfts) {
 ```ts
 // rollbot wallet address.
 const walletAddress = "0x8ae57a027c63fca8070d1bf38622321de8004c67";
-const listingInfo = aggregator.getListingsOfWallet(walletAddress);
+const { nfts: walletNFTList } = await aggregator.getListingsOfWallet(walletAddress);
 
-for (const listingData in listingInfo) {
-    console.log(listingData.order_id)
+for (const nft of walletNFTList) {
+    console.log(nft.listing_data?.nft_list[0].order_id)
 }
 ```
 ### Step2 Select target NFT
 ```ts
-// get all listing NFT order ids of a wallet address.
+//eg: get all listing NFT order ids of a wallet address.
 const orderIds = [];
-for (const nft of result.nfts) {
+for (const nft of walletNFTList) {
   orderIds.push(nft.listing_data?.nft_list[0].order_id as string);
 }
 ```
 
 ### Step3 Get transaction data
 >
-> You can use the aggregator to do trading, and the request will return the data you use to generate the transaction with metamask.
+> You can use the aggregator to do trading, and the request will return the data you need to generate the transaction.
 ```ts
-const orderIds = "orderIds"; // Replace with Step2 OrderIds.
+const orderIds = ["orderIds"]; // Replace with Step2 OrderIds.
 
 const params: AggregateParams = ({
   buyer_address: 'buyerAddress', // Replace with buyer address.

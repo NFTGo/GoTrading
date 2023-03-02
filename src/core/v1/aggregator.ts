@@ -19,6 +19,7 @@ import {
   NftsListingInfo,
   MultiNFTListingsResponse,
   OrderInfo,
+  BulkBuyParams,
 } from '../interface';
 import { AggregatorUtils } from './utils';
 
@@ -49,13 +50,16 @@ export class AggregatorStable implements Aggregator {
     return this.get(`/nft/${contract}/${tokenId}/listing`);
   }
 
-  getListingsOfNFTs(nfts: NFTBaseInfo[]): Promise<MultiNFTListingsResponse> {
+  private getListingsOfNFTs(nfts: NFTBaseInfo[]): Promise<MultiNFTListingsResponse> {
     if (!(nfts.length > 0)) {
       throw AggregatorApiException.missingParamError('nfts');
     }
 
     return this.post(`/nft-aggregate/orders`, {
-      nfts,
+      nfts: nfts.map((nft) => ({
+        contract: nft.contract,
+        token_id: nft.tokenId,
+      })),
     });
   }
 
@@ -87,7 +91,7 @@ export class AggregatorStable implements Aggregator {
     const limit = params?.limit;
 
     if (limit && limit > 1000) {
-      throw AggregatorApiException.invalidLimitError(1000);
+      throw AggregatorApiException.invalidLimitError(`/collection/${contract}/filtered_nfts`, 1000);
     }
 
     return this.get(`/collection/${contract}/filtered_nfts`, {
@@ -97,18 +101,24 @@ export class AggregatorStable implements Aggregator {
     });
   }
 
-  private getDetailsOfNFTs(nfts: NFTBaseInfo[]): Promise<Partial<NFT>[]> {
+  private getDetailsOfNFTs(nfts: NFTBaseInfo[]): Promise<{ nfts: Partial<NFT>[] }> {
     if (!(nfts.length > 0)) {
       throw AggregatorBaseException.missingParamError('nfts');
     }
-    return this.post(`/nft-aggregates/multi_nfts`, {
-      nfts,
+    return this.post(`/nft-aggregate/multi_nfts`, {
+      nfts: nfts.map((nft) => ({
+        contract: nft.contract,
+        token_id: nft.tokenId,
+      })),
     });
   }
 
   private getOrderStatusOfNFTs(nfts: NFTInfoForTrade[]): Promise<NftsListingInfo> {
-    if (!(nfts.length > 0)) {
+    if (isInvalidParam(nfts)) {
       throw AggregatorBaseException.missingParamError('nfts');
+    }
+    if (!(nfts.length > 0)) {
+      throw AggregatorBaseException.invalidParamError('nfts', 'nfts should be a array');
     }
     if (!this.utils) {
       throw AggregatorBaseException.missingParamError('web3_provider');
@@ -129,13 +139,13 @@ export class AggregatorStable implements Aggregator {
       try {
         const [orders, details] = await Promise.all([this.getListingsOfNFTs(nfts), this.getDetailsOfNFTs(nfts)]);
         const nftsOrderInfos = new Map<string, OrderInfo>(
-          orders.orders.map((order) => [
-            this.utils?.genUniqueKeyForNFT({ contract: order.contract, tokenId: order.token_id }) as string,
+          (orders?.orders ?? []).map((order) => [
+            this.utils?.genUniqueKeyForNFT({ contract: order.contract_address, tokenId: order.token_id }) as string,
             order,
           ])
         );
         const nftsDetails = new Map<string, Partial<NFT>>(
-          details.map((detail) => [
+          (details?.nfts ?? []).map((detail) => [
             this.utils?.genUniqueKeyForNFT({ contract: detail.contract_address, tokenId: detail.token_id }) as string,
             detail,
           ])
@@ -174,25 +184,7 @@ export class AggregatorStable implements Aggregator {
     });
   }
 
-  async bulkBuy(
-    nfts: NFTInfoForTrade[] = [],
-    callback: {
-      onSendingTransaction?: (hash: string) => void;
-      onFinishTransaction?: (
-        successNFTs: NFTBaseInfo[],
-        failNFTs: NFTBaseInfo[],
-        nftsListingInfo: NftsListingInfo
-      ) => void;
-      onError?: (error: Error, nftsListingInfo?: NftsListingInfo) => void;
-    } = {},
-    config = {
-      ignoreUnListedNFTs: false,
-      ignoreInvalidOrders: false,
-      ignoreSuspiciousOrders: false,
-      withSafeMode: false,
-    }
-  ) {
-    const { onError, onFinishTransaction, onSendingTransaction } = callback;
+  async bulkBuy({ nfts = [], onError, onFinishTransaction, onSendingTransaction, config }: BulkBuyParams) {
     try {
       const { ignoreInvalidOrders, ignoreSuspiciousOrders, ignoreUnListedNFTs, withSafeMode } = config;
       const listInfos = await this.getOrderStatusOfNFTs(nfts);
@@ -217,8 +209,9 @@ export class AggregatorStable implements Aggregator {
       const getAggregateResult: (ordersUsedToTrade: ListingInfo[]) => Promise<AggregateResponse | undefined> = async (
         ordersUsedToTrade: ListingInfo[]
       ) => {
+        const buyer_address = this.utils?.account || (await this.utils?._web3Instance.eth.getAccounts())?.[0];
         const aggregateResult = await this.getAggregateInfo({
-          buyer_address: this.utils?.account as string,
+          buyer_address: buyer_address as string,
           order_ids: ordersUsedToTrade?.map((order) => order.order_id),
           is_safe: withSafeMode,
         });

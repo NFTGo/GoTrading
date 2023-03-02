@@ -20,23 +20,30 @@ import { ERC1155Abi } from '../abi/ERC1155';
 
 export class AggregatorUtils implements Utils {
   constructor(private provider: provider) {
-    this.web3 = new Web3(this.provider);
-    this.web3.eth.getAccounts().then((accounts) => {
-      this.account = accounts[0];
-    });
+    this._web3Instance = new Web3(this.provider);
+    this.TRANSFER_TOPIC = this._web3Instance?.eth.abi.encodeEventSignature(ERC721Abi.transfer);
+    this.TRANSFER_BATCH_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(ERC1155Abi.batchTransfer);
+    this.TRANSFER_SINGLE_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(ERC1155Abi.singleTransfer);
+    this.PUNK_TRANSFER_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(CryptoPunkAbi.transfer);
+    this.PUNK_SINGLE_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(CryptoPunkAbi.bought);
+    this.init();
   }
-  private web3: Web3 = new Web3(this.provider);
+  public _web3Instance: Web3;
   public account: string = '';
-  private TRANSFER_TOPIC = this.web3.eth.abi.encodeEventSignature(ERC721Abi.transfer);
-  private TRANSFER_BATCH_TOPIC = this.web3.eth.abi.encodeEventSignature(ERC1155Abi.batchTransfer);
-  private TRANSFER_SINGLE_TOPIC = this.web3.eth.abi.encodeEventSignature(ERC1155Abi.singleTransfer);
-  private PUNK_TRANSFER_TOPIC = this.web3.eth.abi.encodeEventSignature(CryptoPunkAbi.transfer);
-  private PUNK_SINGLE_TOPIC = this.web3.eth.abi.encodeEventSignature(CryptoPunkAbi.bought);
+  private async init() {
+    const accounts = await this._web3Instance.eth.getAccounts();
+    this.account = accounts[0];
+  }
+  private TRANSFER_TOPIC: string;
+  private TRANSFER_BATCH_TOPIC: string;
+  private TRANSFER_SINGLE_TOPIC: string;
+  private PUNK_TRANSFER_TOPIC: string;
+  private PUNK_SINGLE_TOPIC: string;
   inspectTransaction({ hash, interval = 1000 }: InspectTransactionParams) {
     const transactionInstance = new SendTransaction();
     const intervalId = setInterval(async () => {
       try {
-        const res = await this.web3?.eth?.getTransactionReceipt(hash);
+        const res = await this._web3Instance?.eth?.getTransactionReceipt(hash);
         if (res === null) {
           return;
         }
@@ -69,7 +76,7 @@ export class AggregatorUtils implements Utils {
             break;
           } else {
             // 721
-            decodedEventLog = this.web3.eth.abi.decodeLog(
+            decodedEventLog = this._web3Instance.eth.abi.decodeLog(
               ERC721Abi.transfer.inputs ?? [],
               log.data,
               log.topics.slice(1) // without the topic[0] if its a non-anonymous event, otherwise with topic[0].
@@ -82,7 +89,7 @@ export class AggregatorUtils implements Utils {
           break;
         case this.TRANSFER_BATCH_TOPIC:
           // batch 1155
-          decodedEventLog = this.web3.eth.abi.decodeLog(
+          decodedEventLog = this._web3Instance.eth.abi.decodeLog(
             ERC1155Abi.batchTransfer.inputs ?? [],
             log.data,
             log.topics.slice(1)
@@ -95,7 +102,7 @@ export class AggregatorUtils implements Utils {
           break;
         case this.TRANSFER_SINGLE_TOPIC:
           // single 1155
-          decodedEventLog = this.web3.eth.abi.decodeLog(
+          decodedEventLog = this._web3Instance.eth.abi.decodeLog(
             ERC1155Abi.singleTransfer.inputs ?? [],
             log.data,
             log.topics.slice(1)
@@ -108,7 +115,7 @@ export class AggregatorUtils implements Utils {
           break;
         case this.PUNK_TRANSFER_TOPIC:
           // punk
-          decodedEventLog = this.web3.eth.abi.decodeLog(
+          decodedEventLog = this._web3Instance.eth.abi.decodeLog(
             CryptoPunkAbi.transfer.inputs ?? [],
             log.data,
             log.topics.slice(1)
@@ -119,7 +126,7 @@ export class AggregatorUtils implements Utils {
           amount = 1;
           break;
         case this.PUNK_SINGLE_TOPIC:
-          decodedEventLog = this.web3.eth.abi.decodeLog(
+          decodedEventLog = this._web3Instance.eth.abi.decodeLog(
             CryptoPunkAbi.bought.inputs ?? [],
             log.data,
             log.topics.slice(1)
@@ -143,7 +150,7 @@ export class AggregatorUtils implements Utils {
     }
   }
   genUniqueKeyForNFT({ contract, tokenId }: NFTBaseInfo): string {
-    return `${contract}_${tokenId}`;
+    return `${contract?.toLocaleLowerCase?.()}_${tokenId}`;
   }
   parseTransactedNFTs(receipt: TransactionReceipt): Map<string, NFTInfoForTrade> | undefined {
     if (receipt?.logs.length === 0 || !receipt?.status) {
@@ -180,20 +187,22 @@ export class AggregatorUtils implements Utils {
     const transactionInstance = new SendTransaction();
     // safe mode need more transaction detail than normal, including nonce, gasLimit, type and etc.
     // https://docs.ethers.io/v5/api/providers/types/#providers-TransactionRequest
-    this.web3.eth.getTransactionCount(transactionConfig.from as string).then((nonce) => {
+    this._web3Instance.eth.getTransactionCount(transactionConfig.from as string).then((nonce) => {
       transactionConfig.value = BigNumber.isBigNumber(transactionConfig.value)
         ? transactionConfig.value
         : (BigNumber.from(transactionConfig.value) as any);
       transactionConfig.nonce = nonce;
       transactionConfig.type = 2;
       const priorityFee = BigNumber.from(2000000000);
-      this.web3.eth.getGasPrice().then((gasPrice) => {
+      this._web3Instance.eth.getGasPrice().then((gasPrice) => {
         transactionConfig.maxFeePerGas = priorityFee.add(BigNumber.from(gasPrice));
         transactionConfig.maxPriorityFeePerGas = priorityFee;
         // eth_sign only accetp 32byte data
-        const unsignedTransactionHash = this.web3.utils.keccak256(ethers.utils.serializeTransaction(transactionConfig));
+        const unsignedTransactionHash = this._web3Instance.utils.keccak256(
+          ethers.utils.serializeTransaction(transactionConfig)
+        );
 
-        this.web3.eth
+        this._web3Instance.eth
           .sign(unsignedTransactionHash, transactionConfig.from as string)
           .then(async (signedTransaction) => {
             const signedTrx = ethers.utils.serializeTransaction(transactionConfig, signedTransaction);
@@ -224,7 +233,7 @@ export class AggregatorUtils implements Utils {
   sendTransaction(transactionConfig: TransactionConfig) {
     const transactionInstance = new SendTransaction();
 
-    this.web3.eth
+    this._web3Instance.eth
       .estimateGas({
         data: transactionConfig.data,
         value: transactionConfig.value,
@@ -251,7 +260,7 @@ export class AggregatorUtils implements Utils {
               transactionInstance.finally();
             });
         } else {
-          this.web3.eth
+          this._web3Instance.eth
             .sendTransaction(transactionConfig)
             .on('transactionHash', (hash) => {
               transactionInstance.transaction_hash_handler?.(hash);

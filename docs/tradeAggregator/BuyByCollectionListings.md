@@ -5,11 +5,30 @@
 import { BigNumber } from "ethers";
 import { FilteredNFTsParam, AggregateParams, AggregateResponse, init } from "@nftgo/gotrading";
 
-const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io')
-
+// server
+const provider = new Web3.providers.HttpProvider(
+  "https://rpc.tenderly.co/fork/823ef734-4730-4063-bb00-640c54940021"
+); //Replace with your own provider
+const web3Instance = new Web3(provider); // replace with your provider
+web3Instance.eth.accounts.wallet.add({
+   address: "your wallet address",
+  privateKey: "your private key",
+});
 const configs = {
-  api_key: 'YOUR-API-KEY', // Replace with your own API Key.
-  web3_provider: provider, // Replace with your provider,
+  api_key: "api key", // Replace with your own API Key.
+  web3_provider: "provider", // Replace with your provider,
+  agent: new HttpsProxyAgent({
+    host: "127.0.0.1",
+    port: "7890",
+  }),
+};
+
+// client
+
+const provider = window.ethereum;
+const configs = {
+  api_key: "api key", // Replace with your own API Key.
+  web3_provider: "provider", // Replace with your provider,
 };
 // create tradeAggregator client
 const {aggregator, utils} = init(configs);

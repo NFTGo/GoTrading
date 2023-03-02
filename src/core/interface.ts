@@ -3,6 +3,7 @@ import Web3 from 'web3';
 import { Log, provider, TransactionConfig, TransactionReceipt } from 'web3-core';
 import { AggregatorUtils } from './v1/utils';
 import { AggregatorStable } from './v1/aggregator';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 
 // # user-land interface , core  should implement this
 export enum EVMChain {
@@ -19,44 +20,16 @@ export interface Aggregator {
   getListingOfNFT(contract: string, tokenId: string): Promise<SingleNFTListingsResponse>;
 
   /**
-   * Return a list of listing info about batch of NFTs.
-   * - details: {@link }
-   * @param nfts The list of nfts that you want to get listing info
-   * @returns Promise<{@link MultiNFTListingsResponse}>
-   */
-  getListingsOfNFTs(nfts: NFTBaseInfo[]): Promise<MultiNFTListingsResponse>;
-
-  /**
    * Bulk buy nfts. If you know clearly about the nfts you want to buy, just put them into bulk buy, and you will get a result.
    * - details: {@link }
-   * @param nfts The list of nfts and amount that you want to buy
-   * @param callback the callbacks on every stage of buying nfts
-   * @param config config your own trade strategy
+   * @param params {@link BulkBuyParams} nfts, callbacks and config
    * @returns void
    */
-  bulkBuy(
-    nfts: NFTInfoForTrade[],
-    callback: {
-      onSendingTransaction?: (hash: string) => void;
-      onFinishTransaction?: (
-        successNFTs: NFTBaseInfo[],
-        failNFTs: NFTBaseInfo[],
-        nftsListingInfo: NftsListingInfo
-      ) => void;
-      onError?: (error: Error, nftsListingInfo?: NftsListingInfo) => void;
-    },
-    config: {
-      ignoreUnListedNFTs: boolean;
-      ignoreInvalidOrders: boolean;
-      ignoreSuspiciousOrders: boolean;
-      withSafeMode: boolean;
-    }
-  ): void;
+  bulkBuy(params: BulkBuyParams): void;
 
   /**
    * Return a list of listing info about a Ethereum address.
    * - details: {@link}
-   * @param collectionContract The contract address of the collection
    * @param address The address of an account
    * @returns Promise<{@link SingleAddressListingsResponse}>
    */
@@ -170,13 +143,8 @@ export interface GoTrading {
 }
 
 export interface HTTPClient {
-  get<R, Q = undefined>(url: string, query: Q | undefined, headers?: HeadersInit): Promise<R>;
-  post<R, P = undefined>(url: string, data: P, headers?: HeadersInit): Promise<R>;
-}
-
-export interface HTTPAgentOption {
-  host: string;
-  port: string;
+  get<R, Q = undefined>(url: string, query: Q | undefined, headers?: Record<string, string>): Promise<R>;
+  post<R, P = undefined>(url: string, data: P, headers?: Record<string, string>): Promise<R>;
 }
 
 export interface Config {
@@ -184,7 +152,7 @@ export interface Config {
   chain?: EVMChain;
   base_url?: string;
   web3_provider?: provider;
-  agent?: HTTPAgentOption;
+  agent?: HttpsProxyAgent;
 }
 
 // # all below is POJO for response
@@ -467,6 +435,19 @@ export type SortBy =
   | 'rarity_high_to_low'
   | 'sales_time';
 
+export interface BulkBuyParams {
+  nfts: NFTInfoForTrade[];
+  onSendingTransaction?: (hash: string) => void;
+  onFinishTransaction?: (successNFTs: NFTBaseInfo[], failNFTs: NFTBaseInfo[], nftsListingInfo: NftsListingInfo) => void;
+  onError?: (error: Error, nftsListingInfo?: NftsListingInfo) => void;
+  config: {
+    ignoreUnListedNFTs: boolean;
+    ignoreInvalidOrders: boolean;
+    ignoreSuspiciousOrders: boolean;
+    withSafeMode: boolean;
+  };
+}
+
 export interface FilteredNFTsParam {
   /**
    * Select specific traits for nft. Use '-' to join trait type and trait value, and ',' to join different traits. For example, 'Eyes-Bored,Fur-Trippy'. Default is None for not selecting traits.
@@ -547,7 +528,7 @@ export interface OrderInfo {
   /**
    * Contract，Address of the contract for this NFT collection, beginning with 0x
    */
-  contract: string;
+  contract_address: string;
   listing_data?: NftListing;
   /**
    * Token Id，The token ID for this NFT. Each item in an NFT collection     will be assigned a
@@ -568,7 +549,7 @@ export interface SingleAddressListingsResponse {
   /**
    * Nft List
    */
-  nft_list: NFT[];
+  nfts: NFT[];
 }
 
 /**

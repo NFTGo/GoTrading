@@ -1,26 +1,32 @@
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import { AggregatorApiException } from './exception';
 
-import { HTTPClient, HTTPAgentOption } from './interface';
-import HttpsProxyAgent from 'https-proxy-agent';
+import { HTTPClient } from './interface';
 
 export class InternalHTTPClient implements HTTPClient {
-  constructor(private agent?: HTTPAgentOption) {}
+  constructor(private agent?: HttpsProxyAgent) {}
   fetch<R>(input: RequestInfo | URL, init?: RequestInit | undefined) {
-    const agentOption = this.agent ? { agent: new (HttpsProxyAgent as any)({ ...this.agent }) } : {};
+    const agentOption = this.agent ? { agent: this.agent } : {};
     return new Promise<R>((resolve, reject) => {
       fetch(input, { ...init, ...agentOption })
-        .then((res) => {
+        .then(async (res) => {
           if (res.status !== 200) {
-            reject(new AggregatorApiException(res.status, res.statusText));
+            reject(
+              new AggregatorApiException(
+                res.status,
+                res.statusText?.length > 0 ? res.statusText : await res.json(),
+                res.url
+              )
+            );
           }
           return res.json();
         })
         .catch((e) => {
-          reject(AggregatorApiException.requestError(e));
+          reject(AggregatorApiException.requestError(input?.toString(), e));
         })
         .then((res) => {
           if (!res) {
-            reject(AggregatorApiException.emptyResponseError());
+            reject(AggregatorApiException.apiEmptyResponseError(input?.toString()));
           } else {
             resolve(res);
           }
@@ -46,7 +52,7 @@ export class InternalHTTPClient implements HTTPClient {
     return this.fetch<R>(actualUrl, { headers, method: 'GET' });
   }
 
-  post<R, P = Object>(url: string, data: P, headers: HeadersInit): Promise<R> {
+  post<R, P = Object>(url: string, data: P, headers: Record<string, string>): Promise<R> {
     return this.fetch<R>(url, {
       method: 'POST',
       body: JSON.stringify(data),
