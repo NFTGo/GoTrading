@@ -40,12 +40,11 @@ yarn add @nftgo/gotrading
 ```
 
 ### 2. Import and init the SDK.
-
+- For server-side initialization:
 ```ts
 import { init } from '@nftgo/gotrading';
 import Web3 from 'web3';
 
-// server
 const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io') //Replace with your own provider
 
 const web3Instance = new Web3(provider); // replace with your provider
@@ -62,7 +61,15 @@ const configs = {
   }),
 };
 
-// client
+// create tradeAggregator client
+const {aggregator, utils} = init(configs);
+```
+- For client-side initialization:
+```ts
+import { init } from '@nftgo/gotrading';
+import Web3 from 'web3';
+
+// for client
 const provider = window.ethereum;
 const configs = {
   api_key: 'YOUR-API-KEY', // Replace with your own API Key.
@@ -118,8 +125,6 @@ aggregator.bulkBuy({
     console.log(error, nftsListingInfo), // callback on any error occurs
   config: bulkBuyConfig,
 });
-
-
 ```
 
 ## GoTrading Complete Process
@@ -212,7 +217,9 @@ utils?.sendTransaction({
 
   - [***BuyByNFTListings***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/tradeAggregator/BuyByNFTListings.md)
 
-  - [***BuyByWalletListings.***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/tradeAggregator/BuyByWalletListings..md)
+  - [***BuyByWalletListings***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/tradeAggregator/BuyByWalletListings.md)
+
+  - [***BulkBuy***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/tradeAggregator/BulkBuy.md)
 
 
 ## Interface example

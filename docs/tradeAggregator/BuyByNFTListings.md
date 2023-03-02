@@ -1,17 +1,28 @@
 # Buy by NFT listings
 ## ***complete example***
+- For server-side:
 ```ts
 // init sdk client
 import { BigNumber } from "ethers";
-import { init, AggregateParams, AggregateResponse, SingleNFTListingsResponse } from '@nftgo/gotrading';
+import { init, AggregateParams, AggregateResponse, SingleNFTListingsResponse } from "@nftgo/gotrading";
 
-const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io')
-
+// server
+const provider = new Web3.providers.HttpProvider(
+  "https://rpc.tenderly.co/fork/823ef734-4730-4063-bb00-640c54940021"
+); //Replace with your own provider
+const web3Instance = new Web3(provider); // replace with your provider
+web3Instance.eth.accounts.wallet.add({
+   address: "your wallet address",
+  privateKey: "your private key",
+});
 const configs = {
-  api_key: 'YOUR-API-KEY', // Replace with your own API Key.
-  web3_provider: provider, // Replace with your provider,
+  api_key: "api key", // Replace with your own API Key.
+  web3_provider: "provider", // Replace with your provider,
+  agent: new HttpsProxyAgent({
+    host: "127.0.0.1",
+    port: "7890",
+  }),
 };
-
 // create tradeAggregator client
 const {aggregator, utils} = init(configs);
 
@@ -19,9 +30,62 @@ const {aggregator, utils} = init(configs);
 const baycContract = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
 const tokenId = 1;
 
-const listingInfo: SingleNFTListingsResponse = aggregator.getListingOfNFT(baycContract, tokenId)
+const {nft_list: listingsInfo} = await aggregator.getListingOfNFT(baycContract, tokenId);
 let orderIds: string[] = [];
-orderIds.push(listingInfo.nft_list[0].order_id as string);
+orderIds.push(listingsInfo[0].order_id as string);
+
+const buyerAddress = "0x1234567890123456789012345678901234567890";// Replace with buyer address.
+// without safe mode
+const params: AggregateParams = ({
+  buyer_address: buyerAddress,
+  is_safe: false,
+  order_ids: orderIds,
+});
+
+const aggregateResponse = await aggregator.getAggregateInfo(params);
+
+utils?.sendTransaction({
+  from: aggregateResponse.tx_info.from_address,
+  to: aggregateResponse.tx_info.to_address,
+  data: aggregateResponse.tx_info.data,
+  value: BigNumber.from(aggregateResponse.tx_info.value.toString()).toHexString()
+}).on('transaction_hash', (hash)=>{
+  console.log(hash);
+}).on('receipt', (receipt)=>{
+  if (receipt.logs.length) {
+    for (const log of receipt.logs) {
+      // not every log with useful info
+      const decodedLog = utils.decodeLog(log);
+    }
+  }else {
+    console.log('transaction fail for some unknown reason')
+  }
+}).on('error', (error)=>{
+  console.log('transaction fail: ', error);
+});
+```
+- For client-side:
+
+```ts
+// init sdk client
+import { BigNumber } from "ethers";
+import { init, AggregateParams, AggregateResponse, SingleNFTListingsResponse } from '@nftgo/gotrading';
+
+const provider = window.ethereum;
+const configs = {
+  api_key: "api key", // Replace with your own API Key.
+  web3_provider: "provider", // Replace with your provider,
+};
+// create tradeAggregator client
+const {aggregator, utils} = init(configs);
+
+// Get the listing info of BAYC No.1
+const baycContract = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
+const tokenId = 1;
+
+const {nft_list: listingsInfo} = await aggregator.getListingOfNFT(baycContract, tokenId);
+let orderIds: string[] = [];
+orderIds.push(listingsInfo[0].order_id as string);
 
 const buyerAddress = "0x1234567890123456789012345678901234567890";// Replace with buyer address.
 // without safe mode

@@ -1,5 +1,5 @@
-# Buy by collection listings
-##  ***complete example***
+# Buy by wallet listings
+## ***complete example***
 - For server-side:
 ```ts
 // init sdk client
@@ -26,16 +26,16 @@ const configs = {
 // create tradeAggregator client
 const {aggregator, utils} = init(configs);
 
-// Get the listing info of BAYC.
-const baycContract = '0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D'; // Replace with your test collection
+const walletAddress = "0x8ae57a027c63fca8070d1bf38622321de8004c67";
 
-const collectionResponse = await aggregator.getListingsOfCollection(baycContract);
-
+const { nfts: walletNFTList } = await aggregator.getListingsOfWallet(walletAddress);
 let orderIds:string[] = [];
-for (const nft of collectionResponse.nfts) {
-  orderIds.push(nft.listing_data?.nft_list[0].order_id as string);
+for (const nft of walletNFTList) {
+    orderIds.push(nft.listing_data?.nft_list[0].order_id as string)
 }
+
 const buyerAddress = "0x1234567890123456789012345678901234567890";// Replace with buyer address.
+
 // without safe mode
 const params: AggregateParams = ({
   buyer_address: buyerAddress,
@@ -70,28 +70,23 @@ utils?.sendTransaction({
 ```ts
 // init sdk client
 import { BigNumber } from "ethers";
-import { FilteredNFTsParam, AggregateParams, AggregateResponse, init } from "@nftgo/gotrading";
-
-// client
-
-const provider = window.ethereum;
+import { init, AggregateParams, AggregateResponse, SingleAddressListingsResponse } from '@nftgo/gotrading';
 const configs = {
-  api_key: "api key", // Replace with your own API Key.
-  web3_provider: "provider", // Replace with your provider,
+  apiKey: 'YOUR-API-KEY', // Replace with your own API Key.
 };
 // create tradeAggregator client
 const {aggregator, utils} = init(configs);
 
-// Get the listing info of BAYC.
-const baycContract = '0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D'; // Replace with your test collection
+const walletAddress = "0x8ae57a027c63fca8070d1bf38622321de8004c67";
 
-const collectionResponse = await aggregator.getListingsOfCollection(baycContract);
-
+const { nfts: walletNFTList } = await aggregator.getListingsOfWallet(walletAddress);
 let orderIds:string[] = [];
-for (const nft of collectionResponse.nfts) {
-  orderIds.push(nft.listing_data?.nft_list[0].order_id as string);
+for (const nft of walletNFTList) {
+    orderIds.push(nft.listing_data?.nft_list[0].order_id as string)
 }
+
 const buyerAddress = "0x1234567890123456789012345678901234567890";// Replace with buyer address.
+
 // without safe mode
 const params: AggregateParams = ({
   buyer_address: buyerAddress,
@@ -122,10 +117,9 @@ utils?.sendTransaction({
 });
 ```
 >
-> This is [Safe Mode Example](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/tradeAggregator/tradeWithSafeMode.md).
+> This is [Safe Mode Example](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/BuyByCollectionListings.md).
 
 ## ***interface***
-  - [***FilteredNFTsParam***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/FilteredNFTsParam.md)
-  - [***FilteredNFTsResponse***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/FilteredNFTsResponse.md)
+  - [***SingleAddressListingsResponse***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/SingleAddressListingsResponse.md)
   - [***AggregateParams***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/TradeAggregatorParams.md)
   - [***AggregateResponse***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/TradeAggregatorResponse.md)
