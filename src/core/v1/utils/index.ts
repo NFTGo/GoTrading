@@ -48,9 +48,9 @@ export class AggregatorUtils implements Utils {
           return;
         }
         clearInterval(intervalId);
-        transactionInstance.receipt_handler?.(res);
+        transactionInstance.receiptHandler?.(res);
       } catch (error) {
-        transactionInstance.error_handler?.(error as Error);
+        transactionInstance.errorHandler?.(error as Error);
       } finally {
         transactionInstance.finally?.();
       }
@@ -211,20 +211,20 @@ export class AggregatorUtils implements Utils {
             flashBots.eth
               .sendSignedTransaction(signedTrx)
               .on('transactionHash', (hash) => {
-                transactionInstance.transaction_hash_handler?.(hash);
+                transactionInstance.transactionHashHandler?.(hash);
               })
               .on('receipt', (receipt) => {
-                transactionInstance.receipt_handler?.(receipt);
+                transactionInstance.receiptHandler?.(receipt);
               })
               .on('error', (error) => {
-                transactionInstance.error_handler?.(error);
+                transactionInstance.errorHandler?.(error);
               });
           })
           .catch((error) => {
-            transactionInstance.error_handler?.(error);
+            transactionInstance.errorHandler?.(error);
           })
           .finally(() => {
-            transactionInstance.finally_handler?.();
+            transactionInstance.finallyHandler?.();
           });
       });
     });
@@ -248,13 +248,13 @@ export class AggregatorUtils implements Utils {
           globalThis?.ethereum
             ?.request({ method: 'eth_sendTransaction', params: [transactionConfig] })
             .then((hash: string) => {
-              transactionInstance.transaction_hash_handler?.(hash);
+              transactionInstance.transactionHashHandler?.(hash);
               this.inspectTransaction({ hash }).on('receipt', (receipt) => {
-                transactionInstance.receipt_handler?.(receipt);
+                transactionInstance.receiptHandler?.(receipt);
               });
             })
             .catch((error: Error) => {
-              transactionInstance.error_handler?.(error);
+              transactionInstance.errorHandler?.(error);
             })
             .finally(() => {
               transactionInstance.finally();
@@ -263,16 +263,16 @@ export class AggregatorUtils implements Utils {
           this._web3Instance.eth
             .sendTransaction(transactionConfig)
             .on('transactionHash', (hash) => {
-              transactionInstance.transaction_hash_handler?.(hash);
+              transactionInstance.transactionHashHandler?.(hash);
             })
             .on('receipt', (receipt) => {
-              transactionInstance.receipt_handler?.(receipt);
+              transactionInstance.receiptHandler?.(receipt);
             })
             .on('error', (error) => {
-              transactionInstance.error_handler?.(error);
+              transactionInstance.errorHandler?.(error);
             })
             .finally(() => {
-              transactionInstance.finally_handler?.();
+              transactionInstance.finallyHandler?.();
             });
         }
       });
@@ -281,21 +281,21 @@ export class AggregatorUtils implements Utils {
 }
 
 class SendTransaction implements Transaction {
-  public transaction_hash_handler: TransactionHashHandler = null;
-  public receipt_handler: ReceiptHandler = null;
-  public error_handler: ErrorHandler = null;
-  public finally_handler: FinallyHandler = null;
-  on(type: 'transaction_hash', handler: TransactionHashHandler): Transaction;
+  public transactionHashHandler: TransactionHashHandler = null;
+  public receiptHandler: ReceiptHandler = null;
+  public errorHandler: ErrorHandler = null;
+  public finallyHandler: FinallyHandler = null;
+  on(type: 'transactionHash', handler: TransactionHashHandler): Transaction;
   on(type: 'receipt', handler: ReceiptHandler): Transaction;
   on(type: 'error', handler: ErrorHandler): Transaction;
   on(
-    type: 'transaction_hash' | 'receipt' | 'error',
+    type: 'transactionHash' | 'receipt' | 'error',
     handler: TransactionHashHandler & ReceiptHandler & ErrorHandler
   ): Transaction {
-    this[`${type}_handler`] = handler;
+    this[`${type}Handler`] = handler;
     return this;
   }
   finally(onfinally?: FinallyHandler): void {
-    this.finally_handler = onfinally;
+    this.finallyHandler = onfinally;
   }
 }

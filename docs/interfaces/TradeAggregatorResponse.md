@@ -4,16 +4,16 @@ export interface TradeAggregatorResponse {
   /**
    * Gas Limit，The gas limit
    */
-  gas_limit: number;
+  gasLimit: number;
   /**
    * Saving Gas，The saving gas
    */
-  saving_gas: number;
-  tx_info: TXInfo;
+  savingGas: number;
+  txInfo: TXInfo;
   /**
    * Used Gas，The used gas
    */
-  used_gas: number;
+  usedGas: number;
 }
 ```
 - ***TXInfo***
@@ -26,11 +26,11 @@ export interface TXInfo {
   /**
    * From Address，The address of the from
    */
-  from_address: string;
+  fromAddress: string;
   /**
    * To Address，The address of the to
    */
-  to_address: string;
+  toAddress: string;
   /**
    * Value，The price(eth) of the NFT
    */

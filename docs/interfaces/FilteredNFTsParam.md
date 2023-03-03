@@ -8,7 +8,7 @@ export interface FilteredNFTsParam {
   /**
    * Sort by listing_price_low_to_high / listing_price_high_to_low / last_price_low_to_high / last_price_high_to_low / rarity_low_to_high / rarity_high_to_low / sales_time
    */
-  sort_by?: SortBy;
+  sortBy?: SortBy;
   /**
    * The index of data segments. The returned data is divided into many segments. One segment is returned at a time. {offset} parameter indicates the index of data segments.
    */
@@ -20,7 +20,7 @@ export interface FilteredNFTsParam {
   /**
    * Queries can be searched with this keyword.
    */
-  key_word?: string;
+  keyWord?: string;
   /**
    * Queries can be bounded by a Min price and Max Price.
    */

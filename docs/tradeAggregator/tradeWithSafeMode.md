@@ -2,23 +2,23 @@
 ```ts
 const buyerAddress = "0x1234567890123456789012345678901234567890";// Replace with buyer address.
 const params: AggregateParams = {
-  buyer_address: buyerAddress,
-  is_safe: true,
-  order_ids: orderIds,
+  buyerAddress: buyerAddress,
+  isSafe: true,
+  orderIds: orderIds,
 };
 
 const aggregateResponse = await aggregator.getAggregateInfo(params);
 
 utils
   ?.sendSafeModeTransaction({
-    from: aggregateResponse.tx_info.from_address,
-    to: aggregateResponse.tx_info.to_address,
-    data: aggregateResponse.tx_info.data,
-    value: BigNumber.from(aggregateResponse.tx_info.value.toString()),
+    from: aggregateResponse.txInfo.fromAddress,
+    to: aggregateResponse.txInfo.toAddress,
+    data: aggregateResponse.txInfo.data,
+    value: BigNumber.from(aggregateResponse.txInfo.value.toString()),
     chainId: 1,
-    gasLimit: BigNumber.from(aggregateResponse.gas_limit.toString()),
+    gasLimit: BigNumber.from(aggregateResponse.gasLimit.toString()),
   })
-  .on('transaction_hash', (hash)=>{
+  .on('transactionHash', (hash)=>{
     console.log(hash);
   })
   .on('receipt', (receipt)=>{

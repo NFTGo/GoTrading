@@ -11,18 +11,18 @@ import { AggregatorApiException, AggregatorBaseException } from './exception';
  *
  */
 export function init(config: Config): GoTrading {
-  if (!config.api_key) {
+  if (!config.apiKey) {
     throw AggregatorApiException.missApiKeyError();
   }
   if (config.chain && !Object.values(EVMChain).includes(config.chain)) {
     throw AggregatorBaseException.invalidParamError('chain', `${config.chain} chain is not supported currently.`);
   }
-  const aggregatorUtils = config.web3_provider ? new AggregatorUtils(config.web3_provider) : undefined;
+  const aggregatorUtils = config.web3Provider ? new AggregatorUtils(config.web3Provider) : undefined;
   const aggregatorApi = new AggregatorStable(
     new InternalHTTPClient(config.agent),
     {
       ...config,
-      base_url: config?.base_url || 'https://aggregator.data-api.nftgo.io/',
+      baseUrl: config?.baseUrl || 'https://aggregator.data-api.nftgo.io/',
       chain: config?.chain || EVMChain.ETH,
     },
     aggregatorUtils

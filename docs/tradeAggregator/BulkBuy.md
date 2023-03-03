@@ -13,8 +13,8 @@ web3Instance.eth.accounts.wallet.add({
   privateKey: "your private key",
 });
 const configs = {
-  api_key: "YOUR-API-KEY", // Replace with your own API Key.
-  web3_provider: web3Instance.currentProvider, // Replace with your provider.
+  apiKey: "YOUR-API-KEY", // Replace with your own API Key.
+  web3Provider: web3Instance.currentProvider, // Replace with your provider.
   agent: new HttpsProxyAgent({ // if you have problem connect to our api end point, please config your http agent
     host: "your host ip",
     port: "your agent port",
@@ -69,8 +69,8 @@ import Web3 from 'web3';
 // for client
 const provider = window.ethereum;
 const configs = {
-  api_key: 'YOUR-API-KEY', // Replace with your own API Key.
-  web3_provider: provider, // Replace with your provider.
+  apiKey: 'YOUR-API-KEY', // Replace with your own API Key.
+  web3Provider: provider, // Replace with your provider.
 };
 
 // create tradeAggregator client

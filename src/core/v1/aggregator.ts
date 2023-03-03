@@ -31,9 +31,9 @@ export class AggregatorStable implements Aggregator {
   constructor(
     private client: HTTPClient,
     private config: {
-      api_key: string;
+      apiKey: string;
       chain: EVMChain;
-      base_url?: string;
+      baseUrl?: string;
     },
     private utils?: AggregatorUtils
   ) {}
@@ -58,7 +58,7 @@ export class AggregatorStable implements Aggregator {
     return this.post(`/nft-aggregate/orders`, {
       nfts: nfts.map((nft) => ({
         contract: nft.contract,
-        token_id: nft.tokenId,
+        tokenId: nft.tokenId,
       })),
     });
   }
@@ -72,12 +72,12 @@ export class AggregatorStable implements Aggregator {
   }
 
   getAggregateInfo(params: AggregateParams): Promise<AggregateResponse> {
-    if (isInvalidParam(params.buyer_address)) {
-      throw AggregatorApiException.missingParamError('buyer_address');
+    if (isInvalidParam(params.buyerAddress)) {
+      throw AggregatorApiException.missingParamError('buyerAddress');
     }
 
-    if (isInvalidParam(params.order_ids)) {
-      throw AggregatorApiException.missingParamError('order_ids');
+    if (isInvalidParam(params.orderIds)) {
+      throw AggregatorApiException.missingParamError('orderIds');
     }
 
     return this.post('/nft-aggregate/aggregate', params);
@@ -108,7 +108,7 @@ export class AggregatorStable implements Aggregator {
     return this.post(`/nft-aggregate/multi_nfts`, {
       nfts: nfts.map((nft) => ({
         contract: nft.contract,
-        token_id: nft.tokenId,
+        tokenId: nft.tokenId,
       })),
     });
   }
@@ -121,7 +121,7 @@ export class AggregatorStable implements Aggregator {
       throw AggregatorBaseException.invalidParamError('nfts', 'nfts should be a array');
     }
     if (!this.utils) {
-      throw AggregatorBaseException.missingParamError('web3_provider');
+      throw AggregatorBaseException.missingParamError('web3Provider');
     }
     if (nfts.reduce((pre, curr) => pre + curr.amount, 0) > 120) {
       throw AggregatorBaseException.invalidParamError('nfts', 'total amount should under 120');
@@ -140,13 +140,13 @@ export class AggregatorStable implements Aggregator {
         const [orders, details] = await Promise.all([this.getListingsOfNFTs(nfts), this.getDetailsOfNFTs(nfts)]);
         const nftsOrderInfos = new Map<string, OrderInfo>(
           (orders?.orders ?? []).map((order) => [
-            this.utils?.genUniqueKeyForNFT({ contract: order.contract_address, tokenId: order.token_id }) as string,
+            this.utils?.genUniqueKeyForNFT({ contract: order.contractAddress, tokenId: order.tokenId }) as string,
             order,
           ])
         );
         const nftsDetails = new Map<string, Partial<NFT>>(
           (details?.nfts ?? []).map((detail) => [
-            this.utils?.genUniqueKeyForNFT({ contract: detail.contract_address, tokenId: detail.token_id }) as string,
+            this.utils?.genUniqueKeyForNFT({ contract: detail.contractAddress, tokenId: detail.tokenId }) as string,
             detail,
           ])
         );
@@ -154,17 +154,17 @@ export class AggregatorStable implements Aggregator {
           const key = this.utils?.genUniqueKeyForNFT({ ...nft }) as string;
           const nftOrderInfo = nftsOrderInfos.get(key);
           const nftDetailInfo = nftsDetails.get(key);
-          const is1155 = nftDetailInfo?.contract_type === 'ERC1155';
+          const is1155 = nftDetailInfo?.contractType === 'ERC1155';
           let lists: ListingInfo[];
           if (is1155) {
-            lists = nftOrderInfo?.listing_data?.nft_list?.slice?.(0, nft.amount) ?? [];
+            lists = nftOrderInfo?.listingData?.nftList?.slice?.(0, nft.amount) ?? [];
           } else {
-            lists = nftOrderInfo?.listing_data?.nft_list?.[0] ? [nftOrderInfo?.listing_data?.nft_list?.[0]] : [];
+            lists = nftOrderInfo?.listingData?.nftList?.[0] ? [nftOrderInfo?.listingData?.nftList?.[0]] : [];
           }
           lists.forEach((list) => {
             if (!list) {
               listingInfo.unListNFTs.push({ ...nft });
-            } else if (list?.market_name !== 'sudoswap' && list?.expired_time && list?.expired_time <= Date.now()) {
+            } else if (list?.marketName !== 'sudoswap' && list?.expiredTime && list?.expiredTime <= Date.now()) {
               // sudoswap dosen't have expire time
               listingInfo.expireOrders.push(list);
               listingInfo.expireNFTs.push({ ...nft });
@@ -209,20 +209,20 @@ export class AggregatorStable implements Aggregator {
       const getAggregateResult: (ordersUsedToTrade: ListingInfo[]) => Promise<AggregateResponse | undefined> = async (
         ordersUsedToTrade: ListingInfo[]
       ) => {
-        const buyer_address = this.utils?.account || (await this.utils?._web3Instance.eth.getAccounts())?.[0];
+        const buyerAddress = this.utils?.account || (await this.utils?._web3Instance.eth.getAccounts())?.[0];
         const aggregateResult = await this.getAggregateInfo({
-          buyer_address: buyer_address as string,
-          order_ids: ordersUsedToTrade?.map((order) => order.order_id),
-          is_safe: withSafeMode,
+          buyerAddress: buyerAddress as string,
+          orderIds: ordersUsedToTrade?.map((order) => order.orderId),
+          isSafe: withSafeMode,
         });
-        const invalidIds = aggregateResult?.invalid_ids;
+        const invalidIds = aggregateResult?.invalidIds;
         if (invalidIds?.length > 0) {
-          const InvalidOrders = ordersUsedToTrade.filter((order) => invalidIds.includes(order.order_id));
+          const InvalidOrders = ordersUsedToTrade.filter((order) => invalidIds.includes(order.orderId));
           if (!ignoreInvalidOrders) {
             onError?.(
               AggregatorBulkBuyException.hasExpiredNFT({
                 contract: InvalidOrders[0].contract,
-                tokenId: InvalidOrders[0].token_id,
+                tokenId: InvalidOrders[0].tokenId,
               }),
               listInfos
             );
@@ -232,7 +232,7 @@ export class AggregatorStable implements Aggregator {
               onError?.(AggregatorBulkBuyException.noValidOrder(), listInfos);
               return undefined;
             }
-            return await getAggregateResult(ordersUsedToTrade.filter((order) => !invalidIds.includes(order.order_id)));
+            return await getAggregateResult(ordersUsedToTrade.filter((order) => !invalidIds.includes(order.orderId)));
           }
         } else {
           return aggregateResult;
@@ -263,14 +263,14 @@ export class AggregatorStable implements Aggregator {
       if (withSafeMode) {
         this.utils
           ?.sendSafeModeTransaction({
-            from: aggregateResult.tx_info.from_address,
-            to: aggregateResult.tx_info.to_address,
-            data: aggregateResult.tx_info.data,
-            value: BigNumber.from(aggregateResult.tx_info.value.toString()),
+            from: aggregateResult.txInfo.fromAddress,
+            to: aggregateResult.txInfo.toAddress,
+            data: aggregateResult.txInfo.data,
+            value: BigNumber.from(aggregateResult.txInfo.value.toString()),
             chainId: 1,
-            gasLimit: BigNumber.from(aggregateResult.gas_limit.toString()),
+            gasLimit: BigNumber.from(aggregateResult.gasLimit.toString()),
           })
-          .on('transaction_hash', onSendingTransaction)
+          .on('transactionHash', onSendingTransaction)
           .on('receipt', onReceipt)
           .on('error', (error) => {
             onError?.(error, listInfos);
@@ -278,12 +278,12 @@ export class AggregatorStable implements Aggregator {
       } else {
         this.utils
           ?.sendTransaction({
-            from: aggregateResult.tx_info.from_address,
-            to: aggregateResult.tx_info.to_address,
-            data: aggregateResult.tx_info.data,
-            value: BigNumber.from(aggregateResult.tx_info.value.toString()).toHexString(),
+            from: aggregateResult.txInfo.fromAddress,
+            to: aggregateResult.txInfo.toAddress,
+            data: aggregateResult.txInfo.data,
+            value: BigNumber.from(aggregateResult.txInfo.value.toString()).toHexString(),
           })
-          .on('transaction_hash', onSendingTransaction)
+          .on('transactionHash', onSendingTransaction)
           .on('receipt', onReceipt)
           .on('error', (error) => {
             onError?.(error, listInfos);
@@ -295,11 +295,11 @@ export class AggregatorStable implements Aggregator {
   }
 
   private get headers() {
-    return { 'X-API-KEY': this.config.api_key, 'X-FROM': 'js_sdk' };
+    return { 'X-API-KEY': this.config.apiKey, 'X-FROM': 'js_sdk' };
   }
 
   private get url() {
-    return this.config.base_url + this.config.chain + '/v1';
+    return this.config.baseUrl + this.config.chain + '/v1';
   }
 
   private post<R, P = undefined>(path: string, params: P) {

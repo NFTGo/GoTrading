@@ -1,4 +1,5 @@
 import { HttpsProxyAgent } from 'https-proxy-agent';
+import { camel } from '../helpers/key-format';
 import { AggregatorApiException } from './exception';
 
 import { HTTPClient } from './interface';
@@ -28,7 +29,7 @@ export class InternalHTTPClient implements HTTPClient {
           if (!res) {
             reject(AggregatorApiException.apiEmptyResponseError(input?.toString()));
           } else {
-            resolve(res);
+            resolve(camel(res));
           }
         });
     });

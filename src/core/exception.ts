@@ -55,7 +55,7 @@ export class AggregatorApiException extends AggregatorBaseException {
   }
 
   static missApiKeyError() {
-    return new AggregatorApiException(ApiExceptionType.API_KEY_ERROR, this.missingParam('api_key'));
+    return new AggregatorApiException(ApiExceptionType.API_KEY_ERROR, this.missingParam('apiKey'));
   }
 
   static invalidLimitError(url: string, max: number) {

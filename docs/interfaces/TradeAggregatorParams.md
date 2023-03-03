@@ -4,15 +4,15 @@ export interface TradeAggregatorParams {
   /**
    * Buyer Address，Address of buyer.
    */
-  buyer_address: string;
+  buyerAddress: string;
   /**
    * Is Safe，Is it safe mode? true or false
    */
-  is_safe?: boolean;
+  isSafe?: boolean;
   /**
    * Order Ids，A list of orderIds.order id is from listing API.
    */
-  order_ids: string[];
+  orderIds: string[];
 }
 ```
 

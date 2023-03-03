@@ -16,8 +16,8 @@ web3Instance.eth.accounts.wallet.add({
   privateKey: "your private key",
 });
 const configs = {
-  api_key: "api key", // Replace with your own API Key.
-  web3_provider: "provider", // Replace with your provider,
+  apiKey: "api key", // Replace with your own API Key.
+  web3Provider: "provider", // Replace with your provider,
   agent: new HttpsProxyAgent({
     host: "127.0.0.1",
     port: "7890",
@@ -31,26 +31,26 @@ const walletAddress = "0x8ae57a027c63fca8070d1bf38622321de8004c67";
 const { nfts: walletNFTList } = await aggregator.getListingsOfWallet(walletAddress);
 let orderIds:string[] = [];
 for (const nft of walletNFTList) {
-    orderIds.push(nft.listing_data?.nft_list[0].order_id as string)
+    orderIds.push(nft.listingData?.nftList[0].orderId as string)
 }
 
 const buyerAddress = "0x1234567890123456789012345678901234567890";// Replace with buyer address.
 
 // without safe mode
 const params: AggregateParams = ({
-  buyer_address: buyerAddress,
-  is_safe: false,
-  order_ids: orderIds,
+  buyerAddress: buyerAddress,
+  isSafe: false,
+  orderIds: orderIds,
 });
 
 const aggregateResponse = await aggregator.getAggregateInfo(params);
 
 utils?.sendTransaction({
-  from: aggregateResponse.tx_info.from_address,
-  to: aggregateResponse.tx_info.to_address,
-  data: aggregateResponse.tx_info.data,
-  value: BigNumber.from(aggregateResponse.tx_info.value.toString()).toHexString()
-}).on('transaction_hash', (hash)=>{
+  from: aggregateResponse.txInfo.fromAddress,
+  to: aggregateResponse.txInfo.toAddress,
+  data: aggregateResponse.txInfo.data,
+  value: BigNumber.from(aggregateResponse.txInfo.value.toString()).toHexString()
+}).on('transactionHash', (hash)=>{
   console.log(hash);
 }).on('receipt', (receipt)=>{
   if (receipt.logs.length) {
@@ -82,26 +82,26 @@ const walletAddress = "0x8ae57a027c63fca8070d1bf38622321de8004c67";
 const { nfts: walletNFTList } = await aggregator.getListingsOfWallet(walletAddress);
 let orderIds:string[] = [];
 for (const nft of walletNFTList) {
-    orderIds.push(nft.listing_data?.nft_list[0].order_id as string)
+    orderIds.push(nft.listingData?.nftList[0].orderId as string)
 }
 
 const buyerAddress = "0x1234567890123456789012345678901234567890";// Replace with buyer address.
 
 // without safe mode
 const params: AggregateParams = ({
-  buyer_address: buyerAddress,
-  is_safe: false,
-  order_ids: orderIds,
+  buyerAddress: buyerAddress,
+  isSafe: false,
+  orderIds: orderIds,
 });
 
 const aggregateResponse = await aggregator.getAggregateInfo(params);
 
 utils?.sendTransaction({
-  from: aggregateResponse.tx_info.from_address,
-  to: aggregateResponse.tx_info.to_address,
-  data: aggregateResponse.tx_info.data,
-  value: BigNumber.from(aggregateResponse.tx_info.value.toString()).toHexString()
-}).on('transaction_hash', (hash)=>{
+  from: aggregateResponse.txInfo.fromAddress,
+  to: aggregateResponse.txInfo.toAddress,
+  data: aggregateResponse.txInfo.data,
+  value: BigNumber.from(aggregateResponse.txInfo.value.toString()).toHexString()
+}).on('transactionHash', (hash)=>{
   console.log(hash);
 }).on('receipt', (receipt)=>{
   if (receipt.logs.length) {

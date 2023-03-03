@@ -53,8 +53,8 @@ web3Instance.eth.accounts.wallet.add({
   privateKey: "your private key",
 });
 const configs = {
-  api_key: "YOUR-API-KEY", // Replace with your own API Key.
-  web3_provider: web3Instance.currentProvider, // Replace with your provider.
+  apiKey: "YOUR-API-KEY", // Replace with your own API Key.
+  web3Provider: web3Instance.currentProvider, // Replace with your provider.
   agent: new HttpsProxyAgent({ // if you have problem connect to our api end point, please config your http agent
     host: "your host ip",
     port: "your agent port",
@@ -72,8 +72,8 @@ import Web3 from 'web3';
 // for client
 const provider = window.ethereum;
 const configs = {
-  api_key: 'YOUR-API-KEY', // Replace with your own API Key.
-  web3_provider: provider, // Replace with your provider.
+  apiKey: 'YOUR-API-KEY', // Replace with your own API Key.
+  web3Provider: provider, // Replace with your provider.
 };
 
 // create tradeAggregator client
@@ -137,8 +137,8 @@ aggregator.bulkBuy({
 const baycContract = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
 const tokenId = "1";
 
-const {nft_list: listingsInfo} = await aggregator.getListingOfNFT(baycContract, tokenId);
-console.log(listingsInfo[0].order_id)
+const {nftList: listingsInfo} = await aggregator.getListingOfNFT(baycContract, tokenId);
+console.log(listingsInfo[0].orderId)
 ```
 
   - ***1.2 Get listing info of the Collection.***
@@ -149,7 +149,7 @@ const baycContract = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
 const { nfts } = await aggregator.getListingsOfCollection(baycContract);
 
 for (const nft of nfts) {
-  console.log(nft.listing_data?.nft_list[0].order_id)
+  console.log(nft.listingData?.nftList[0].orderId)
 }
 ```
 
@@ -160,7 +160,7 @@ const walletAddress = "0x8ae57a027c63fca8070d1bf38622321de8004c67";
 const { nfts: walletNFTList } = await aggregator.getListingsOfWallet(walletAddress);
 
 for (const nft of walletNFTList) {
-    console.log(nft.listing_data?.nft_list[0].order_id)
+    console.log(nft.listingData?.nftList[0].orderId)
 }
 ```
 ### Step2 Select target NFT
@@ -168,7 +168,7 @@ for (const nft of walletNFTList) {
 //eg: get all listing NFT order ids of a wallet address.
 const orderIds = [];
 for (const nft of walletNFTList) {
-  orderIds.push(nft.listing_data?.nft_list[0].order_id as string);
+  orderIds.push(nft.listingData?.nftList[0].orderId as string);
 }
 ```
 
@@ -179,9 +179,9 @@ for (const nft of walletNFTList) {
 const orderIds = ["orderIds"]; // Replace with Step2 OrderIds.
 
 const params: AggregateParams = ({
-  buyer_address: 'buyerAddress', // Replace with buyer address.
-  is_safe: false,
-  order_ids: orderIds,
+  buyerAddress: 'buyerAddress', // Replace with buyer address.
+  isSafe: false,
+  orderIds: orderIds,
 });
 
 const aggregateResponse = await aggregator.getAggregateInfo(params);
@@ -192,11 +192,11 @@ console.log(result);
 ### Step4 Invoke Contract to purchase
 ```ts
 utils?.sendTransaction({
-  from: aggregateResponse.tx_info.from_address,
-  to: aggregateResponse.tx_info.to_address,
-  data: aggregateResponse.tx_info.data,
-  value: BigNumber.from(aggregateResponse.tx_info.value.toString()).toHexString()
-}).on('transaction_hash', (hash)=>{
+  from: aggregateResponse.txInfo.fromAddress,
+  to: aggregateResponse.txInfo.toAddress,
+  data: aggregateResponse.txInfo.data,
+  value: BigNumber.from(aggregateResponse.txInfo.value.toString()).toHexString()
+}).on('transactionHash', (hash)=>{
   console.log(hash);
 }).on('receipt', (receipt)=>{
   if (receipt.logs.length) {
