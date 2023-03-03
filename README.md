@@ -132,7 +132,7 @@ aggregator.bulkBuy({
 
 ## GoTrading Complete Process
 ![image info](process.jpg)
-### Step1 Get Listing Info
+### Step1 Get listing info
   - ***1.1 Get the listing info of a single nft.***
 
 ```ts
@@ -168,7 +168,7 @@ for (const nft of walletNFTList) {
     console.log(nft.listingData?.nftList[0].orderId)
 }
 ```
-### Step2 Select target NFT
+### Step2 Select desired NFT listing order
 ```ts
 //eg: get all listing NFT order ids of a wallet address.
 const orderIds = [];
@@ -177,9 +177,7 @@ for (const nft of walletNFTList) {
 }
 ```
 
-### Step3 Get transaction data
->
-> You can use the aggregator to do trading, and the request will return the data you need to generate the transaction.
+### Step3 Retrieve transaction data for purchasing
 ```ts
 const orderIds = ["orderIds"]; // Replace with Step2 OrderIds.
 
