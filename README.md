@@ -45,23 +45,23 @@ yarn add @nftgo/gotrading
 import { init } from '@nftgo/gotrading';
 import Web3 from 'web3';
 
+// Create a new Web3 Provider to interact with the Ethereum network.
 const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io') //Replace with your own provider
 
-const web3Instance = new Web3(provider); // replace with your provider
+// Create a new Web3 instance and use the above Provider to interact with the network.
+const web3Instance = new Web3(provider); // Replace with your provider
 web3Instance.eth.accounts.wallet.add({
   address: "your wallet address",
   privateKey: "your private key",
 });
+
+// Configure the necessary parameters for the Trade Aggregator API client.
 const configs = {
   apiKey: "YOUR-API-KEY", // Replace with your own API Key.
   web3Provider: web3Instance.currentProvider, // Replace with your provider.
-  agent: new HttpsProxyAgent({ // if you have problem connect to our api end point, please config your http agent
-    host: "your host ip",
-    port: "your agent port",
-  }),
 };
 
-// create tradeAggregator client
+// Create a Trade Aggregator client instance and return the utility and aggregator objects of the Trade Aggregator API.
 const {aggregator, utils} = init(configs);
 ```
 - For client-side initialization:
@@ -69,14 +69,17 @@ const {aggregator, utils} = init(configs);
 import { init } from '@nftgo/gotrading';
 import Web3 from 'web3';
 
-// for client
+// Create a new Web3 Provider to interact with the Ethereum network.
+// For client-side applications, use the Ethereum provider provided by the user's browser.
 const provider = window.ethereum;
+
+// Configure the necessary parameters for the Trade Aggregator API client.
 const configs = {
   apiKey: 'YOUR-API-KEY', // Replace with your own API Key.
   web3Provider: provider, // Replace with your provider.
 };
 
-// create tradeAggregator client
+// Create a Trade Aggregator client instance and return the utility and aggregator objects of the Trade Aggregator API.
 const {aggregator, utils} = init(configs);
 ```
 > ***Get your own NFTGo DEVELOPERS API Key***
@@ -89,22 +92,22 @@ const {aggregator, utils} = init(configs);
 ```ts
 import { NFTInfoForTrade } from '@nftgo/gotrading';
 
-// list some NFTs you want to buy
-// we recommend you using our aggregator.getListingOfNFT method to check whether your nfts have valid listings
-const nfts: NFTInfoForTrade[] = [ // replace with your own nft list
+// List the NFTs you want to buy.
+// We recommend using the aggregator.getListingOfNFT method to check whether your NFTs have valid listings.
+const nfts: NFTInfoForTrade[] = [ // Replace with your own list of NFTs.
   {
     contract: "0xcfff4c8c0df0e2431977eba7df3d3de857f4b76e",
     tokenId: "16",
     amount: 1
   },
-    {
+  {
     contract: "0xcfff4c8c0dF0E2431977EbA7dF3D3De857f4B76e",
     tokenId: "18",
     amount: 1
   }
-]
+];
 
-// config your bulk
+// Configure the necessary parameters for bulk buying NFTs.
 const bulkBuyConfig = {
   ignoreUnListedNFTs: false, // Do you want to ignore unlisted NFTs?
   ignoreInvalidOrders: false, // Do you want to ignore invalid orders?
@@ -112,17 +115,17 @@ const bulkBuyConfig = {
   withSafeMode: false, // Use Safe Mode or Without Safe Mode.
 };
 
-// buy nfts
+// Buy the NFTs specified in the nfts array using the Trade Aggregator API.
 aggregator.bulkBuy({
   nfts,
-  onSendingTransaction: (hash: string) => console.log(hash), // callback on sending a transaction
-  onFinishTransaction: ( // callback on a transaction finished
+  onSendingTransaction: (hash: string) => console.log(hash), // Callback function when a transaction is being sent.
+  onFinishTransaction: ( // Callback function when a transaction is finished.
     successNFTs: NFTBaseInfo[],
     failNFTs: NFTBaseInfo[],
     nftsListingInfo: NftsListingInfo
   ) => console.log(successNFTs, failNFTs, nftsListingInfo),
   onError: (error: Error, nftsListingInfo?: NftsListingInfo) =>
-    console.log(error, nftsListingInfo), // callback on any error occurs
+    console.log(error, nftsListingInfo), // Callback function when an error occurs during the bulk buy process.
   config: bulkBuyConfig,
 });
 ```
@@ -133,12 +136,12 @@ aggregator.bulkBuy({
   - ***1.1 Get the listing info of a single nft.***
 
 ```ts
-// Get the listing info of BAYC No.1
+// Retrieve the listing information for BAYC #1
 const baycContract = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
 const tokenId = "1";
 
-const {nftList: listingsInfo} = await aggregator.getListingOfNFT(baycContract, tokenId);
-console.log(listingsInfo[0].orderId)
+const { nftList: listingsInfo } = await aggregator.getListingOfNFT(baycContract, tokenId);
+console.log(listingsInfo[0].orderId); // Output the order ID of the first listing in the array.
 ```
 
   - ***1.2 Get listing info of the Collection.***
@@ -148,6 +151,7 @@ const baycContract = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
 
 const { nfts } = await aggregator.getListingsOfCollection(baycContract);
 
+// Loop through each NFT and log the order ID of its listing.
 for (const nft of nfts) {
   console.log(nft.listingData?.nftList[0].orderId)
 }
@@ -159,6 +163,7 @@ for (const nft of nfts) {
 const walletAddress = "0x8ae57a027c63fca8070d1bf38622321de8004c67";
 const { nfts: walletNFTList } = await aggregator.getListingsOfWallet(walletAddress);
 
+// Iterate over each NFT in the wallet's listings and log the order ID of the first listing.
 for (const nft of walletNFTList) {
     console.log(nft.listingData?.nftList[0].orderId)
 }
@@ -186,7 +191,7 @@ const params: AggregateParams = ({
 
 const aggregateResponse = await aggregator.getAggregateInfo(params);
 
-console.log(result);
+console.log(aggregateResponse);
 ```
 
 ### Step4 Invoke Contract to purchase
