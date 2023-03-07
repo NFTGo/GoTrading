@@ -1,5 +1,5 @@
 import { HttpsProxyAgent } from 'https-proxy-agent';
-import { camel } from '../helpers/key-format';
+import { camel, underline } from '../helpers/key-format';
 import { AggregatorApiException } from './exception';
 
 import { HTTPClient } from './interface';
@@ -38,13 +38,16 @@ export class InternalHTTPClient implements HTTPClient {
   get<R, Q = Object>(url: string, query: Q | undefined, headers: Record<string, string>): Promise<R> {
     const params = [];
     let actualUrl = url;
-    for (const key in query) {
-      if (query[key] instanceof Array) {
-        for (const value of query[key] as Array<any>) {
+    const underLineQuery = underline(query);
+    for (const key in underLineQuery) {
+      if (underLineQuery[key] instanceof Array) {
+        for (const value of underLineQuery[key] as Array<any>) {
           value !== null && value !== undefined && params.push(`${key}=${value}`);
         }
       } else {
-        query[key] !== null && query[key] !== undefined && params.push(`${key}=${query[key]}`);
+        underLineQuery[key] !== null &&
+          underLineQuery[key] !== undefined &&
+          params.push(`${key}=${underLineQuery[key]}`);
       }
     }
     if (params.length !== 0) {
@@ -56,7 +59,7 @@ export class InternalHTTPClient implements HTTPClient {
   post<R, P = Object>(url: string, data: P, headers: Record<string, string>): Promise<R> {
     return this.fetch<R>(url, {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify(underline(data)),
       headers: { ...headers, 'Content-Type': 'application/json' },
     });
   }
