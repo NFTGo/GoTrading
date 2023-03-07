@@ -25,7 +25,7 @@ const configs = {
 const {aggregator, utils} = init(configs);
 
 // list some NFTs you want to buy
-// we recommend you using our aggregator.getListingOfNFT method to check whether your nfts have valid listings
+// we recommend you using our aggregator.getListingsOfNFT method to check whether your nfts have valid listings
 const nfts: NFTInfoForTrade[] = [ // replace with your own nft list
   {
     contract: "0xcfff4c8c0df0e2431977eba7df3d3de857f4b76e",
@@ -43,7 +43,7 @@ const nfts: NFTInfoForTrade[] = [ // replace with your own nft list
 const bulkBuyConfig = {
   ignoreUnListedNFTs: false, // Do you want to ignore unlisted NFTs?
   ignoreInvalidOrders: false, // Do you want to ignore invalid orders?
-  ignoreSuspiciousOrders: false, // Do you want to ignore suspicious NFTs?
+  ignoreSuspiciousNFTs: false, // Do you want to ignore suspicious NFTs?
   withSafeMode: false, // Use Safe Mode or Without Safe Mode.
 };
 
@@ -76,7 +76,7 @@ const configs = {
 // create tradeAggregator client
 const {aggregator, utils} = init(configs);
 // list some NFTs you want to buy
-// we recommend you using our aggregator.getListingOfNFT method to check whether your nfts have valid listings
+// we recommend you using our aggregator.getListingsOfNFT method to check whether your nfts have valid listings
 const nfts: NFTInfoForTrade[] = [ // replace with your own nft list
   {
     contract: "0xcfff4c8c0df0e2431977eba7df3d3de857f4b76e",
@@ -94,7 +94,7 @@ const nfts: NFTInfoForTrade[] = [ // replace with your own nft list
 const bulkBuyConfig = {
   ignoreUnListedNFTs: false, // Do you want to ignore unlisted NFTs?
   ignoreInvalidOrders: false, // Do you want to ignore invalid orders?
-  ignoreSuspiciousOrders: false, // Do you want to ignore suspicious NFTs?
+  ignoreSuspiciousNFTs: false, // Do you want to ignore suspicious NFTs?
   withSafeMode: false, // Use Safe Mode or Without Safe Mode.
 };
 

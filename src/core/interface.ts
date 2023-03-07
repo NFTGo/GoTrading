@@ -17,7 +17,7 @@ export interface Aggregator {
    * @param tokenId The token id of the nft
    * @returns Promise<{@link SingleNFTListingsResponse}>
    */
-  getListingOfNFT(contract: string, tokenId: string): Promise<SingleNFTListingsResponse>;
+  getListingsOfNFT(contract: string, tokenId: string): Promise<SingleNFTListingsResponse>;
 
   /**
    * Bulk buy nfts. If you know clearly about the nfts you want to buy, just put them into bulk buy, and you will get a result.
@@ -45,6 +45,7 @@ export interface Aggregator {
 
   /**
    * Return filtered items of an NFT collection. You can select traits, sorting and listing to filter a subset of items.
+   * NOTE: the listingData of every nft only contains best orders (order with lowest listing price) of each marketplace rather than all orders
    * - details: {@link https://docs.nftgo.io/reference/get_filtered_nfts_eth_v1_collection__contract_address__filtered_nfts_get}
    * @param collectionContract The contract address of the collection
    * @param params The query params {@link FilteredNFTsParam}
@@ -60,7 +61,7 @@ export type FinallyHandler = (() => void) | null | undefined;
 export interface BuyNFTsWithOrderIdsParams {
   buyerAddress: string;
   orderIds: string[];
-  isSafeMode?: boolean;
+  isSafeMode?: boolean; // https://docs.nftgo.io/docs/safe-mode
 }
 
 export interface Transaction {
@@ -87,7 +88,7 @@ export interface DecodeLogRes {
 
 export interface InspectTransactionParams {
   hash: string;
-  interval?: number;
+  interval?: number; // ms, 1000 as default
 }
 
 export type UniqueNFTKey = string;
@@ -426,14 +427,15 @@ export interface TXInfo {
   value: number;
 }
 
-export type SortBy =
-  | 'listing_price_low_toHigh'
-  | 'listing_priceHigh_to_low'
-  | 'last_price_low_toHigh'
-  | 'last_priceHigh_to_low'
-  | 'rarity_low_toHigh'
-  | 'rarityHigh_to_low'
-  | 'sales_time';
+export enum SortBy {
+  LISTING_PRICE_LOW_TO_HIGH = 'listing_price_low_to_high',
+  LISTING_PRICE_HIGHT_TO_LOW = 'listing_price_high_to_low',
+  LAST_PRICE_LOW_TO_HIGH = 'last_price_low_to_high',
+  LAST_PRICE_HIGHT_TO_LOW = 'last_price_high_to_low',
+  RARITY_LOW_TO_HIGH = 'rarity_low_to_high',
+  RARITY_HIGH_TO_LOW = 'rarity_high_to_low',
+  SALES_TIME = 'sales_time',
+}
 
 export interface BulkBuyParams {
   nfts: NFTInfoForTrade[];
@@ -443,8 +445,8 @@ export interface BulkBuyParams {
   config: {
     ignoreUnListedNFTs: boolean;
     ignoreInvalidOrders: boolean;
-    ignoreSuspiciousOrders: boolean;
-    withSafeMode: boolean;
+    ignoreSuspiciousNFTs: boolean;
+    withSafeMode: boolean; // link
   };
 }
 
@@ -454,7 +456,7 @@ export interface FilteredNFTsParam {
    */
   traits?: string;
   /**
-   * Sort by listing_price_low_toHigh / listing_priceHigh_to_low / last_price_low_toHigh / last_priceHigh_to_low / rarity_low_toHigh / rarityHigh_to_low / sales_time
+   * Sort by listing_price_low_to_high / listing_priceHigh_to_low / last_price_low_toHigh / last_priceHigh_to_low / rarity_low_toHigh / rarityHigh_to_low / sales_time
    */
   sortBy?: SortBy;
   /**

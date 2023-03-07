@@ -25,7 +25,7 @@ export class AggregatorUtils implements Utils {
     this.TRANSFER_BATCH_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(ERC1155Abi.batchTransfer);
     this.TRANSFER_SINGLE_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(ERC1155Abi.singleTransfer);
     this.PUNK_TRANSFER_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(CryptoPunkAbi.transfer);
-    this.PUNK_SINGLE_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(CryptoPunkAbi.bought);
+    this.PUNK_BOUGHT_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(CryptoPunkAbi.bought);
     this.init();
   }
   public _web3Instance: Web3;
@@ -38,7 +38,7 @@ export class AggregatorUtils implements Utils {
   private TRANSFER_BATCH_TOPIC: string;
   private TRANSFER_SINGLE_TOPIC: string;
   private PUNK_TRANSFER_TOPIC: string;
-  private PUNK_SINGLE_TOPIC: string;
+  private PUNK_BOUGHT_TOPIC: string;
   inspectTransaction({ hash, interval = 1000 }: InspectTransactionParams) {
     const transactionInstance = new SendTransaction();
     const intervalId = setInterval(async () => {
@@ -125,7 +125,7 @@ export class AggregatorUtils implements Utils {
           to = decodedEventLog.to;
           amount = 1;
           break;
-        case this.PUNK_SINGLE_TOPIC:
+        case this.PUNK_BOUGHT_TOPIC:
           decodedEventLog = this._web3Instance.eth.abi.decodeLog(
             CryptoPunkAbi.bought.inputs ?? [],
             log.data,
@@ -150,13 +150,13 @@ export class AggregatorUtils implements Utils {
     }
   }
   genUniqueKeyForNFT({ contract, tokenId }: NFTBaseInfo): string {
-    return `${contract?.toLocaleLowerCase?.()}_${tokenId}`;
+    return `${contract?.toLowerCase?.()}_${tokenId}`;
   }
   parseTransactedNFTs(receipt: TransactionReceipt): Map<string, NFTInfoForTrade> | undefined {
     if (receipt?.logs.length === 0 || !receipt?.status) {
       return undefined;
     }
-    // Use set to prevent duplication.
+    // Use map to prevent duplication.
     // Because there will be multiple logs for one nft transaction
     // multiple identical nft information may be parsed
     const successList = new Map<string, NFTInfoForTrade>();

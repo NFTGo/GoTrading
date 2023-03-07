@@ -111,7 +111,7 @@ const nfts: NFTInfoForTrade[] = [ // Replace with your own list of NFTs.
 const bulkBuyConfig = {
   ignoreUnListedNFTs: false, // Do you want to ignore unlisted NFTs?
   ignoreInvalidOrders: false, // Do you want to ignore invalid orders?
-  ignoreSuspiciousOrders: false, // Do you want to ignore suspicious NFTs?
+  ignoreSuspiciousNFTs: false, // Do you want to ignore suspicious NFTs?
   withSafeMode: false, // Use Safe Mode or Without Safe Mode.
 };
 
@@ -140,7 +140,7 @@ aggregator.bulkBuy({
 const baycContract = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
 const tokenId = "1";
 
-const { nftList: listingsInfo } = await aggregator.getListingOfNFT(baycContract, tokenId);
+const { nftList: listingsInfo } = await aggregator.getListingsOfNFT(baycContract, tokenId);
 console.log(listingsInfo[0].orderId); // Output the order ID of the first listing in the array.
 ```
 

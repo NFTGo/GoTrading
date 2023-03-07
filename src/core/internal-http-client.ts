@@ -15,7 +15,7 @@ export class InternalHTTPClient implements HTTPClient {
             reject(
               new AggregatorApiException(
                 res.status,
-                res.statusText?.length > 0 ? res.statusText : await res.json(),
+                res.statusText?.length > 0 ? await res.json() : res.statusText,
                 res.url
               )
             );
