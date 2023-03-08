@@ -87,7 +87,7 @@ const {aggregator, utils} = init(configs);
 > If you need to obtain an API key or a custom plan, please contact our support team. You can reach us by submitting a [form](https://forms.monday.com/forms/7fd30cd3cef08cf3b3dbccd1c72892b5), and we will respond to you within 1-2 business days.
 >
 > Please note that we may need to understand your use case and requirements in order to provide you with the API key and custom plan that best suits your needs. Thank you for your interest in our service, and we look forward to working with you.
-###  3. BulkBuy NFTs
+###  3. Bulk Buy NFTs
 ```ts
 import { NFTInfoForTrade } from '@nftgo/gotrading';
 
@@ -129,7 +129,7 @@ aggregator.bulkBuy({
 });
 ```
 
-## GoTrading Complete Process
+## GoTrading Purchase Process
 ![image info](process.jpg)
 ### Step1 Get listing info
   - ***1.1 Get the listing info of a single nft.***
