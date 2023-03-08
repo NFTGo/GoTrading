@@ -7,7 +7,7 @@
 
 <!-- Introduction -->
 
-GoTrading is an open-source development kit that enables you to build your own NFT trading aggregator and marketplace. The SDK provides a comprehensive set of tools and APIs that greatly simplify the development process of a general trading aggregator like Gem.xyz or blur.io, and allow developers to access real-time order feed and NFT transaction data. We implement our aggregated orderbook based on [Reservoir Protocol](https://reservoir.tools/), and provide hight-level functions to help you to build your unified interface for retrieving listing data, bulk buying & listing NFTs, and selling NFTs instantly(accept bids) across all mainstream marketplaces, such as Opensea, Looksrare, Blur, x2y2, Sudoswap, etc.
+GoTrading is an open-source development kit that enables you to build your own NFT trading aggregator and marketplace. The SDK provides a comprehensive set of tools and APIs that greatly simplify the development process of a general trading aggregator like Gem.xyz or Blur.io, and allows developers to access real-time order feed and NFT transaction data. With the SDK, you can easily aggregate orders and functionality from mainstream marketplaces such as Opensea, Looksrare, Blur, x2y2, Sudoswap, etc, all in your products and communities.
 
 ## Key Features
  - Simple and easy-to-use API
@@ -16,10 +16,9 @@ GoTrading is an open-source development kit that enables you to build your own N
 
 
 ## Requirements
-
 - Node.js >= 16.14
-- web3
-- ethers
+- web3 >= 1.8.2
+- ethers >= 5.6.9
 
 You can do this by running the following commands:
 ```bash
@@ -214,6 +213,8 @@ utils?.sendTransaction({
   console.log('transaction fail: ', error);
 });
 ```
+## Model Diagram
+![image info](model_diagram.jpg)
 
 ## Complete example
   - [***BuyByCollectionListings***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/tradeAggregator/BuyByCollectionListings.md)

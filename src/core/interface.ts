@@ -410,7 +410,7 @@ export interface Trait {
  */
 export interface TXInfo {
   /**
-   * Data，The price(eth) of the NFT
+   * Data，The data of the transaction.
    */
   data: string;
   /**
@@ -577,11 +577,11 @@ export interface AggregateParams {
  */
 export interface AggregateResponse {
   /**
-   * Gas Limit，The gas limit
+   * Gas Limit, recommended gas limit as input for this transaction.
    */
   gasLimit: number;
   /**
-   * Saving Gas，The saving gas
+   * Saving Gas, gas saved by using GoTrading aggregator.
    */
   savingGas: number;
   /**
@@ -590,7 +590,7 @@ export interface AggregateResponse {
   invalidIds: string[];
   txInfo: TXInfo;
   /**
-   * Used Gas，The used gas
+   * Used Gas，gas used on testnet for this transaction simulation.
    */
   usedGas: number;
 }
