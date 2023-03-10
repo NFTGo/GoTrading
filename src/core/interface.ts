@@ -229,7 +229,7 @@ export interface Price {
 /**
  * Listinginfo
  */
-export interface ListingInfo {
+export interface ListingOrder {
   /**
    * Contract，Address of the contract for this NFT collection, beginning with 0x
    */
@@ -276,7 +276,7 @@ export interface ListingInfo {
 
 export interface NftListing {
   lastUpdated: number;
-  nftList: ListingInfo[];
+  listingOrders: ListingOrder[];
 }
 
 /**
@@ -506,7 +506,7 @@ export interface SingleNFTListingsResponse {
   /**
    * Nft List
    */
-  nftList: ListingInfo[];
+  listingOrders: ListingOrder[];
 }
 
 /**
@@ -604,11 +604,11 @@ export interface NFTInfoForTrade extends NFTBaseInfo {
   amount: number; // The amount of ERC721 nft should only be 1
 }
 export interface NftsListingInfo {
-  validOrders: ListingInfo[];
+  validOrders: ListingOrder[];
   expireNFTs: NFTBaseInfo[];
-  expireOrders: ListingInfo[];
+  expireOrders: ListingOrder[];
   unListNFTs: NFTBaseInfo[];
   yourOwnNFTs: NFTBaseInfo[];
   suspiciousNFTs: NFTBaseInfo[];
-  suspiciousOrders: ListingInfo[];
+  suspiciousOrders: ListingOrder[];
 }

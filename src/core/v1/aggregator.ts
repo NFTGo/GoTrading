@@ -13,7 +13,7 @@ import {
   SingleNFTListingsResponse,
   EVMChain,
   NFT,
-  ListingInfo,
+  ListingOrder,
   NFTBaseInfo,
   NFTInfoForTrade,
   NftsListingInfo,
@@ -155,11 +155,13 @@ export class AggregatorStable implements Aggregator {
           const nftOrderInfo = nftsOrderInfos.get(key);
           const nftDetailInfo = nftsDetails.get(key);
           const is1155 = nftDetailInfo?.contractType === 'ERC1155';
-          let lists: ListingInfo[];
+          let lists: ListingOrder[];
           if (is1155) {
-            lists = nftOrderInfo?.listingData?.nftList?.slice?.(0, nft.amount) ?? [];
+            lists = nftOrderInfo?.listingData?.listingOrders?.slice?.(0, nft.amount) ?? [];
           } else {
-            lists = nftOrderInfo?.listingData?.nftList?.[0] ? [nftOrderInfo?.listingData?.nftList?.[0]] : [];
+            lists = nftOrderInfo?.listingData?.listingOrders?.[0]
+              ? [nftOrderInfo?.listingData?.listingOrders?.[0]]
+              : [];
           }
           lists.forEach((list) => {
             if (!list) {
@@ -206,8 +208,8 @@ export class AggregatorStable implements Aggregator {
         return;
       }
 
-      const getAggregateResult: (ordersUsedToTrade: ListingInfo[]) => Promise<AggregateResponse | undefined> = async (
-        ordersUsedToTrade: ListingInfo[]
+      const getAggregateResult: (ordersUsedToTrade: ListingOrder[]) => Promise<AggregateResponse | undefined> = async (
+        ordersUsedToTrade: ListingOrder[]
       ) => {
         const buyerAddress = this.utils?.account || (await this.utils?._web3Instance.eth.getAccounts())?.[0];
         const aggregateResult = await this.getAggregateInfo({
