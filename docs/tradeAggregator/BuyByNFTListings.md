@@ -30,9 +30,9 @@ const {aggregator, utils} = init(configs);
 const baycContract = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
 const tokenId = 1;
 
-const {nftList: listingsInfo} = await aggregator.getListingsOfNFT(baycContract, tokenId);
+const listingOrders = await aggregator.getListingsOfNFT(baycContract, tokenId);
 let orderIds: string[] = [];
-orderIds.push(listingsInfo[0].orderId as string);
+orderIds.push(listingOrders[0].orderId as string);
 
 const buyerAddress = "0x1234567890123456789012345678901234567890";// Replace with buyer address.
 // without safe mode
@@ -83,9 +83,9 @@ const {aggregator, utils} = init(configs);
 const baycContract = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
 const tokenId = 1;
 
-const {nftList: listingsInfo} = await aggregator.getListingsOfNFT(baycContract, tokenId);
+const listingOrders = await aggregator.getListingsOfNFT(baycContract, tokenId);
 let orderIds: string[] = [];
-orderIds.push(listingsInfo[0].orderId as string);
+orderIds.push(listingOrders[0].orderId as string);
 
 const buyerAddress = "0x1234567890123456789012345678901234567890";// Replace with buyer address.
 // without safe mode

@@ -31,7 +31,7 @@ const walletAddress = "0x8ae57a027c63fca8070d1bf38622321de8004c67";
 const { nfts: walletNFTList } = await aggregator.getListingsOfWallet(walletAddress);
 let orderIds:string[] = [];
 for (const nft of walletNFTList) {
-    orderIds.push(nft.listingData?.nftList[0].orderId as string)
+    orderIds.push(nft.listingData?.listingOrders[0].orderId as string)
 }
 
 const buyerAddress = "0x1234567890123456789012345678901234567890";// Replace with buyer address.
@@ -82,7 +82,7 @@ const walletAddress = "0x8ae57a027c63fca8070d1bf38622321de8004c67";
 const { nfts: walletNFTList } = await aggregator.getListingsOfWallet(walletAddress);
 let orderIds:string[] = [];
 for (const nft of walletNFTList) {
-    orderIds.push(nft.listingData?.nftList[0].orderId as string)
+    orderIds.push(nft.listingData?.listingOrders[0].orderId as string)
 }
 
 const buyerAddress = "0x1234567890123456789012345678901234567890";// Replace with buyer address.

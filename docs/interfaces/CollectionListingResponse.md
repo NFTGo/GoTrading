@@ -51,7 +51,7 @@ export interface NFT {
    * Last Sale，Last sale price of the NFT
    */
   lastSale?: Sale;
-  listingData?: ListingInfo;
+  listingData?: ListingOrder;
   /**
    * Listing Price，Listing price of the NFT
    */
@@ -73,7 +73,7 @@ export interface NFT {
    */
   name?: string;
   /**
-   * Owner Addresses，List of owner addresses currently holding the NFT. 
+   * Owner Addresses，List of owner addresses currently holding the NFT.
    * A list of one address if it's an ERC721 NFT. A list of addresses if it's an ERC1155 NFT.
    */
   ownerAddresses?: string[];
@@ -96,9 +96,9 @@ export interface NFT {
 }
 ```
 
-- ***ListingInfo***
+- ***ListingOrder***
 ```ts
-export interface ListingInfo {
+export interface ListingOrder {
   /**
    * Contract，Address of the contract for this NFT collection, beginning with 0x
    */

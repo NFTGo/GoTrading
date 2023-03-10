@@ -227,7 +227,7 @@ export interface Price {
 }
 
 /**
- * Listinginfo
+ * ListingOrder
  */
 export interface ListingOrder {
   /**

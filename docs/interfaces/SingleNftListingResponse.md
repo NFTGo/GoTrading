@@ -8,13 +8,13 @@ export interface SingleNFTListingsResponse {
   /**
    * Nft List
    */
-  nftList: ListingInfo[];
+  listingOrders: ListingOrder[];
 }
 ```
 
-- ***ListingInfo***
+- ***ListingOrder***
 ```ts
-export interface ListingInfo {
+export interface ListingOrder {
   /**
    * Contract，Address of the contract for this NFT collection, beginning with 0x
    */

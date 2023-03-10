@@ -139,8 +139,8 @@ aggregator.bulkBuy({
 const baycContract = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
 const tokenId = "1";
 
-const { nftList: listingsInfo } = await aggregator.getListingsOfNFT(baycContract, tokenId);
-console.log(listingsInfo[0].orderId); // Output the order ID of the first listing in the array.
+const listOrders = await aggregator.getListingsOfNFT(baycContract, tokenId);
+console.log(listOrders[0].orderId); // Output the order ID of the first listing in the array.
 ```
 
   - ***1.2 Get listing info of the Collection.***
@@ -152,7 +152,7 @@ const { nfts } = await aggregator.getListingsOfCollection(baycContract);
 
 // Loop through each NFT and log the order ID of its listing.
 for (const nft of nfts) {
-  console.log(nft.listingData?.nftList[0].orderId)
+  console.log(nft.listingData?.listingOrders[0].orderId)
 }
 ```
 
@@ -164,7 +164,7 @@ const { nfts: walletNFTList } = await aggregator.getListingsOfWallet(walletAddre
 
 // Iterate over each NFT in the wallet's listings and log the order ID of the first listing.
 for (const nft of walletNFTList) {
-    console.log(nft.listingData?.nftList[0].orderId)
+    console.log(nft.listingData?.ListingOrders[0].orderId)
 }
 ```
 ### Step2 Select desired NFT listing order
@@ -172,7 +172,7 @@ for (const nft of walletNFTList) {
 //eg: get all listing NFT order ids of a wallet address.
 const orderIds = [];
 for (const nft of walletNFTList) {
-  orderIds.push(nft.listingData?.nftList[0].orderId as string);
+  orderIds.push(nft.listingData?.listingOrders[0].orderId as string);
 }
 ```
 

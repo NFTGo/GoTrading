@@ -1,4 +1,4 @@
-- CollectionListingsParam
+- ***CollectionListingsParam***
 ```ts
 export interface CollectionListingsParam {
   /**

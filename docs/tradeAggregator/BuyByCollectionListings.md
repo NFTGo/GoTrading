@@ -33,7 +33,7 @@ const collectionResponse = await aggregator.getListingsOfCollection(baycContract
 
 let orderIds:string[] = [];
 for (const nft of collectionResponse.nfts) {
-  orderIds.push(nft.listingData?.nftList[0].orderId as string);
+  orderIds.push(nft.listingData?.listingOrders[0].orderId as string);
 }
 const buyerAddress = "0x1234567890123456789012345678901234567890";// Replace with buyer address.
 // without safe mode
@@ -89,7 +89,7 @@ const collectionResponse = await aggregator.getListingsOfCollection(baycContract
 
 let orderIds:string[] = [];
 for (const nft of collectionResponse.nfts) {
-  orderIds.push(nft.listingData?.nftList[0].orderId as string);
+  orderIds.push(nft.listingData?.listingOrders[0].orderId as string);
 }
 const buyerAddress = "0x1234567890123456789012345678901234567890";// Replace with buyer address.
 // without safe mode

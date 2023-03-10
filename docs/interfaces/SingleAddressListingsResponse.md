@@ -50,7 +50,7 @@ export interface NFT {
    * Last Sale，Last sale price of the NFT
    */
   lastSale?: Sale;
-  listingData?: ListingInfo;
+  listingData?: ListingOrder;
   /**
    * Listing Price，Listing price of the NFT
    */
@@ -95,9 +95,9 @@ export interface NFT {
 }
 ```
 
-- ***ListingInfo***
+- ***ListingOrder***
 ```ts
-export interface ListingInfo {
+export interface ListingOrder {
   /**
    * Contract，Address of the contract for this NFT collection, beginning with 0x
    */
