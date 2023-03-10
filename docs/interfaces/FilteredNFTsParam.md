@@ -1,6 +1,6 @@
-- FilteredNFTsParam
+- CollectionListingsParam
 ```ts
-export interface FilteredNFTsParam {
+export interface CollectionListingsParam {
   /**
    * Select specific traits for nft. Use '-' to join trait type and trait value, and ',' to join different traits. For example, 'Eyes-Bored,Fur-Trippy'. Default is None for not selecting traits.
    */

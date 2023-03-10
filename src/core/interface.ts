@@ -48,10 +48,10 @@ export interface Aggregator {
    * NOTE: the listingData of every nft only contains best orders (order with lowest listing price) of each marketplace rather than all orders
    * - details: {@link https://docs.nftgo.io/reference/get_filtered_nfts_eth_v1_collection__contract_address__filtered_nfts_get}
    * @param collectionContract The contract address of the collection
-   * @param params The query params {@link FilteredNFTsParam}
-   * @returns Promise<{@link FilteredNFTsResponse}>
+   * @param params The query params {@link CollectionListingsParam}
+   * @returns Promise<{@link CollectionListingResponse}>
    */
-  getListingsOfCollection(contract: string, params?: FilteredNFTsParam): Promise<FilteredNFTsResponse>;
+  getListingsOfCollection(contract: string, params?: CollectionListingsParam): Promise<CollectionListingResponse>;
 }
 
 export type TransactionHashHandler = ((hash: string) => void) | null | undefined;
@@ -450,7 +450,7 @@ export interface BulkBuyParams {
   };
 }
 
-export interface FilteredNFTsParam {
+export interface CollectionListingsParam {
   /**
    * Select specific traits for nft. Use '-' to join trait type and trait value, and ',' to join different traits. For example, 'Eyes-Bored,Fur-Trippy'. Default is None for not selecting traits.
    */
@@ -484,7 +484,7 @@ export interface FilteredNFTsParam {
 /**
  * NFT_list
  */
-export interface FilteredNFTsResponse {
+export interface CollectionListingResponse {
   /**
    * Nfts，List of NFTs in the collection
    */
@@ -516,7 +516,7 @@ export interface MultiNFTListingsResponse {
   /**
    * Orders
    */
-  orders: OrderInfo[];
+  ListingOrders: OrderInfo[];
 }
 
 /**

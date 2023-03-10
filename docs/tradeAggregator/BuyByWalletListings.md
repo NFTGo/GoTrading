@@ -4,7 +4,7 @@
 ```ts
 // init sdk client
 import { BigNumber } from "ethers";
-import { FilteredNFTsParam, AggregateParams, AggregateResponse, init } from "@nftgo/gotrading";
+import { CollectionListingsParam, AggregateParams, AggregateResponse, init } from "@nftgo/gotrading";
 
 // server
 const provider = new Web3.providers.HttpProvider(

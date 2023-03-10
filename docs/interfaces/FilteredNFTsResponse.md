@@ -1,6 +1,6 @@
-- ***FilteredNFTsResponse***
+- ***CollectionListingResponse***
 ```ts
-export interface FilteredNFTsResponse {
+export interface CollectionListingResponse {
   /**
    * Nfts，List of NFTs in the collection
    */

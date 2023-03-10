@@ -4,7 +4,7 @@
 ```ts
 // init sdk client
 import { BigNumber } from "ethers";
-import { FilteredNFTsParam, AggregateParams, AggregateResponse, init } from "@nftgo/gotrading";
+import { CollectionListingsParam, AggregateParams, AggregateResponse, init } from "@nftgo/gotrading";
 
 // server
 const provider = new Web3.providers.HttpProvider(
@@ -70,7 +70,7 @@ utils?.sendTransaction({
 ```ts
 // init sdk client
 import { BigNumber } from "ethers";
-import { FilteredNFTsParam, AggregateParams, AggregateResponse, init } from "@nftgo/gotrading";
+import { CollectionListingsParam, AggregateParams, AggregateResponse, init } from "@nftgo/gotrading";
 
 // client
 
@@ -125,7 +125,7 @@ utils?.sendTransaction({
 > This is [Safe Mode Example](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/tradeAggregator/tradeWithSafeMode.md).
 
 ## ***interface***
-  - [***FilteredNFTsParam***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/FilteredNFTsParam.md)
-  - [***FilteredNFTsResponse***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/FilteredNFTsResponse.md)
+  - [***CollectionListingsParam***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/CollectionListingsParam.md)
+  - [***CollectionListingResponse***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/CollectionListingResponse.md)
   - [***AggregateParams***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/TradeAggregatorParams.md)
   - [***AggregateResponse***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/TradeAggregatorResponse.md)

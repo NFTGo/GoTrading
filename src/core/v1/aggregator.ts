@@ -5,8 +5,8 @@ import { AggregatorApiException, AggregatorBaseException, AggregatorBulkBuyExcep
 import {
   Aggregator,
   HTTPClient,
-  FilteredNFTsParam,
-  FilteredNFTsResponse,
+  CollectionListingsParam,
+  CollectionListingResponse,
   AggregateParams,
   AggregateResponse,
   SingleAddressListingsResponse,
@@ -20,7 +20,6 @@ import {
   MultiNFTListingsResponse,
   OrderInfo,
   BulkBuyParams,
-  SortBy,
 } from '../interface';
 import { AggregatorUtils } from './utils';
 
@@ -87,7 +86,7 @@ export class AggregatorStable implements Aggregator {
     return this.post('/nft-aggregate/aggregate', params);
   }
 
-  getListingsOfCollection(contract: string, params?: FilteredNFTsParam): Promise<FilteredNFTsResponse> {
+  getListingsOfCollection(contract: string, params?: CollectionListingsParam): Promise<CollectionListingResponse> {
     if (isInvalidParam(contract)) {
       throw AggregatorApiException.missingParamError('collection contract');
     }
@@ -124,7 +123,7 @@ export class AggregatorStable implements Aggregator {
     if (!this.utils) {
       throw AggregatorBaseException.missingParamError('web3Provider');
     }
-    let listingInfo: NftsListingInfo = {
+    let result: NftsListingInfo = {
       validOrders: [],
       expireNFTs: [],
       expireOrders: [],
@@ -137,15 +136,18 @@ export class AggregatorStable implements Aggregator {
       try {
         const [orders, details] = await Promise.all([this.getListingsOfNFTs(nfts), this.getDetailsOfNFTs(nfts)]);
         const nftsOrderInfos = new Map<string, OrderInfo>(
-          (orders?.orders ?? []).map((order) => [
-            this.utils?.genUniqueKeyForNFT({ contract: order.contractAddress, tokenId: order.tokenId }) as string,
-            order,
+          (orders?.ListingOrders ?? []).map((listingOrder) => [
+            this.utils?.genUniqueKeyForNFT({
+              contract: listingOrder.contractAddress,
+              tokenId: listingOrder.tokenId,
+            }) as string,
+            listingOrder,
           ])
         );
         const nftsDetails = new Map<string, Partial<NFT>>(
-          (details?.nfts ?? []).map((detail) => [
-            this.utils?.genUniqueKeyForNFT({ contract: detail.contractAddress, tokenId: detail.tokenId }) as string,
-            detail,
+          (details?.nfts ?? []).map((nft) => [
+            this.utils?.genUniqueKeyForNFT({ contract: nft.contractAddress, tokenId: nft.tokenId }) as string,
+            nft,
           ])
         );
         for (const nft of nfts) {
@@ -161,21 +163,21 @@ export class AggregatorStable implements Aggregator {
           }
           lists.forEach((list) => {
             if (!list) {
-              listingInfo.unListNFTs.push({ ...nft });
+              result.unListNFTs.push({ ...nft });
             } else if (list?.marketName !== 'sudoswap' && list?.expiredTime && list?.expiredTime <= Date.now()) {
               // sudoswap dosen't have expire time
-              listingInfo.expireOrders.push(list);
-              listingInfo.expireNFTs.push({ ...nft });
+              result.expireOrders.push(list);
+              result.expireNFTs.push({ ...nft });
             } else if (nftDetailInfo?.suspicious) {
               // suspicious means not currently tradable on OpenSea
-              listingInfo.suspiciousNFTs.push(nft);
-              listingInfo.suspiciousOrders.push(list);
+              result.suspiciousNFTs.push(nft);
+              result.suspiciousOrders.push(list);
             } else {
-              listingInfo.validOrders.push(list);
+              result.validOrders.push(list);
             }
           });
         }
-        resolve(listingInfo);
+        resolve(result);
       } catch (error) {
         reject(error);
       }

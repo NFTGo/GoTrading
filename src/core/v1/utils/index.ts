@@ -242,10 +242,16 @@ export class AggregatorUtils implements Utils {
       })
       .then((estimateGas) => {
         transactionConfig.gas = BigNumber.from(estimateGas).toHexString();
-        // @ts-ignore
-        if (globalThis?.ethereum) {
-          // @ts-ignore
-          globalThis?.ethereum
+        // some wallet(eg: coinbase wallet) will inject providers object into window, which provide all providers available in current browser
+        let finalProvider = (globalThis as any)?.ethereum as any;
+
+        if (finalProvider) {
+          if (finalProvider?.providers && (this._web3Instance.currentProvider as any)?.isMetaMask) {
+            finalProvider = finalProvider?.providers.filter(
+              (provider: { isMetaMask: boolean }) => provider.isMetaMask
+            )[0];
+          }
+          finalProvider
             ?.request({ method: 'eth_sendTransaction', params: [transactionConfig] })
             .then((hash: string) => {
               transactionInstance.transactionHashHandler?.(hash);
