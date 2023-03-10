@@ -73,8 +73,8 @@ export interface NFT {
    */
   name?: string;
   /**
-   * Owner Addresses，List of owner addresses currently holding the NFT.A list of one
-   * address if it's an ERC721 NFT. A list of addresses if it's an ERC1155 NFT.
+   * Owner Addresses，List of owner addresses currently holding the NFT. 
+   * A list of one address if it's an ERC721 NFT. A list of addresses if it's an ERC1155 NFT.
    */
   ownerAddresses?: string[];
   /**
