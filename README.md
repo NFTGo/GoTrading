@@ -170,7 +170,7 @@ for (const nft of walletNFTList) {
 ### Step2 Select desired NFT listing order
 ```ts
 //eg: get all listing NFT order ids of a wallet address.
-const orderIds = [];
+const orderIds: string[] = [];
 for (const nft of walletNFTList) {
   orderIds.push(nft.listingData?.listingOrders[0].orderId as string);
 }
@@ -178,6 +178,7 @@ for (const nft of walletNFTList) {
 
 ### Step3 Retrieve transaction data for purchasing
 ```ts
+import { AggregateParams } from '@nftgo/gotrading';
 const orderIds = ["orderIds"]; // Replace with Step2 OrderIds.
 
 const params: AggregateParams = ({

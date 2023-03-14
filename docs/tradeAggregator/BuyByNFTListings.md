@@ -3,6 +3,7 @@
 - For server-side:
 ```ts
 // init sdk client
+import Web3 from "web3";
 import { BigNumber } from "ethers";
 import { init, AggregateParams, AggregateResponse, SingleNFTListingsResponse } from "@nftgo/gotrading";
 
@@ -28,7 +29,7 @@ const {aggregator, utils} = init(configs);
 
 // Get the listing info of BAYC No.1
 const baycContract = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
-const tokenId = 1;
+const tokenId = "1";
 
 const listingOrders = await aggregator.getListingsOfNFT(baycContract, tokenId);
 let orderIds: string[] = [];
