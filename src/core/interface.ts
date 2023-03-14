@@ -114,7 +114,7 @@ export interface Utils {
    * @param receipt {@link TransactionReceipt} transaction receipt returned by send transaction method
    * @returns Map<{@link UniqueNFTKey}, {@link NFTInfoForTrade}>
    */
-  parseTransactedNFTs(receipt: TransactionReceipt): Map<UniqueNFTKey, NFTInfoForTrade> | undefined;
+  parseTransactedNFTs(receipt: TransactionReceipt): Map<string, NFTInfoForTrade> | undefined;
   /**
    * Send transaction with safe mode, using flash bot
    * - details: {@link }
@@ -148,10 +148,16 @@ export interface HTTPClient {
   post<R, P = undefined>(url: string, data: P, headers?: Record<string, string>): Promise<R>;
 }
 
+export interface WalletConfig {
+  address: string;
+  privateKey: string;
+}
+
 export interface Config {
   apiKey: string;
   chain?: EVMChain;
   baseUrl?: string;
+  walletConfig?: WalletConfig;
   web3Provider?: provider;
   agent?: HttpsProxyAgent;
 }

@@ -47,17 +47,14 @@ import Web3 from 'web3';
 // Create a new Web3 Provider to interact with the Ethereum network.
 const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io') //Replace with your own provider
 
-// Create a new Web3 instance and use the above Provider to interact with the network.
-const web3Instance = new Web3(provider); // Replace with your provider
-web3Instance.eth.accounts.wallet.add({
-  address: "your wallet address",
-  privateKey: "your private key",
-});
-
 // Configure the necessary parameters for the Trade Aggregator API client.
 const configs = {
   apiKey: "YOUR-API-KEY", // Replace with your own API Key.
-  web3Provider: web3Instance.currentProvider, // Replace with your provider.
+  web3Provider: provider,
+  walletConfig: {
+    address: "Your wallet address",
+    privateKey: "Your private key"
+  }, // Replace with your wallet info.
 };
 
 // Create a Trade Aggregator client instance and return the utility and aggregator objects of the Trade Aggregator API.
@@ -68,14 +65,9 @@ const {aggregator, utils} = init(configs);
 import { init } from '@nftgo/gotrading';
 import Web3 from 'web3';
 
-// Create a new Web3 Provider to interact with the Ethereum network.
-// For client-side applications, use the Ethereum provider provided by the user's browser.
-const provider = window.ethereum;
-
 // Configure the necessary parameters for the Trade Aggregator API client.
 const configs = {
   apiKey: 'YOUR-API-KEY', // Replace with your own API Key.
-  web3Provider: provider, // Replace with your provider.
 };
 
 // Create a Trade Aggregator client instance and return the utility and aggregator objects of the Trade Aggregator API.

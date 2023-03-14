@@ -3,7 +3,7 @@ import Web3 from 'web3';
 
 import { Log, provider, TransactionConfig, TransactionReceipt } from 'web3-core';
 import { PUNK_CONTRACT_ADDRESS } from './consts';
-import { AggregatorUtilsException } from '../../exception';
+import { AggregatorBaseException, AggregatorUtilsException } from '../../exception';
 import {
   ErrorHandler,
   FinallyHandler,
@@ -14,26 +14,32 @@ import {
   Transaction,
   TransactionHashHandler,
   Utils,
+  WalletConfig,
 } from '../../interface';
 import { CryptoPunkAbi, ERC721Abi } from '../abi/ERC721';
 import { ERC1155Abi } from '../abi/ERC1155';
+import { isInvalidParam } from '../../../helpers/is-invalid-param';
 
 export class AggregatorUtils implements Utils {
-  constructor(private provider: provider) {
-    this._web3Instance = new Web3(this.provider);
+  constructor(private provider?: provider, private walletConfig?: WalletConfig) {
+    this._web3Instance = new Web3(this.provider || null);
+    if (walletConfig) {
+      if (typeof walletConfig?.address !== 'string') {
+        throw AggregatorBaseException.invalidParamError('walletConfig.address');
+      }
+      if (typeof walletConfig?.privateKey !== 'string') {
+        throw AggregatorBaseException.invalidParamError('walletConfig.privateKey');
+      }
+      this._web3Instance.eth.accounts.wallet.add(this.walletConfig as WalletConfig);
+    }
     this.TRANSFER_TOPIC = this._web3Instance?.eth.abi.encodeEventSignature(ERC721Abi.transfer);
     this.TRANSFER_BATCH_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(ERC1155Abi.batchTransfer);
     this.TRANSFER_SINGLE_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(ERC1155Abi.singleTransfer);
     this.PUNK_TRANSFER_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(CryptoPunkAbi.transfer);
     this.PUNK_BOUGHT_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(CryptoPunkAbi.bought);
-    this.init();
   }
   public _web3Instance: Web3;
-  public account: string = '';
-  private async init() {
-    const accounts = await this._web3Instance.eth.getAccounts();
-    this.account = accounts[0];
-  }
+  public account: string | undefined = this.walletConfig?.address;
   private TRANSFER_TOPIC: string;
   private TRANSFER_BATCH_TOPIC: string;
   private TRANSFER_SINGLE_TOPIC: string;
@@ -165,7 +171,7 @@ export class AggregatorUtils implements Utils {
       const { contract, tokenId, is1155, amount, to } = this.decodeLog(log);
       // Not every log can parse contract and tokenId
       // Only Log whose destination address equal to buyer address is useful
-      if ((!contract && !tokenId) || to?.toLowerCase() !== this.account?.toLowerCase()) {
+      if ((!contract && !tokenId) || to?.toLowerCase() !== this.walletConfig?.address?.toLowerCase()) {
         continue;
       }
       const key = this.genUniqueKeyForNFT({ contract, tokenId });
@@ -193,10 +199,10 @@ export class AggregatorUtils implements Utils {
         : (BigNumber.from(transactionConfig.value) as any);
       transactionConfig.nonce = nonce;
       transactionConfig.type = 2;
-      const priorityFee = BigNumber.from(2000000000);
+      const priorityFee = BigNumber.from(transactionConfig?.maxPriorityFeePerGas || 2000000000);
       this._web3Instance.eth.getGasPrice().then((gasPrice) => {
-        transactionConfig.maxFeePerGas = priorityFee.add(BigNumber.from(gasPrice));
-        transactionConfig.maxPriorityFeePerGas = priorityFee;
+        transactionConfig.maxFeePerGas = transactionConfig?.maxFeePerGas || priorityFee.add(BigNumber.from(gasPrice));
+        transactionConfig.maxPriorityFeePerGas = transactionConfig?.maxPriorityFeePerGas || priorityFee;
         // eth_sign only accetp 32byte data
         const unsignedTransactionHash = this._web3Instance.utils.keccak256(
           ethers.utils.serializeTransaction(transactionConfig)
@@ -241,11 +247,10 @@ export class AggregatorUtils implements Utils {
         to: transactionConfig.to,
       })
       .then((estimateGas) => {
-        transactionConfig.gas = BigNumber.from(estimateGas).toHexString();
         // some wallet(eg: coinbase wallet) will inject providers object into window, which provide all providers available in current browser
-        let finalProvider = (globalThis as any)?.ethereum as any;
-
-        if (finalProvider) {
+        transactionConfig.gas = BigNumber.from(estimateGas).toHexString();
+        if (typeof (globalThis as any)?.ethereum === 'object') {
+          let finalProvider = (globalThis as any)?.ethereum as any;
           if (finalProvider?.providers && (this._web3Instance.currentProvider as any)?.isMetaMask) {
             finalProvider = finalProvider?.providers.filter(
               (provider: { isMetaMask: boolean }) => provider.isMetaMask

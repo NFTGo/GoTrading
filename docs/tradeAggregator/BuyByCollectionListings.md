@@ -10,14 +10,13 @@ import { CollectionListingsParam, AggregateParams, AggregateResponse, init } fro
 const provider = new Web3.providers.HttpProvider(
   "https://rpc.tenderly.co/fork/823ef734-4730-4063-bb00-640c54940021"
 ); //Replace with your own provider
-const web3Instance = new Web3(provider); // replace with your provider
-web3Instance.eth.accounts.wallet.add({
-   address: "your wallet address",
-  privateKey: "your private key",
-});
 const configs = {
   apiKey: "api key", // Replace with your own API Key.
   web3Provider: "provider", // Replace with your provider,
+  walletConfig: {
+    address: "Your wallet address",
+    privateKey: "Your private key"
+  }, // Replace with your wallet info.
 };
 // create tradeAggregator client
 const {aggregator, utils} = init(configs);
@@ -73,7 +72,6 @@ import { CollectionListingsParam, AggregateParams, AggregateResponse, init } fro
 const provider = window.ethereum;
 const configs = {
   apiKey: "api key", // Replace with your own API Key.
-  web3Provider: "provider", // Replace with your provider,
 };
 // create tradeAggregator client
 const {aggregator, utils} = init(configs);

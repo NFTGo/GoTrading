@@ -6,15 +6,13 @@ import { init, NFTInfoForTrade } from '@nftgo/gotrading';
 import Web3 from 'web3';
 
 const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io') //Replace with your own provider
-
-const web3Instance = new Web3(provider); // replace with your provider
-web3Instance.eth.accounts.wallet.add({
-  address: "your wallet address",
-  privateKey: "your private key",
-});
 const configs = {
   apiKey: "YOUR-API-KEY", // Replace with your own API Key.
-  web3Provider: web3Instance.currentProvider, // Replace with your provider.
+  web3Provider: provider,
+   walletConfig: {
+    address: "Your wallet address",
+    privateKey: "Your private key"
+  }, // Replace with your wallet info.
   agent: new HttpsProxyAgent({ // if you have problem connect to our api end point, please config your http agent
     host: "your host ip",
     port: "your agent port",
@@ -70,7 +68,6 @@ import Web3 from 'web3';
 const provider = window.ethereum;
 const configs = {
   apiKey: 'YOUR-API-KEY', // Replace with your own API Key.
-  web3Provider: provider, // Replace with your provider.
 };
 
 // create tradeAggregator client
