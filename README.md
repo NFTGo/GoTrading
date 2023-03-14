@@ -18,11 +18,11 @@ GoTrading is an open-source development kit that enables you to build your own N
 ## Requirements
 - Node.js >= 16.14
 - web3 >= 1.8.2
-- ethers >= 5.6.9
+- ethers >= 5.6.9, < 6.1
 
 You can do this by running the following commands:
 ```bash
-npm install web3 ethers
+npm install web3 ethers@5.6.9
 ```
 
 ## Quickstart
@@ -194,6 +194,7 @@ console.log(aggregateResponse);
 
 ### Step4 Invoke Contract to purchase
 ```ts
+import { BigNumber } from 'ethers';
 utils?.sendTransaction({
   from: aggregateResponse.txInfo.fromAddress,
   to: aggregateResponse.txInfo.toAddress,

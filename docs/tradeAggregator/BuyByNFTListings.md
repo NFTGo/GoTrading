@@ -33,7 +33,9 @@ const tokenId = "1";
 
 const listingOrders = await aggregator.getListingsOfNFT(baycContract, tokenId);
 let orderIds: string[] = [];
-orderIds.push(listingOrders[0].orderId as string);
+if (lisitngOrders.length > 0) {
+  orderIds.push(listingOrders[0].orderId as string);
+}
 
 const buyerAddress = "0x1234567890123456789012345678901234567890";// Replace with buyer address.
 // without safe mode
