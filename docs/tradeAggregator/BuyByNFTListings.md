@@ -19,10 +19,6 @@ web3Instance.eth.accounts.wallet.add({
 const configs = {
   apiKey: "api key", // Replace with your own API Key.
   web3Provider: "provider", // Replace with your provider,
-  agent: new HttpsProxyAgent({
-    host: "127.0.0.1",
-    port: "7890",
-  }),
 };
 // create tradeAggregator client
 const {aggregator, utils} = init(configs);
