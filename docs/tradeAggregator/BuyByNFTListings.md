@@ -28,7 +28,7 @@ const tokenId = "1";
 
 const listingData = await aggregator.getListingsOfNFT(baycContract, tokenId);
 let orderIds: string[] = [];
-if (listingData?.lisitngOrders.length > 0) {
+if (listingData?.listingOrders.length > 0) {
   orderIds.push(listingData.listingOrders[0].orderId as string);
 }
 

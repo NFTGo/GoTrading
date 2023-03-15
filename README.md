@@ -132,7 +132,7 @@ const baycContract = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
 const tokenId = "1";
 
 const listingData = await aggregator.getListingsOfNFT(baycContract, tokenId);
-if (listingData?.lisitngOrders.length > 0) {
+if (listingData?.listingOrders.length > 0) {
   console.log(listingData.listingOrders[0].orderId as string); // Output the order ID of the first listing in the array.
 }
 ```
