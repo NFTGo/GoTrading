@@ -238,7 +238,6 @@ export class AggregatorUtils implements Utils {
   }
   sendTransaction(transactionConfig: TransactionConfig) {
     const transactionInstance = new SendTransaction();
-
     this._web3Instance.eth
       .estimateGas({
         data: transactionConfig.data,
@@ -271,19 +270,23 @@ export class AggregatorUtils implements Utils {
               transactionInstance.finally();
             });
         } else {
-          this._web3Instance.eth
-            .sendTransaction(transactionConfig)
-            .on('transactionHash', (hash) => {
-              transactionInstance.transactionHashHandler?.(hash);
-            })
-            .on('receipt', (receipt) => {
-              transactionInstance.receiptHandler?.(receipt);
-            })
-            .on('error', (error) => {
-              transactionInstance.errorHandler?.(error);
-            })
-            .finally(() => {
-              transactionInstance.finallyHandler?.();
+          this._web3Instance.eth.accounts
+            .signTransaction(transactionConfig, this.walletConfig?.privateKey as string)
+            .then((signedTransaction) => {
+              this._web3Instance.eth
+                .sendSignedTransaction(signedTransaction.rawTransaction as string)
+                .on('transactionHash', (hash) => {
+                  transactionInstance.transactionHashHandler?.(hash);
+                })
+                .on('receipt', (receipt) => {
+                  transactionInstance.receiptHandler?.(receipt);
+                })
+                .on('error', (error) => {
+                  transactionInstance.errorHandler?.(error);
+                })
+                .finally(() => {
+                  transactionInstance.finallyHandler?.();
+                });
             });
         }
       });

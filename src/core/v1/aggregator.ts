@@ -121,7 +121,7 @@ export class AggregatorStable implements Aggregator {
       throw AggregatorBaseException.invalidParamError('nfts', 'nfts should be a array');
     }
     if (!this.utils) {
-      throw AggregatorBaseException.missingParamError('walletConfig');
+      throw AggregatorBaseException.missingParamError('walletProvider or walletConfig');
     }
     let result: NftsListingInfo = {
       validOrders: [],

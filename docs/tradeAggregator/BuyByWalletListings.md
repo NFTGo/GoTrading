@@ -14,7 +14,7 @@ const provider = new Web3.providers.HttpProvider(
 const configs = {
   apiKey: "api key", // Replace with your own API Key.
   web3Provider: "provider", // Replace with your provider,
-   walletConfig: {
+  walletConfig: {
     address: "Your wallet address",
     privateKey: "Your private key"
   }, // Replace with your wallet info.

@@ -17,7 +17,10 @@ export function init(config: Config): GoTrading {
   if (config.chain && !Object.values(EVMChain).includes(config.chain)) {
     throw AggregatorBaseException.invalidParamError('chain', `${config.chain} chain is not supported currently.`);
   }
-  const aggregatorUtils = config.web3Provider ? new AggregatorUtils(config.web3Provider) : undefined;
+  const aggregatorUtils =
+    config?.web3Provider || config?.walletConfig
+      ? new AggregatorUtils(config.web3Provider, config.walletConfig)
+      : undefined;
   const aggregatorApi = new AggregatorStable(
     new InternalHTTPClient(config.agent),
     {
