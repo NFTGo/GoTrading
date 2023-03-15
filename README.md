@@ -131,8 +131,10 @@ aggregator.bulkBuy({
 const baycContract = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
 const tokenId = "1";
 
-const listOrders = await aggregator.getListingsOfNFT(baycContract, tokenId);
-console.log(listOrders[0].orderId); // Output the order ID of the first listing in the array.
+const listingData = await aggregator.getListingsOfNFT(baycContract, tokenId);
+if (listingData?.lisitngOrders.length > 0) {
+  console.log(listingData.listingOrders[0].orderId as string); // Output the order ID of the first listing in the array.
+}
 ```
 
   - ***1.2 Get listing info of the Collection.***

@@ -26,10 +26,10 @@ const {aggregator, utils} = init(configs);
 const baycContract = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
 const tokenId = "1";
 
-const listingOrders = await aggregator.getListingsOfNFT(baycContract, tokenId);
+const listingData = await aggregator.getListingsOfNFT(baycContract, tokenId);
 let orderIds: string[] = [];
-if (lisitngOrders.length > 0) {
-  orderIds.push(listingOrders[0].orderId as string);
+if (listingData?.lisitngOrders.length > 0) {
+  orderIds.push(listingData.listingOrders[0].orderId as string);
 }
 
 const buyerAddress = "0x1234567890123456789012345678901234567890";// Replace with buyer address.
