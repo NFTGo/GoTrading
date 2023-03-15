@@ -3,6 +3,7 @@
 - For server-side:
 ```ts
 // init sdk client
+import Web3 from 'web3';
 import { BigNumber } from "ethers";
 import { CollectionListingsParam, AggregateParams, AggregateResponse, init } from "@nftgo/gotrading";
 
