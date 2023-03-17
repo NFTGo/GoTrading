@@ -18,18 +18,10 @@ export function init(config: Config): GoTrading {
     throw AggregatorBaseException.invalidParamError('chain', `${config.chain} chain is not supported currently.`);
   }
   const aggregatorUtils =
-    config?.web3Provider || config?.walletConfig
+    (globalThis as any)?.ethereum || config?.web3Provider || config?.walletConfig
       ? new AggregatorUtils(config.web3Provider, config.walletConfig)
       : undefined;
-  const aggregatorApi = new AggregatorStable(
-    new InternalHTTPClient(config.agent),
-    {
-      ...config,
-      baseUrl: config?.baseUrl || 'https://aggregator.data-api.nftgo.io/',
-      chain: config?.chain || EVMChain.ETH,
-    },
-    aggregatorUtils
-  );
+  const aggregatorApi = new AggregatorStable(new InternalHTTPClient(config.agent), config, aggregatorUtils);
   return {
     aggregator: aggregatorApi,
     utils: aggregatorUtils,

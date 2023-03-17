@@ -1,6 +1,7 @@
-import { BigNumber, UnsignedTransaction } from 'ethers';
+import { BigNumber } from 'ethers';
 import { TransactionReceipt } from 'web3-core';
 import { isInvalidParam } from '../../helpers/is-invalid-param';
+import { BASE_URL } from '../conifg';
 import { AggregatorApiException, AggregatorBaseException, AggregatorBulkBuyException } from '../exception';
 import {
   Aggregator,
@@ -20,6 +21,7 @@ import {
   MultiNFTListingsResponse,
   OrderInfo,
   BulkBuyParams,
+  Config,
 } from '../interface';
 import { AggregatorUtils } from './utils';
 
@@ -28,15 +30,7 @@ import { AggregatorUtils } from './utils';
  * implement aggregator version 1 for nftgo-aggregator
  */
 export class AggregatorStable implements Aggregator {
-  constructor(
-    private client: HTTPClient,
-    private config: {
-      apiKey: string;
-      chain: EVMChain;
-      baseUrl?: string;
-    },
-    private utils?: AggregatorUtils
-  ) {}
+  constructor(private client: HTTPClient, private config: Config, private utils?: AggregatorUtils) {}
 
   getListingsOfNFT(contract: string, tokenId: string): Promise<SingleNFTListingsResponse> {
     if (isInvalidParam(contract)) {
@@ -120,7 +114,7 @@ export class AggregatorStable implements Aggregator {
     if (!(nfts?.length > 0)) {
       throw AggregatorBaseException.invalidParamError('nfts', 'nfts should be a array');
     }
-    if (!this.utils) {
+    if (!(globalThis as any)?.ethereum && !this.utils) {
       throw AggregatorBaseException.missingParamError('walletProvider or walletConfig');
     }
     let result: NftsListingInfo = {
@@ -157,27 +151,36 @@ export class AggregatorStable implements Aggregator {
           const is1155 = nftDetailInfo?.contractType === 'ERC1155';
           let lists: ListingOrder[];
           if (is1155) {
-            lists = nftOrderInfo?.listingData?.listingOrders?.slice?.(0, nft.amount) ?? [];
+            lists =
+              nftOrderInfo?.listingData?.listingOrders?.slice?.(0, (nft?.amount ?? 1) >= 1 ? nft?.amount : 1) ?? [];
           } else {
+            if (typeof nft?.amount === 'number' && nft?.amount !== 1) {
+              console.warn('The amount of ERC721 is 1 by default. The amount you set will be ignored.');
+            }
             lists = nftOrderInfo?.listingData?.listingOrders?.[0]
               ? [nftOrderInfo?.listingData?.listingOrders?.[0]]
               : [];
           }
-          lists.forEach((list) => {
-            if (!list) {
-              result.unListNFTs.push({ ...nft });
-            } else if (list?.marketName !== 'sudoswap' && list?.expiredTime && list?.expiredTime <= Date.now()) {
-              // sudoswap dosen't have expire time
-              result.expireOrders.push(list);
-              result.expireNFTs.push({ ...nft });
-            } else if (nftDetailInfo?.suspicious) {
-              // suspicious means not currently tradable on OpenSea
-              result.suspiciousNFTs.push(nft);
-              result.suspiciousOrders.push(list);
-            } else {
-              result.validOrders.push(list);
-            }
-          });
+          console.log({ nft, lists });
+          if (lists.length === 0) {
+            result.unListNFTs.push({ ...nft });
+          } else {
+            lists.forEach((list) => {
+              if (!list) {
+                result.unListNFTs.push({ ...nft });
+              } else if (list?.marketName !== 'sudoswap' && list?.expiredTime && list?.expiredTime <= Date.now()) {
+                // sudoswap dosen't have expire time
+                result.expireOrders.push(list);
+                result.expireNFTs.push({ ...nft });
+              } else if (nftDetailInfo?.suspicious) {
+                // suspicious means not currently tradable on OpenSea
+                result.suspiciousNFTs.push(nft);
+                result.suspiciousOrders.push(list);
+              } else {
+                result.validOrders.push(list);
+              }
+            });
+          }
         }
         resolve(result);
       } catch (error) {
@@ -256,7 +259,7 @@ export class AggregatorStable implements Aggregator {
         } else {
           onFinishTransaction?.(
             Array.from(successList.entries().next().value),
-            nfts?.filter((nft) => successList.has(this.utils?.genUniqueKeyForNFT({ ...nft }) as string)),
+            nfts?.filter((nft) => !successList.has(this.utils?.genUniqueKeyForNFT({ ...nft }) as string)),
             listInfos
           );
         }
@@ -301,7 +304,7 @@ export class AggregatorStable implements Aggregator {
   }
 
   private get url() {
-    return this.config.baseUrl + this.config.chain + '/v1';
+    return (this.config?.baseUrl ?? BASE_URL) + (this.config?.chain ?? EVMChain.ETH) + '/v1';
   }
 
   private post<R, P = undefined>(path: string, params: P) {

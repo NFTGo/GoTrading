@@ -19,9 +19,10 @@ const configs = {
     privateKey: "Your private key"
   }, // Replace with your wallet info.
 };
-// create tradeAggregator client
+// Create tradeAggregator client
 const {aggregator, utils} = init(configs);
 
+// The wallet address you want to buy from
 const walletAddress = "0x8ae57a027c63fca8070d1bf38622321de8004c67";
 
 const { nfts: walletNFTList } = await aggregator.getListingsOfWallet(walletAddress);

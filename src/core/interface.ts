@@ -607,7 +607,7 @@ export interface NFTBaseInfo {
 }
 
 export interface NFTInfoForTrade extends NFTBaseInfo {
-  amount: number; // The amount of ERC721 nft should only be 1
+  amount?: number; // The amount of ERC721 nft should only be 1
 }
 export interface NftsListingInfo {
   validOrders: ListingOrder[];

@@ -18,11 +18,10 @@ import {
 } from '../../interface';
 import { CryptoPunkAbi, ERC721Abi } from '../abi/ERC721';
 import { ERC1155Abi } from '../abi/ERC1155';
-import { isInvalidParam } from '../../../helpers/is-invalid-param';
 
 export class AggregatorUtils implements Utils {
   constructor(private provider?: provider, private walletConfig?: WalletConfig) {
-    this._web3Instance = new Web3(this.provider || null);
+    this._web3Instance = new Web3(this.provider || (globalThis as any)?.ethereum);
     if (walletConfig) {
       if (typeof walletConfig?.address !== 'string') {
         throw AggregatorBaseException.invalidParamError('walletConfig.address');
@@ -178,7 +177,7 @@ export class AggregatorUtils implements Utils {
       if (is1155) {
         if (successList.has(key)) {
           const old1155 = successList.get(key) as NFTInfoForTrade;
-          old1155.amount += amount ?? 0;
+          (old1155.amount as number) += amount ?? 0;
           successList.set(key, old1155);
         } else {
           successList.set(key, { contract, tokenId, amount });
@@ -237,6 +236,15 @@ export class AggregatorUtils implements Utils {
     return transactionInstance;
   }
   sendTransaction(transactionConfig: TransactionConfig) {
+    if (
+      this.walletConfig?.address &&
+      transactionConfig?.from?.toString?.()?.toLowerCase?.() !== this.walletConfig?.address?.toLowerCase?.()
+    ) {
+      throw AggregatorUtilsException.invalidParamError(
+        'transactionConfig.from',
+        'Buyer address must equal to wallet address'
+      );
+    }
     const transactionInstance = new SendTransaction();
     this._web3Instance.eth
       .estimateGas({
