@@ -158,7 +158,7 @@ const { nfts: walletNFTList } = await aggregator.getListingsOfWallet(walletAddre
 
 // Iterate over each NFT in the wallet's listings and log the order ID of the first listing.
 for (const nft of walletNFTList) {
-    console.log(nft.listingData?.ListingOrders[0].orderId)
+    console.log(nft.listingData?.listingOrders[0].orderId)
 }
 ```
 ### Step2 Select desired NFT listing order

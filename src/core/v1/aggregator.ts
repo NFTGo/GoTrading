@@ -136,7 +136,7 @@ export class AggregatorStable implements Aggregator {
       try {
         const [orders, details] = await Promise.all([this.getListingsOfNFTs(nfts), this.getDetailsOfNFTs(nfts)]);
         const nftsOrderInfos = new Map<string, OrderInfo>(
-          (orders?.ListingOrders ?? []).map((listingOrder) => [
+          (orders?.listingOrders ?? []).map((listingOrder) => [
             this.utils?.genUniqueKeyForNFT({
               contract: listingOrder.contractAddress,
               tokenId: listingOrder.tokenId,

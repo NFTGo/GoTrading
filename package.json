@@ -1,6 +1,6 @@
 {
   "name": "@nftgo/gotrading",
-  "version": "0.0.32",
+  "version": "0.0.36",
   "description": "JavaScript SDK for the NFTGo trading aggregator. Let users buy crypto collectibles and other cryptogoods from multi-marketplaces , all on your own site!",
   "license": "MIT",
   "author": "NFTGo Developers",

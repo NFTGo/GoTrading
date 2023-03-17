@@ -522,7 +522,7 @@ export interface MultiNFTListingsResponse {
   /**
    * Orders
    */
-  ListingOrders: OrderInfo[];
+  listingOrders: OrderInfo[];
 }
 
 /**
