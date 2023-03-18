@@ -206,31 +206,50 @@ export class AggregatorUtils implements Utils {
         const unsignedTransactionHash = this._web3Instance.utils.keccak256(
           ethers.utils.serializeTransaction(transactionConfig)
         );
-
-        this._web3Instance.eth
-          .sign(unsignedTransactionHash, transactionConfig.from as string)
-          .then(async (signedTransaction) => {
-            const signedTrx = ethers.utils.serializeTransaction(transactionConfig, signedTransaction);
-            const trueRpc = 'https://rpc.flashbots.net';
-            const flashBots = new Web3(trueRpc);
-            flashBots.eth
-              .sendSignedTransaction(signedTrx)
-              .on('transactionHash', (hash) => {
-                transactionInstance.transactionHashHandler?.(hash);
-              })
-              .on('receipt', (receipt) => {
-                transactionInstance.receiptHandler?.(receipt);
-              })
-              .on('error', (error) => {
-                transactionInstance.errorHandler?.(error);
-              });
-          })
-          .catch((error) => {
-            transactionInstance.errorHandler?.(error);
-          })
-          .finally(() => {
+        const flashBotsSendTx = (signedTrx: string) => {
+          const trueRpc = 'https://rpc.flashbots.net';
+          const flashBots = new Web3(trueRpc);
+          flashBots.eth
+            .sendSignedTransaction(signedTrx)
+            .on('transactionHash', (hash) => {
+              transactionInstance.transactionHashHandler?.(hash);
+            })
+            .on('receipt', (receipt) => {
+              transactionInstance.receiptHandler?.(receipt);
+            })
+            .on('error', (error) => {
+              transactionInstance.errorHandler?.(error);
+            });
+        };
+        // Client
+        if ((globalThis as any).ethereum) {
+          this._web3Instance.eth
+            .sign(unsignedTransactionHash, transactionConfig.from as string)
+            .then(async (signedTransaction) => {
+              const signedTrx = ethers.utils.serializeTransaction(transactionConfig, signedTransaction);
+              flashBotsSendTx(signedTrx);
+            })
+            .catch((error) => {
+              transactionInstance.errorHandler?.(error);
+            })
+            .finally(() => {
+              transactionInstance.finallyHandler?.();
+            });
+        } else {
+          // Server
+          try {
+            const signedTransaction = this._web3Instance.eth.accounts.sign(
+              unsignedTransactionHash,
+              this.walletConfig?.privateKey as string
+            );
+            const signedTrx = ethers.utils.serializeTransaction(transactionConfig, signedTransaction.signature);
+            flashBotsSendTx(signedTrx);
+          } catch (error) {
+            transactionInstance.errorHandler?.(error as any);
+          } finally {
             transactionInstance.finallyHandler?.();
-          });
+          }
+        }
       });
     });
     return transactionInstance;

@@ -89,7 +89,7 @@ const nfts: NFTInfoForTrade[] = [ // Replace with your own list of NFTs.
   {
     contract: "0xcfff4c8c0df0e2431977eba7df3d3de857f4b76e",
     tokenId: "16",
-    amount: 1
+    amount: 1 // How many you want to buy. Usually used in ERC1155 nfts
   },
   {
     contract: "0xcfff4c8c0dF0E2431977EbA7dF3D3De857f4B76e",
@@ -176,7 +176,7 @@ import { AggregateParams } from '@nftgo/gotrading';
 const orderIds = ["orderIds"]; // Replace with Step2 OrderIds.
 
 const params: AggregateParams = ({
-  buyerAddress: 'buyerAddress', // Replace with buyer address.
+  buyerAddress: 'buyerAddress', // Replace with buyer address. Must be the same with your wallet address
   isSafe: false,
   orderIds: orderIds,
 });

@@ -161,7 +161,6 @@ export class AggregatorStable implements Aggregator {
               ? [nftOrderInfo?.listingData?.listingOrders?.[0]]
               : [];
           }
-          console.log({ nft, lists });
           if (lists.length === 0) {
             result.unListNFTs.push({ ...nft });
           } else {
