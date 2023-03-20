@@ -7,17 +7,12 @@ import { BulkListingOptions } from './YourSDK';
 
 // ...其他导入和已有测试用例...
 
-describe('YourSDK - Main Process', () => {
+describe('Listing - Main Process - Your', () => {
   let sdk: YourSDK;
   let options: BulkListingOptions;
 
   beforeEach(() => {
     sdk = new YourSDK(/*构造函数参数*/);
-    options = {
-      autoApprove: true,
-      skipUnapproved: false,
-      failOnUnapproved: false,
-    };
   });
 
   test('List user NFTs for sale', async () => {

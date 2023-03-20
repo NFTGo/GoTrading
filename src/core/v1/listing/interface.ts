@@ -1,7 +1,75 @@
 import { NFTBaseInfo } from '../../interface';
 
+export type Marketplace = 'OpenSea' | 'LooksRare' | 'X2Y2';
+
+export interface PrepareListingParams {
+  // contract:tokenId
+  token: string;
+  weiPrice: string;
+  orderKind: string;
+  orderbook: string;
+  automatedRoyalties: boolean;
+  listingTime: string;
+  expirationTime: string;
+  currency: '0x0000000000000000000000000000000000000000';
+}
+
+interface PostData {
+  body: {
+    order: {
+      data: Record<string, any>;
+      kink: string;
+    };
+    orderbook: string;
+    source: string;
+  };
+  endpoint: string;
+  method: 'POST';
+}
+
+interface SignData {
+  domain: {
+    name: string;
+    version: string;
+    chainId: number;
+    verifyingContract: string;
+  };
+  signatureKind: 'eip191' | 'eip712';
+  types: Record<string, any[]>;
+  value: Record<string, any>;
+  orderIndex: number;
+  status: 'complete' | 'incomplete';
+  message?: string;
+}
+
+interface ListingAction {
+  post: PostData;
+  sign: SignData;
+}
+
+export interface ListingItem {
+  status: 'complete' | 'incomplete';
+  orderIndexes: number[];
+  data?: ListingAction | Record<string, any>;
+}
+
+interface StepInfo {
+  id: string;
+  action: string;
+  description: string;
+  kind: 'transaction' | 'signature';
+  items: ListingItem[];
+}
+export interface ListingStepsDetailInfo {
+  steps: [StepInfo, StepInfo];
+  errors: any[];
+}
 export interface NFTInfoForListing extends NFTBaseInfo {
-  // ...NFT信息定义
+  marketplace: Marketplace;
+  ethPrice: number;
+  listingTime: number;
+  expirationTime: number;
+  isCreatorFeesEnforced?: boolean;
 }
 
 export interface BulkListingParams {
