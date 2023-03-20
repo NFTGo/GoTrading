@@ -54,6 +54,17 @@ export interface Aggregator {
   getListingsOfCollection(contract: string, params?: CollectionListingsParam): Promise<CollectionListingResponse>;
 }
 
+/**
+ * ListingIndexer allows instances of listings to be indexed into different marketplaces
+ */
+export interface ListingIndexer {
+  /**
+   * post a listing order to the target marketplace
+   * @param params
+   */
+  postListingOrder(params: PostListingOrderParams): Promise<PostListingOrderResponse>;
+}
+
 export type TransactionHashHandler = ((hash: string) => void) | null | undefined;
 export type ReceiptHandler = ((receipt: TransactionReceipt) => void) | null | undefined;
 export type ErrorHandler = ((error: Error) => void) | null | undefined;
@@ -599,6 +610,14 @@ export interface AggregateResponse {
    * Used Gas，gas used on testnet for this transaction simulation.
    */
   usedGas: number;
+}
+
+export interface PostListingOrderParams {
+
+}
+
+export interface PostListingOrderResponse {
+
 }
 
 export interface NFTBaseInfo {
