@@ -2,6 +2,18 @@ import { NFTBaseInfo } from '../../interface';
 
 export type Marketplace = 'OpenSea' | 'LooksRare' | 'X2Y2';
 
+export interface ApprovePolicyOption {
+  /**
+   * If true, automatically approves all unapproved NFTs.
+   */
+  autoApprove?: boolean;
+
+  /**
+   * If true, skips unapproved NFTs and proceeds with the approved ones.
+   */
+  skipUnapproved?: boolean;
+}
+
 export interface PrepareListingParams {
   // contract:tokenId
   token: string;
@@ -27,7 +39,7 @@ interface PostData {
   method: 'POST';
 }
 
-interface SignData {
+export interface SignData {
   domain: {
     name: string;
     version: string;

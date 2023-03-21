@@ -23,6 +23,7 @@ export class InternalHTTPClient implements HTTPClient {
           return res.json();
         })
         .catch((e) => {
+          console.info('ffff', e);
           reject(AggregatorApiException.requestError(input?.toString(), e));
         })
         .then((res) => {
