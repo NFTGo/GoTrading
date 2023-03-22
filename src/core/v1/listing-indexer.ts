@@ -1,10 +1,12 @@
 import {
-  ApprovePolicyOption, BulkListingOptions,
+  ApprovePolicyOption,
+  BulkListingOptions,
   ListingItem,
   ListingStepsDetailInfo,
   NFTInfoForListing,
-  PrepareListingParams, SignData
-} from "./listing/interface";
+  PrepareListingParams,
+  SignData,
+} from './listing/interface';
 
 import {
   ApiKeyConfig,
@@ -13,22 +15,33 @@ import {
   ListingIndexerConfig,
   ListingOrderProtocol,
   PostListingOrderParams,
-  PostListingOrderResponse
-} from "../interface";
-import {ListingIndexerApiException} from "../exception";
-import {arrayify, defaultAbiCoder, joinSignature, splitSignature} from "ethers/lib/utils";
-import * as Models from "../../models";
-import {ExternalServiceRateLimiter} from "./utils/rate-limiter";
-import {RateLimiter} from "limiter";
-import {marketplaceMeta} from "./listing/const";
-import {runPipeline} from "../../helpers/pipeline";
-import {AggregatorUtils} from "./utils";
+  PostListingOrderResponse,
+} from '../interface';
+import { ListingIndexerApiException } from '../exception';
+import { arrayify, defaultAbiCoder, joinSignature, splitSignature } from 'ethers/lib/utils';
+import * as Models from '../../models';
+import { ExternalServiceRateLimiter } from './utils/rate-limiter';
+import { RateLimiter } from 'limiter';
+import { marketplaceMeta } from './listing/const';
+import { runPipeline } from '../../helpers/pipeline';
+import { AggregatorUtils } from './utils';
 
 export class ListingIndexerStable implements ListingIndexer {
   private postOrderHandlers = new Map<ListingOrderProtocol, IPostOrderHandler>();
+
+  private get headers() {
+    return { 'X-API-KEY': this.config.apiKey, 'X-FROM': 'js_sdk' };
+  }
+
   constructor(private client: HTTPClient, private config: ListingIndexerConfig, private utils: AggregatorUtils) {
-    this.postOrderHandlers.set(ListingOrderProtocol.SEAPORTV14, new SeaportV1D4Handler(client, config.openSeaApiKeyConfig));
-    this.postOrderHandlers.set(ListingOrderProtocol.LOOKSRARE, new LooksRareHandler(client, config.looksRareApiKeyConfig));
+    this.postOrderHandlers.set(
+      ListingOrderProtocol.SEAPORTV14,
+      new SeaportV1D4Handler(client, config.openSeaApiKeyConfig)
+    );
+    this.postOrderHandlers.set(
+      ListingOrderProtocol.LOOKSRARE,
+      new LooksRareHandler(client, config.looksRareApiKeyConfig)
+    );
     this.postOrderHandlers.set(ListingOrderProtocol.X2Y2, new X2Y2Handler(client, config.x2y2ApiKeyConfig));
   }
   /**
@@ -48,10 +61,10 @@ export class ListingIndexerStable implements ListingIndexer {
     let result;
 
     switch (params.version) {
-      case "/order/v3":
+      case '/order/v3':
         if (signature) {
           try {
-            const {v, r, s} = splitSignature(signature);
+            const { v, r, s } = splitSignature(signature);
             payload.order.data = {
               ...payload.order.data,
               signature,
@@ -66,11 +79,11 @@ export class ListingIndexerStable implements ListingIndexer {
 
         result = await handler.handle(payload);
         return {
-          code: "SUCCESS",
-          msg: "success",
+          code: 'SUCCESS',
+          msg: 'success',
           data: result,
-        }
-      case "/order/v4":
+        };
+      case '/order/v4':
         const bulkData = payload.bulkData;
         if (signature) {
           try {
@@ -96,37 +109,37 @@ export class ListingIndexerStable implements ListingIndexer {
                 s,
               };
             }
-
           } catch (e: any) {
             throw ListingIndexerApiException.invalidSignatureError(signature);
           }
         }
         result = await handler.handle(payload);
         return {
-          code: "SUCCESS",
-          msg: "success",
+          code: 'SUCCESS',
+          msg: 'success',
           data: result,
-        }
+        };
       default:
-        throw ListingIndexerApiException.invalidPostOrderVersionError(params.version)
+        throw ListingIndexerApiException.invalidPostOrderVersionError(params.version);
     }
   }
 
   async postBatchListingOrders(params: PostListingOrderParams[]): Promise<PostListingOrderResponse[]> {
-    const results = await Promise.all(params.map(async (param) => {
-      try {
-        return await this.postListingOrder(param);
-      } catch (e: any) {
-        return {
-          code: e.code,
-          msg: e.message,
-          data: null,
+    const results = await Promise.all(
+      params.map(async (param) => {
+        try {
+          return await this.postListingOrder(param);
+        } catch (e: any) {
+          return {
+            code: e.code,
+            msg: e.message,
+            data: null,
+          };
         }
-      }
-    }));
+      })
+    );
     return results;
   }
-
 
   async prepareListing(nfts: NFTInfoForListing[]): Promise<ListingStepsDetailInfo> {
     const params = nfts.map<PrepareListingParams>((param) => {
@@ -146,12 +159,15 @@ export class ListingIndexerStable implements ListingIndexer {
       };
     });
 
-    // TODO: use this.client.post instead
-    const response = await this.post('/nft-aggregate/listings', (config) => ({
-      params,
-      maker: config.walletConfig?.address,
-      source: 'nftgo.io',
-    }));
+    const response = await this.client.post(
+      '/nft-aggregate/listings',
+      {
+        params,
+        maker: this.config.walletConfig?.address,
+        source: 'nftgo.io',
+      },
+      this.headers
+    );
     console.info('response', JSON.stringify(response));
     // const data = await response.json();
     const data = response as ListingStepsDetailInfo;
@@ -274,7 +290,10 @@ class SeaportV1D4Handler implements IPostOrderHandler {
   url = 'https://api.opensea.io/v2/orders/ethereum/seaport/listings';
   rateLimiter: ExternalServiceRateLimiter;
   constructor(private client: HTTPClient, apiKeyConfig: ApiKeyConfig) {
-    this.rateLimiter = new ExternalServiceRateLimiter(apiKeyConfig.apiKey, new RateLimiter({ tokensPerInterval: apiKeyConfig.requestsPerInterval, interval: apiKeyConfig.interval }));
+    this.rateLimiter = new ExternalServiceRateLimiter(
+      apiKeyConfig.apiKey,
+      new RateLimiter({ tokensPerInterval: apiKeyConfig.requestsPerInterval, interval: apiKeyConfig.interval })
+    );
   }
   async handle(payload: any): Promise<any> {
     const order = payload.order;
@@ -286,14 +305,18 @@ class SeaportV1D4Handler implements IPostOrderHandler {
     const seaportOrder: Models.SeaportV1D4.Types.ListingOrderParams = order.data;
 
     const apiKey = await this.rateLimiter.getAPIKeyWithRateLimiter();
-    return this.client.post(this.url, JSON.stringify({
-      parameters: {
-        ...seaportOrder,
-        totalOriginalConsiderationItems: order.params.consideration.length,
-      },
-      signature: order.data.signature,
-      protocol_address: Models.SeaportV1D4.Addresses.Exchange[Models.Utils.Network.Ethereum]
-    }), { 'X-Api-Key': apiKey });
+    return this.client.post(
+      this.url,
+      JSON.stringify({
+        parameters: {
+          ...seaportOrder,
+          totalOriginalConsiderationItems: order.params.consideration.length,
+        },
+        signature: order.data.signature,
+        protocol_address: Models.SeaportV1D4.Addresses.Exchange[Models.Utils.Network.Ethereum],
+      }),
+      { 'X-Api-Key': apiKey }
+    );
   }
 }
 
@@ -302,7 +325,10 @@ class LooksRareHandler implements IPostOrderHandler {
   url = 'https://api.looksrare.org/api/v1/orders';
   rateLimiter: ExternalServiceRateLimiter;
   constructor(private client: HTTPClient, apiKeyConfig: ApiKeyConfig) {
-    this.rateLimiter = new ExternalServiceRateLimiter(apiKeyConfig.apiKey, new RateLimiter({ tokensPerInterval: apiKeyConfig.requestsPerInterval, interval: apiKeyConfig.interval }));
+    this.rateLimiter = new ExternalServiceRateLimiter(
+      apiKeyConfig.apiKey,
+      new RateLimiter({ tokensPerInterval: apiKeyConfig.requestsPerInterval, interval: apiKeyConfig.interval })
+    );
   }
   async handle(payload: any): Promise<any> {
     const order = payload.order;
@@ -315,16 +341,20 @@ class LooksRareHandler implements IPostOrderHandler {
     const looksrareOrder: Models.LooksRare.Types.LooksRareListingOrderParams = order.data;
     const apiKey = await this.rateLimiter.getAPIKeyWithRateLimiter();
 
-    return this.client.post(this.url, JSON.stringify({
-      ...looksrareOrder,
-      signature: joinSignature({
-        v: order.params.v,
-        r: order.params.r as string,
-        s: order.params.s,
+    return this.client.post(
+      this.url,
+      JSON.stringify({
+        ...looksrareOrder,
+        signature: joinSignature({
+          v: order.params.v,
+          r: order.params.r as string,
+          s: order.params.s,
+        }),
+        tokenId: order.params.tokenId,
+        params: [],
       }),
-      tokenId: order.params.tokenId,
-      params: [],
-    }), { 'X-Api-Key': apiKey });
+      { 'X-Api-Key': apiKey }
+    );
   }
 }
 
@@ -334,10 +364,13 @@ class X2Y2Handler implements IPostOrderHandler {
   rateLimiter: ExternalServiceRateLimiter;
 
   constructor(private client: HTTPClient, apiKeyConfig: ApiKeyConfig) {
-    this.rateLimiter = new ExternalServiceRateLimiter(apiKeyConfig.apiKey, new RateLimiter({
-      tokensPerInterval: apiKeyConfig.requestsPerInterval,
-      interval: apiKeyConfig.interval
-    }));
+    this.rateLimiter = new ExternalServiceRateLimiter(
+      apiKeyConfig.apiKey,
+      new RateLimiter({
+        tokensPerInterval: apiKeyConfig.requestsPerInterval,
+        interval: apiKeyConfig.interval,
+      })
+    );
   }
 
   async handle(payload: any): Promise<any> {
@@ -378,10 +411,14 @@ class X2Y2Handler implements IPostOrderHandler {
       orderIds: [],
       changePrice: false,
       isCollection: order.dataMask !== '0x',
-    }
+    };
 
-    return this.client.post(this.url, JSON.stringify({
-      ...orderParams,
-    }), {'X-Api-Key': apiKey});
+    return this.client.post(
+      this.url,
+      JSON.stringify({
+        ...orderParams,
+      }),
+      { 'X-Api-Key': apiKey }
+    );
   }
 }
