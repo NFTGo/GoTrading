@@ -30,7 +30,7 @@ interface PostData {
   body: {
     order: {
       data: Record<string, any>;
-      kink: string;
+      kind: string;
     };
     orderbook: string;
     source: string;
@@ -49,8 +49,9 @@ export interface SignData {
   signatureKind: 'eip191' | 'eip712';
   types: Record<string, any[]>;
   value: Record<string, any>;
-  orderIndex: number;
-  status: 'complete' | 'incomplete';
+  // If it is not seaportv1.4, the following fields will be included.
+  orderIndex?: number;
+  status?: 'complete' | 'incomplete';
   message?: string;
 }
 
@@ -62,18 +63,28 @@ interface ListingAction {
 export interface ListingItem {
   status: 'complete' | 'incomplete';
   orderIndexes: number[];
-  data?: ListingAction | Record<string, any>;
+  data?: ListingAction;
 }
 
-interface StepInfo {
+export interface ApprovalItem {
+  status: 'complete' | 'incomplete';
+  orderIndexes: number[];
+  data?: {
+    from: string;
+    to: string;
+    data: string;
+  };
+}
+
+interface StepInfo<T> {
   id: string;
   action: string;
   description: string;
   kind: 'transaction' | 'signature';
-  items: ListingItem[];
+  items: T[];
 }
 export interface ListingStepsDetailInfo {
-  steps: [StepInfo, StepInfo];
+  steps: [StepInfo<ApprovalItem>, StepInfo<ListingItem>];
   errors: any[];
 }
 export interface NFTInfoForListing extends NFTBaseInfo {

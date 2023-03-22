@@ -167,7 +167,7 @@ export interface GoTrading {
 
 export interface HTTPClient {
   get<R, Q = undefined>(url: string, query: Q | undefined, headers?: Record<string, string>): Promise<R>;
-  post<R, P = undefined>(url: string, data: P, headers?: Record<string, string>): Promise<R>;
+  post<R, P = undefined>(url: string, data: P, headers?: Record<string, string>, isUnderLine?: boolean): Promise<R>;
 }
 
 export interface WalletConfig {
@@ -190,7 +190,7 @@ export interface ListingIndexerConfig extends Config {
   x2y2ApiKeyConfig: ApiKeyConfig;
 }
 
-export type ApiKeyConfig = { apiKey: string, requestsPerInterval: number, interval: number };
+export type ApiKeyConfig = { apiKey: string; requestsPerInterval: number; interval: number };
 
 // # all below is POJO for response
 
@@ -633,8 +633,8 @@ export interface AggregateResponse {
 
 export interface PostListingOrderParams {
   version: '/order/v3' | '/order/v4';
-  protocol: ListingOrderProtocol,
-  payload: any, // order payload
+  protocol: ListingOrderProtocol;
+  payload: any; // order payload
   signature: string; // wallet address signature
 }
 

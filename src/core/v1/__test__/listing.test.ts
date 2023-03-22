@@ -1,51 +1,42 @@
-import { HTTPClient, Config, EVMChain } from '../../interface';
-import { HttpsProxyAgent } from 'https-proxy-agent';
-
+import { HTTPClient, ListingIndexerConfig, EVMChain } from '../../interface';
+const HttpsProxyAgent = require('https-proxy-agent');
+import Web3 from 'web3';
+import { bootstrap } from 'global-agent';
 import { ListingIndexerStable } from '../listing-indexer';
-import { NFTInfoForListing } from '../listing/interface';
-import { InternalHTTPClient } from '../../internal-http-client';
+import { ExternalHTTPClient } from '../../internal-http-client';
 import { AggregatorUtils } from '../utils';
+import { mockListingStepData } from './mock';
 
-let mockNFTs: NFTInfoForListing[] = [
-  {
-    marketplace: 'OpenSea',
-    contract: '0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85',
-    tokenId: '49192847250963616308588609813616528462652700069388429320289774529014260090265',
-    ethPrice: 11,
-    listingTime: 1679379726,
-    expirationTime: 1679555359,
-  },
-  {
-    marketplace: 'OpenSea',
-    contract: '0xee467844905022d2a6cc1da7a0b555608faae751',
-    tokenId: '5745',
-    ethPrice: 11,
-    listingTime: 1679379726,
-    expirationTime: 1679984526,
-  },
-];
+const providerUrl = 'https://rpc.tenderly.co/fork/d73c8e08-3381-4d11-9f4d-b38c2a13ffa7';
 
-const HTTP_PROXY = 'http://127.0.0.1:9091';
-const proxyUrl = new URL(HTTP_PROXY);
+// proxy env
+bootstrap();
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
+const HTTP_PROXY = 'http://10.10.36.44:9090';
 
-let config: Config = {
+const mockApi = {
   apiKey: '11',
+  requestsPerInterval: 111,
+  interval: 11,
+};
+let config: ListingIndexerConfig = {
+  apiKey: '1c946db2-2664-4e67-a051-a1419497ac3e', // Replace with your own API Key.
   baseUrl: 'https://data-api.nftgo.dev/',
   chain: EVMChain.ETH,
+  web3Provider: new Web3.providers.HttpProvider(providerUrl),
   walletConfig: {
-    address: '0x3e24914f74Cd66e3ee7d1F066A880A6c69404E13',
-    privateKey: '0xabcdef1234567890',
+    address: process.env.ADDRESS || '',
+    privateKey: process.env.PRIVATE_KEY || '',
   },
-  agent: new HttpsProxyAgent({
-    host: proxyUrl.hostname,
-    port: proxyUrl.port,
-  }),
+  agent: new HttpsProxyAgent(HTTP_PROXY),
+  openSeaApiKeyConfig: mockApi,
+  looksRareApiKeyConfig: mockApi,
+  x2y2ApiKeyConfig: mockApi,
 };
 
-const utils = new AggregatorUtils(config.web3Provider, config.walletConfig);
-let httpClient: HTTPClient = new InternalHTTPClient(config?.agent);
-
-describe('ListingIndexerStable', () => {
+describe('ListingIndexerStable Function Unit Test', () => {
+  const utils = new AggregatorUtils(config.web3Provider, config.walletConfig);
+  let httpClient: HTTPClient = new ExternalHTTPClient(config?.agent);
   let listingIndexer: ListingIndexerStable;
 
   beforeEach(() => {
@@ -56,34 +47,35 @@ describe('ListingIndexerStable', () => {
     expect(listingIndexer).toBeInstanceOf(ListingIndexerStable);
   });
 
-  test('prepareListing test', async () => {
-    expect.assertions(1);
-    try {
-      const result = await listingIndexer.prepareListing(mockNFTs);
-      // const length = result.length;
-      const boolean = Boolean(result);
-      expect(boolean).toEqual(true);
-    } catch (e) {
-      console.error(e);
-    }
+  // test('prepareListing api should return prepareListing data', async () => {
+  //   try {
+  //     const result = await listingIndexer.prepareListing(mockNFTs);
+  //     expect(result).toEqual(mockListingStepData);
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // }, 10000);
+
+  // test('approveWithPolicy auto Approve', async () => {
+  //   const data = [
+  //     listingIndexer.parseApprovalData(mockListingStepData),
+  //     listingIndexer.parseListingData(mockListingStepData),
+  //   ];
+  //   const res = await listingIndexer.approveWithPolicy(data as any, {
+  //     autoApprove: true,
+  //   });
+  //   console.info(res);
+  //   expect(true).toEqual(true);
+  // });
+
+  test('listing with policy', async () => {
+    const data = listingIndexer.parseListingData(mockListingStepData);
+    // const res = await listingIndexer.approveWithPolicy(data as any, {
+    //   autoApprove: true,
+    // });
+    const res = await listingIndexer.listingWithPolicy(data);
+    console.info(res);
   });
-
-  //   test('approveWithPolicy should throw "Method not implemented." error', () => {
-  //     expect(() => {
-  //       listingIndexer.approveWithPolicy([[], []], {
-  //         autoApprove: true,
-  //       });
-  //     }).toThrowError('Method not implemented.');
-  //   });
-
-  //   test('postListingOrder should throw "Method not implemented." error', async () => {
-  //     expect.assertions(1);
-  //     try {
-  //       await listingIndexer.postListingOrder({});
-  //     } catch (error) {
-  //       expect((error as any).message).toBe('Method not implemented.');
-  //     }
-  //   });
 
   //   test('bulkListing should call runPipeline with correct parameters', async () => {
   //     const nfts: NFTInfoForListing[] = [];

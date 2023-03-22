@@ -3,6 +3,7 @@ node_modules
 package-lock.json
 yarn-error.log
 
+.env
 # zero-installs
 .yarn/cache
 .yarn/versions

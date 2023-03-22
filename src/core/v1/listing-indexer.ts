@@ -1,4 +1,5 @@
 import {
+  ApprovalItem,
   ApprovePolicyOption,
   BulkListingOptions,
   ListingItem,
@@ -10,6 +11,7 @@ import {
 
 import {
   ApiKeyConfig,
+  EVMChain,
   HTTPClient,
   ListingIndexer,
   ListingIndexerConfig,
@@ -25,9 +27,15 @@ import { RateLimiter } from 'limiter';
 import { marketplaceMeta } from './listing/const';
 import { runPipeline } from '../../helpers/pipeline';
 import { AggregatorUtils } from './utils';
+import { BASE_URL } from '../conifg';
+import { camel } from '../../helpers/key-format';
 
 export class ListingIndexerStable implements ListingIndexer {
   private postOrderHandlers = new Map<ListingOrderProtocol, IPostOrderHandler>();
+
+  private get url() {
+    return (this.config?.baseUrl ?? BASE_URL) + (this.config?.chain ?? EVMChain.ETH) + '/v1';
+  }
 
   private get headers() {
     return { 'X-API-KEY': this.config.apiKey, 'X-FROM': 'js_sdk' };
@@ -158,23 +166,22 @@ export class ListingIndexerStable implements ListingIndexer {
         expirationTime: (expirationTime / 1000).toFixed(0),
       };
     });
-
-    const response = await this.client.post(
-      '/nft-aggregate/listings',
+    const data = await this.client.post(
+      this.url + '/nft-aggregate/listings',
       {
         params,
         maker: this.config.walletConfig?.address,
         source: 'nftgo.io',
       },
-      this.headers
+      this.headers,
+      true
     );
-    console.info('response', JSON.stringify(response));
-    // const data = await response.json();
-    const data = response as ListingStepsDetailInfo;
-    return data;
+    const camelData = camel(data);
+    console.info('camelData:', JSON.stringify(camelData));
+    return camelData as ListingStepsDetailInfo;
   }
 
-  parseApprovalData(rawData: ListingStepsDetailInfo): ListingItem[] {
+  parseApprovalData(rawData: ListingStepsDetailInfo): ApprovalItem[] {
     const { steps } = rawData;
     const approvalData = steps[0].items;
     return approvalData;
@@ -223,7 +230,33 @@ export class ListingIndexerStable implements ListingIndexer {
     }
   }
 
-  async listingWithPolicy(listingItems: ListingItem[]) {}
+  async listingWithPolicy(listingItems: ListingItem[]) {
+    console.info('listingItems', listingItems);
+    const listings = listingItems.map((item) => {
+      const { status, data, orderIndexes } = item;
+      if (status === 'complete' || !data || orderIndexes?.length === 0) {
+        return Promise.resolve('complete');
+      } else {
+        const { sign, post } = data;
+        return new Promise((resolve, reject) => {
+          this.signListingInfo(sign)
+            .then((signature) => {
+              // TODO: call post order
+              resolve({
+                orderIndexes,
+                signature,
+                post,
+              });
+            })
+            .catch((err) => {
+              console.error(err);
+              reject(new Error('listing signature error:' + err.message));
+            });
+        });
+      }
+    });
+    return Promise.allSettled(listings);
+  }
 
   async signApproveInfo(approvalSignInfo: any): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -266,9 +299,9 @@ export class ListingIndexerStable implements ListingIndexer {
   // bulk listing
   async bulkListing(nfts: NFTInfoForListing[], config: BulkListingOptions) {
     // const tasks = [getApprovalAndSignInfo, [parseApprovalData, parseListingData], approveWithPolicy, listingWithPolicy];
-    const tasks = [] as any;
+    const tasks = [this.prepareListing, [this.parseApprovalData, this.parseListingData], this.approveWithPolicy];
     try {
-      await runPipeline(tasks, nfts);
+      await runPipeline(tasks as any, nfts);
     } catch (error) {
       throw error;
     }

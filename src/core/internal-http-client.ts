@@ -1,6 +1,6 @@
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import { camel, underline } from '../helpers/key-format';
-import {AggregatorApiException, BaseException} from './exception';
+import { AggregatorApiException, BaseException } from './exception';
 
 import { HTTPClient } from './interface';
 
@@ -23,7 +23,6 @@ export class InternalHTTPClient implements HTTPClient {
           return res.json();
         })
         .catch((e) => {
-          console.info('ffff', e);
           reject(AggregatorApiException.requestError(input?.toString(), e));
         })
         .then((res) => {
@@ -76,15 +75,18 @@ export class ExternalHTTPClient implements HTTPClient {
           if (!isHttpResponseSuccess(res.status)) {
             reject(
               BaseException.httpUnsuccessfulResponse(
-            `HTTP request to ${input?.toString()} failed with status code ${res.status} and message ${res.statusText?.length > 0 ? JSON.stringify(await res.json()) : res.statusText}`,
+                `HTTP request to ${input?.toString()} failed with status code ${res.status} and message ${
+                  res.statusText?.length > 0 ? JSON.stringify(await res.json()) : res.statusText
+                }`
               )
             );
           }
-          return res.json();
+          const data = await res.json();
+          return resolve(data);
         })
         .catch((e) => {
           reject(BaseException.httpRequestError(`HTTP request to ${input?.toString()} failed with error ${e.message}`));
-        })
+        });
     });
   }
   get<R, Q = undefined>(url: string, query: Q | undefined, headers?: Record<string, string>): Promise<R> {
@@ -98,8 +100,8 @@ export class ExternalHTTPClient implements HTTPClient {
         }
       } else {
         underLineQuery[key] !== null &&
-        underLineQuery[key] !== undefined &&
-        params.push(`${key}=${underLineQuery[key]}`);
+          underLineQuery[key] !== undefined &&
+          params.push(`${key}=${underLineQuery[key]}`);
       }
     }
     if (params.length !== 0) {
@@ -108,10 +110,11 @@ export class ExternalHTTPClient implements HTTPClient {
     return this.fetch<R>(actualUrl, { headers, method: 'GET' });
   }
 
-  post<R, P = undefined>(url: string, data: P, headers?: Record<string, string>): Promise<R> {
+  post<R, P = undefined>(url: string, data: P, headers?: Record<string, string>, isUnderLine?: boolean): Promise<R> {
+    const body = isUnderLine ? JSON.stringify(underline(data)) : JSON.stringify(data);
     return this.fetch<R>(url, {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: body,
       headers: { ...headers, 'Content-Type': 'application/json' },
     });
   }
