@@ -173,6 +173,16 @@ export interface Config {
   agent?: HttpsProxyAgent;
 }
 
+export interface ListingIndexerConfig {
+  nftGoApiKey: string;
+  openSeaApiKeyConfig: ApiKeyConfig;
+  looksRareApiKeyConfig: ApiKeyConfig;
+  x2y2ApiKeyConfig: ApiKeyConfig;
+  chain?: EVMChain;
+}
+
+export type ApiKeyConfig = { apiKey: string, requestsPerInterval: number, interval: number };
+
 // # all below is POJO for response
 
 /**
@@ -613,11 +623,22 @@ export interface AggregateResponse {
 }
 
 export interface PostListingOrderParams {
+  version: '/order/v3' | '/order/v4';
+  protocol: ListingOrderProtocol,
+  payload: any, // order payload
+  signature: string; // wallet address signature
+}
 
+export enum ListingOrderProtocol {
+  SEAPORTV14 = 'seaport-v1.4',
+  LOOKSRARE = 'looks-rare',
+  X2Y2 = 'x2y2',
 }
 
 export interface PostListingOrderResponse {
-
+  code: string; // SUCCESS or ERROR
+  msg: string;
+  data: any;
 }
 
 export interface NFTBaseInfo {
