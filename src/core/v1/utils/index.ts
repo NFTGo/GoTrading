@@ -21,6 +21,7 @@ import { ERC1155Abi } from '../abi/ERC1155';
 
 export class AggregatorUtils implements Utils {
   constructor(private provider?: provider, private walletConfig?: WalletConfig) {
+    this._ethersProvider = new ethers.providers.Web3Provider(this.provider || (globalThis as any)?.ethereum);
     this._web3Instance = new Web3(this.provider || (globalThis as any)?.ethereum);
     if (walletConfig) {
       if (typeof walletConfig?.address !== 'string') {
@@ -29,6 +30,7 @@ export class AggregatorUtils implements Utils {
       if (typeof walletConfig?.privateKey !== 'string') {
         throw AggregatorBaseException.invalidParamError('walletConfig.privateKey');
       }
+      this._ethersSigner = this._ethersProvider.getSigner(walletConfig?.address);
       this._web3Instance.eth.accounts.wallet.add(this.walletConfig as WalletConfig);
     }
     this.TRANSFER_TOPIC = this._web3Instance?.eth.abi.encodeEventSignature(ERC721Abi.transfer);
@@ -37,6 +39,8 @@ export class AggregatorUtils implements Utils {
     this.PUNK_TRANSFER_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(CryptoPunkAbi.transfer);
     this.PUNK_BOUGHT_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(CryptoPunkAbi.bought);
   }
+  public _ethersProvider: ethers.providers.Web3Provider;
+  public _ethersSigner: ethers.providers.JsonRpcSigner | undefined;
   public _web3Instance: Web3;
   public account: string | undefined = this.walletConfig?.address;
   private TRANSFER_TOPIC: string;

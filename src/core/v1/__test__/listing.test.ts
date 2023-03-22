@@ -1,42 +1,97 @@
-/**
- * Test the main process, such as getting all NFTs of the current user and listing them for sale.
- */
+import { HTTPClient, Config, EVMChain } from '../../interface';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 
-import { YourSDK } from './YourSDK';
-import { BulkListingOptions } from './YourSDK';
+import { ListingIndexerStable } from '../listing-indexer';
+import { NFTInfoForListing } from '../listing/interface';
+import { InternalHTTPClient } from '../../internal-http-client';
+import { AggregatorUtils } from '../utils';
 
-// ...其他导入和已有测试用例...
+let mockNFTs: NFTInfoForListing[] = [
+  {
+    marketplace: 'OpenSea',
+    contract: '0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85',
+    tokenId: '49192847250963616308588609813616528462652700069388429320289774529014260090265',
+    ethPrice: 11,
+    listingTime: 1679379726,
+    expirationTime: 1679555359,
+  },
+  {
+    marketplace: 'OpenSea',
+    contract: '0xee467844905022d2a6cc1da7a0b555608faae751',
+    tokenId: '5745',
+    ethPrice: 11,
+    listingTime: 1679379726,
+    expirationTime: 1679984526,
+  },
+];
 
-describe('YourSDK - Main Process', () => {
-  let sdk: YourSDK;
-  let options: BulkListingOptions;
+const HTTP_PROXY = 'http://127.0.0.1:9091';
+const proxyUrl = new URL(HTTP_PROXY);
+
+let config: Config = {
+  apiKey: '11',
+  baseUrl: 'https://data-api.nftgo.dev/',
+  chain: EVMChain.ETH,
+  walletConfig: {
+    address: '0x3e24914f74Cd66e3ee7d1F066A880A6c69404E13',
+    privateKey: '0xabcdef1234567890',
+  },
+  agent: new HttpsProxyAgent({
+    host: proxyUrl.hostname,
+    port: proxyUrl.port,
+  }),
+};
+
+const utils = new AggregatorUtils(config.web3Provider, config.walletConfig);
+let httpClient: HTTPClient = new InternalHTTPClient(config?.agent);
+
+describe('ListingIndexerStable', () => {
+  let listingIndexer: ListingIndexerStable;
 
   beforeEach(() => {
-    sdk = new YourSDK(/*构造函数参数*/);
-    options = {
-      autoApprove: true,
-      skipUnapproved: false,
-      failOnUnapproved: false,
-    };
+    listingIndexer = new ListingIndexerStable(httpClient, config, utils);
   });
 
-  test('List user NFTs for sale', async () => {
-    // 获取当前用户的所有NFTs，这里可以使用模拟数据
-    const userNFTs = [
-      // ...用户的NFTs列表
-    ];
+  test('should create an instance of ListingIndexerStable', () => {
+    expect(listingIndexer).toBeInstanceOf(ListingIndexerStable);
+  });
 
-    // 获取approval和sign信息
-    const approvalAndSignInfo = await sdk.getApprovalAndSignInfo(userNFTs);
+  test('prepareListing test', async () => {
+    expect.assertions(1);
+    try {
+      const result = await listingIndexer.prepareListing(mockNFTs);
+      // const length = result.length;
+      const boolean = Boolean(result);
+      expect(boolean).toEqual(true);
+    } catch (e) {
+      console.error(e);
+    }
+  });
 
-    // 处理approval
-    const approvalResult = await sdk.handleApproval(approvalAndSignInfo.approved, options);
-    expect(approvalResult).toBe(true); // 根据实际情况修改期望值
+  //   test('approveWithPolicy should throw "Method not implemented." error', () => {
+  //     expect(() => {
+  //       listingIndexer.approveWithPolicy([[], []], {
+  //         autoApprove: true,
+  //       });
+  //     }).toThrowError('Method not implemented.');
+  //   });
 
-    // 对每个NFT执行其他必要操作，例如签名、挂单等
-    // ...
+  //   test('postListingOrder should throw "Method not implemented." error', async () => {
+  //     expect.assertions(1);
+  //     try {
+  //       await listingIndexer.postListingOrder({});
+  //     } catch (error) {
+  //       expect((error as any).message).toBe('Method not implemented.');
+  //     }
+  //   });
 
-    // 检查所有NFT是否已成功挂单
-    for (const nft of userNFTs) {
-      const isListed = await sdk.isNFTListed(nft);
+  //   test('bulkListing should call runPipeline with correct parameters', async () => {
+  //     const nfts: NFTInfoForListing[] = [];
+  //     const config: BulkListingOptions = {};
 
+  //     const runPipelineSpy = jest.spyOn(require('../../helpers/pipeline'), 'runPipeline');
+  //     await listingIndexer.bulkListing(nfts, config);
+
+  //     expect(runPipelineSpy).toBeCalledWith(expect.any(Array), nfts);
+  //   });
+});

@@ -4,6 +4,13 @@ import { Log, provider, TransactionConfig, TransactionReceipt } from 'web3-core'
 import { AggregatorUtils } from './v1/utils';
 import { AggregatorStable } from './v1/aggregator';
 import { HttpsProxyAgent } from 'https-proxy-agent';
+import {
+  ListingItem,
+  ListingStepsDetailInfo,
+  NFTInfoForListing,
+  ApprovePolicyOption,
+  BulkListingOptions,
+} from './v1/listing/interface';
 
 // # user-land interface , core  should implement this
 export enum EVMChain {
@@ -58,11 +65,15 @@ export interface Aggregator {
  * ListingIndexer allows instances of listings to be indexed into different marketplaces
  */
 export interface ListingIndexer {
+  prepareListing(nfts: NFTInfoForListing[]): Promise<ListingStepsDetailInfo>;
+
+  approveWithPolicy(data: [ListingItem[], ListingItem[]], policyOption: ApprovePolicyOption): Promise<ListingItem[]>;
   /**
    * post a listing order to the target marketplace
    * @param params
    */
   postListingOrder(params: PostListingOrderParams): Promise<PostListingOrderResponse>;
+  bulkListing(nfts: NFTInfoForListing[], config: BulkListingOptions): Promise<void>;
 }
 
 export type TransactionHashHandler = ((hash: string) => void) | null | undefined;
@@ -173,12 +184,10 @@ export interface Config {
   agent?: HttpsProxyAgent;
 }
 
-export interface ListingIndexerConfig {
-  nftGoApiKey: string;
+export interface ListingIndexerConfig extends Config {
   openSeaApiKeyConfig: ApiKeyConfig;
   looksRareApiKeyConfig: ApiKeyConfig;
   x2y2ApiKeyConfig: ApiKeyConfig;
-  chain?: EVMChain;
 }
 
 export type ApiKeyConfig = { apiKey: string, requestsPerInterval: number, interval: number };
