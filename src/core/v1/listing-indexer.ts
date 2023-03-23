@@ -177,7 +177,6 @@ export class ListingIndexerStable implements ListingIndexer {
       true
     );
     const camelData = camel(data);
-    console.info('camelData:', JSON.stringify(camelData));
     return camelData as ListingStepsDetailInfo;
   }
 
@@ -231,7 +230,6 @@ export class ListingIndexerStable implements ListingIndexer {
   }
 
   async listingWithPolicy(listingItems: ListingItem[]) {
-    console.info('listingItems', listingItems);
     const listings = listingItems.map((item) => {
       const { status, data, orderIndexes } = item;
       if (status === 'complete' || !data || orderIndexes?.length === 0) {
@@ -242,6 +240,7 @@ export class ListingIndexerStable implements ListingIndexer {
           this.signListingInfo(sign)
             .then((signature) => {
               // TODO: call post order
+              console.info('signature', signature);
               resolve({
                 orderIndexes,
                 signature,

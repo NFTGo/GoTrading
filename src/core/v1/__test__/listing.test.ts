@@ -5,7 +5,7 @@ import { bootstrap } from 'global-agent';
 import { ListingIndexerStable } from '../listing-indexer';
 import { ExternalHTTPClient } from '../../internal-http-client';
 import { AggregatorUtils } from '../utils';
-import { mockListingStepData } from './mock';
+import { mockListingStepData, mockNFTs } from './mock';
 
 const providerUrl = 'https://rpc.tenderly.co/fork/d73c8e08-3381-4d11-9f4d-b38c2a13ffa7';
 
@@ -68,14 +68,27 @@ describe('ListingIndexerStable Function Unit Test', () => {
   //   expect(true).toEqual(true);
   // });
 
-  test('listing with policy', async () => {
-    const data = listingIndexer.parseListingData(mockListingStepData);
-    // const res = await listingIndexer.approveWithPolicy(data as any, {
-    //   autoApprove: true,
-    // });
-    const res = await listingIndexer.listingWithPolicy(data);
-    console.info(res);
-  });
+  // test('listing with policy', async () => {
+  //   const data = listingIndexer.parseListingData(mockListingStepData);
+  //   // const res = await listingIndexer.approveWithPolicy(data as any, {
+  //   //   autoApprove: true,
+  //   // });
+  //   const res = await listingIndexer.listingWithPolicy(data);
+  //   console.info(res);
+  // });
+
+  test('main process', async () => {
+    const result = await listingIndexer.prepareListing(mockNFTs);
+    const data = [
+      listingIndexer.parseApprovalData(mockListingStepData),
+      listingIndexer.parseListingData(mockListingStepData),
+    ];
+    const res = await listingIndexer.approveWithPolicy(data as any, {
+      autoApprove: true,
+    });
+    const res2 = await listingIndexer.listingWithPolicy(res);
+    expect(true).toEqual(true);
+  }, 20000);
 
   //   test('bulkListing should call runPipeline with correct parameters', async () => {
   //     const nfts: NFTInfoForListing[] = [];
