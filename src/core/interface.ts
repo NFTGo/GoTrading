@@ -73,6 +73,8 @@ export interface ListingIndexer {
    * @param params
    */
   postListingOrder(params: PostListingOrderParams): Promise<PostListingOrderResponse>;
+
+  postBatchListingOrders(params: PostListingOrderParams[]): Promise<PostListingOrderResponse[]>;
   bulkListing(nfts: NFTInfoForListing[], config: BulkListingOptions): Promise<void>;
 }
 
