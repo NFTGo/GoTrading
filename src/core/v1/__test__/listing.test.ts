@@ -8,7 +8,7 @@ import { AggregatorUtils } from '../utils';
 import { mockListingStepData, mockNFTs } from './mock';
 
 const providerUrl = 'https://rpc.tenderly.co/fork/d73c8e08-3381-4d11-9f4d-b38c2a13ffa7';
-
+// const providerUrl = 'https://mainnet.infura.io/v3/';
 // proxy env
 bootstrap();
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
@@ -16,8 +16,8 @@ const HTTP_PROXY = 'http://10.10.36.44:9090';
 
 const mockApi = {
   apiKey: '11',
-  requestsPerInterval: 111,
-  interval: 11,
+  requestsPerInterval: 2,
+  interval: 1000,
 };
 let config: ListingIndexerConfig = {
   apiKey: '1c946db2-2664-4e67-a051-a1419497ac3e', // Replace with your own API Key.

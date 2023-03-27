@@ -2,11 +2,13 @@ import {
   ApprovalItem,
   ApprovePolicyOption,
   BulkListingOptions,
+  ErrorListingItem,
   ListingItem,
   ListingStepsDetailInfo,
   NFTInfoForListing,
   PrepareListingParams,
   SignData,
+  SignedListingItem,
 } from './listing/interface';
 
 import {
@@ -25,7 +27,6 @@ import * as Models from '../../models';
 import { ExternalServiceRateLimiter } from './utils/rate-limiter';
 import { RateLimiter } from 'limiter';
 import { marketplaceMeta } from './listing/const';
-import { runPipeline } from '../../helpers/pipeline';
 import { AggregatorUtils } from './utils';
 import { BASE_URL } from '../conifg';
 import { camel } from '../../helpers/key-format';
@@ -132,23 +133,6 @@ export class ListingIndexerStable implements ListingIndexer {
     }
   }
 
-  async postBatchListingOrders(params: PostListingOrderParams[]): Promise<PostListingOrderResponse[]> {
-    const results = await Promise.all(
-      params.map(async (param) => {
-        try {
-          return await this.postListingOrder(param);
-        } catch (e: any) {
-          return {
-            code: e.code,
-            msg: e.message,
-            data: null,
-          };
-        }
-      })
-    );
-    return results;
-  }
-
   async prepareListing(nfts: NFTInfoForListing[]): Promise<ListingStepsDetailInfo> {
     const params = nfts.map<PrepareListingParams>((param) => {
       const { contract, tokenId, marketplace, ethPrice, listingTime, expirationTime, isCreatorFeesEnforced } = param;
@@ -193,7 +177,7 @@ export class ListingIndexerStable implements ListingIndexer {
   }
 
   async approveWithPolicy(
-    data: [ListingItem[], ListingItem[]],
+    data: [ApprovalItem[], ListingItem[]],
     policyOption: ApprovePolicyOption
   ): Promise<ListingItem[]> {
     const [approvalItems, listingItems] = data;
@@ -229,7 +213,7 @@ export class ListingIndexerStable implements ListingIndexer {
     }
   }
 
-  async listingWithPolicy(listingItems: ListingItem[]) {
+  async signListingOrders(listingItems: ListingItem[]): Promise<[SignedListingItem[], ErrorListingItem[]]> {
     const listings = listingItems.map((item) => {
       const { status, data, orderIndexes } = item;
       if (status === 'complete' || !data || orderIndexes?.length === 0) {
@@ -239,22 +223,69 @@ export class ListingIndexerStable implements ListingIndexer {
         return new Promise((resolve, reject) => {
           this.signListingInfo(sign)
             .then((signature) => {
-              // TODO: call post order
-              console.info('signature', signature);
               resolve({
-                orderIndexes,
                 signature,
                 post,
+                orderIndexes,
               });
             })
             .catch((err) => {
-              console.error(err);
-              reject(new Error('listing signature error:' + err.message));
+              reject(new Error('listing error:' + err.message));
             });
         });
       }
     });
-    return Promise.allSettled(listings);
+    const data = await Promise.allSettled(listings);
+    const signaturedOrders = data
+      .filter((e) => e.status === 'fulfilled')
+      .map((e) => (e as PromiseFulfilledResult<SignedListingItem>).value);
+    const errorOrders = data
+      .map((e, i) => ({ ...e, orderIndexes: listingItems[i].orderIndexes }))
+      .filter((e) => e.status === 'rejected')
+      .map((e) => ({
+        reason: (e as PromiseRejectedResult).reason,
+        reasonStep: 'sign listing error',
+        orderIndexes: e.orderIndexes,
+      }));
+    return [signaturedOrders, errorOrders];
+  }
+
+  async bulkPostListingOrders(signaturedOrders: SignedListingItem[]): Promise<[number[], ErrorListingItem[]]> {
+    const bulkPostOrders = signaturedOrders.map((e) => {
+      const { signature, post } = e;
+      const { endpoint, body } = post;
+      return this.postListingOrder({
+        version: endpoint,
+        protocol: body.order.kind as any,
+        payload: body,
+        signature: signature,
+      });
+    });
+    const data = await Promise.allSettled(bulkPostOrders);
+    const successItems: number[] = [];
+    const errorItems: ErrorListingItem[] = [];
+    data.forEach((e, i) => {
+      const indexes = signaturedOrders[i].orderIndexes;
+      if (e.status === 'fulfilled') {
+        const { code } = e.value;
+        if (code === 'SUCCESS') {
+          successItems.push(...indexes);
+        } else {
+          errorItems.push({
+            reason: 'post listing failed',
+            reasonStep: 'post listing response error',
+            orderIndexes: indexes,
+          });
+        }
+      } else {
+        errorItems.push({
+          reason: 'post listing request failed',
+          reasonStep: 'post listing request error',
+          orderIndexes: indexes,
+        });
+      }
+    });
+    return [successItems, errorItems];
   }
 
   async signApproveInfo(approvalSignInfo: any): Promise<any> {
@@ -297,11 +328,35 @@ export class ListingIndexerStable implements ListingIndexer {
 
   // bulk listing
   async bulkListing(nfts: NFTInfoForListing[], config: BulkListingOptions) {
-    // const tasks = [getApprovalAndSignInfo, [parseApprovalData, parseListingData], approveWithPolicy, listingWithPolicy];
-    const tasks = [this.prepareListing, [this.parseApprovalData, this.parseListingData], this.approveWithPolicy];
+    const { autoApprove, onFinish, onError } = config;
     try {
-      await runPipeline(tasks as any, nfts);
+      /**
+       * The first step is to obtain the items that need to be listed, relevant authorization signatures, and listing parameters
+       */
+      const data = await this.prepareListing(nfts);
+      /**
+       * Then, do some simple data formatting and prepare to hand it over to the next process.
+       */
+      const approvalData = this.parseApprovalData(data);
+      const listingData = this.parseListingData(data);
+      /**
+       * Next: authorize unlicensed items or skip them.
+       */
+      const approvalResult = await this.approveWithPolicy([approvalData, listingData], {
+        autoApprove,
+      });
+      /**
+       * Next, sign the post order for the authorized items.
+       */
+      const [listingResult, errorOrders] = await this.signListingOrders(approvalResult);
+      /**
+       * Finally, for each different exchange, make post order requests using different strategies.
+       */
+      const [successIndexes, errorItems] = await this.bulkPostListingOrders(listingResult);
+
+      onFinish(successIndexes, [...errorOrders, ...errorItems]);
     } catch (error) {
+      onError(error as Error);
       throw error;
     }
   }

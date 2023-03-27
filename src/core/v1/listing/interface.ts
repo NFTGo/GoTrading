@@ -26,7 +26,7 @@ export interface PrepareListingParams {
   currency: '0x0000000000000000000000000000000000000000';
 }
 
-interface PostData {
+export interface PostData {
   body: {
     order: {
       data: Record<string, any>;
@@ -35,7 +35,7 @@ interface PostData {
     orderbook: string;
     source: string;
   };
-  endpoint: string;
+  endpoint: '/order/v3' | '/order/v4';
   method: 'POST';
 }
 
@@ -64,6 +64,18 @@ export interface ListingItem {
   status: 'complete' | 'incomplete';
   orderIndexes: number[];
   data?: ListingAction;
+}
+
+export interface SignedListingItem {
+  signature: string;
+  post: PostData;
+  orderIndexes: number[];
+}
+
+export interface ErrorListingItem {
+  reason: string;
+  reasonStep?: string;
+  orderIndexes: number[];
 }
 
 export interface ApprovalItem {
@@ -118,6 +130,6 @@ export interface BulkListingOptions {
    */
   failOnUnapproved: boolean;
 
-  onFinish: (successNFTs: NFTBaseInfo[], failNFTs: NFTBaseInfo[]) => void;
-  onSuccess: (successNFTs: NFTBaseInfo[], failNFTs: NFTBaseInfo[]) => void;
+  onFinish: (successIndexes: number[], failedItems?: ErrorListingItem[]) => void;
+  onError: (err: Error) => void;
 }

@@ -10,6 +10,9 @@ import {
   NFTInfoForListing,
   ApprovePolicyOption,
   BulkListingOptions,
+  ApprovalItem,
+  SignedListingItem,
+  ErrorListingItem,
 } from './v1/listing/interface';
 
 // # user-land interface , core  should implement this
@@ -67,14 +70,17 @@ export interface Aggregator {
 export interface ListingIndexer {
   prepareListing(nfts: NFTInfoForListing[]): Promise<ListingStepsDetailInfo>;
 
-  approveWithPolicy(data: [ListingItem[], ListingItem[]], policyOption: ApprovePolicyOption): Promise<ListingItem[]>;
+  approveWithPolicy(data: [ApprovalItem[], ListingItem[]], policyOption: ApprovePolicyOption): Promise<ListingItem[]>;
+
+  signListingOrders(data: ListingItem[]): Promise<[SignedListingItem[], ErrorListingItem[]]>;
+
+  bulkPostListingOrders(data: SignedListingItem[]): Promise<[number[], ErrorListingItem[]]>;
   /**
    * post a listing order to the target marketplace
    * @param params
    */
   postListingOrder(params: PostListingOrderParams): Promise<PostListingOrderResponse>;
 
-  postBatchListingOrders(params: PostListingOrderParams[]): Promise<PostListingOrderResponse[]>;
   bulkListing(nfts: NFTInfoForListing[], config: BulkListingOptions): Promise<void>;
 }
 
