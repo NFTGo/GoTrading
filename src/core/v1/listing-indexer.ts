@@ -327,13 +327,15 @@ export class ListingIndexerStable implements ListingIndexer {
   }
 
   // bulk listing
-  async bulkListing(nfts: NFTInfoForListing[], config: BulkListingOptions) {
-    const { autoApprove, onFinish, onError } = config;
+  async bulkListing(nfts: NFTInfoForListing[], config?: BulkListingOptions) {
+    console.info('bulkListing');
+    const { autoApprove, skipUnapproved, onFinish, onError } = config ?? {};
     try {
       /**
        * The first step is to obtain the items that need to be listed, relevant authorization signatures, and listing parameters
        */
       const data = await this.prepareListing(nfts);
+      console.info('data', data);
       /**
        * Then, do some simple data formatting and prepare to hand it over to the next process.
        */
@@ -344,6 +346,7 @@ export class ListingIndexerStable implements ListingIndexer {
        */
       const approvalResult = await this.approveWithPolicy([approvalData, listingData], {
         autoApprove,
+        skipUnapproved,
       });
       /**
        * Next, sign the post order for the authorized items.
@@ -353,10 +356,11 @@ export class ListingIndexerStable implements ListingIndexer {
        * Finally, for each different exchange, make post order requests using different strategies.
        */
       const [successIndexes, errorItems] = await this.bulkPostListingOrders(listingResult);
-
-      onFinish(successIndexes, [...errorOrders, ...errorItems]);
+      const errorIndexes = [...errorOrders, ...errorItems];
+      onFinish?.(successIndexes, errorIndexes);
+      return [successIndexes, errorIndexes] as [number[], ErrorListingItem[]];
     } catch (error) {
-      onError(error as Error);
+      onError?.(error as Error);
       throw error;
     }
   }

@@ -12,7 +12,8 @@ const providerUrl = 'https://rpc.tenderly.co/fork/d73c8e08-3381-4d11-9f4d-b38c2a
 // proxy env
 bootstrap();
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
-const HTTP_PROXY = 'http://10.10.36.44:9090';
+
+const HTTP_PROXY = 'http://192.168.31.186:9090';
 
 const mockApi = {
   apiKey: '11',
@@ -20,7 +21,7 @@ const mockApi = {
   interval: 1000,
 };
 let config: ListingIndexerConfig = {
-  apiKey: '1c946db2-2664-4e67-a051-a1419497ac3e', // Replace with your own API Key.
+  apiKey: process.env.API_KEY || '', // Replace with your own API Key.
   baseUrl: 'https://data-api.nftgo.dev/',
   chain: EVMChain.ETH,
   web3Provider: new Web3.providers.HttpProvider(providerUrl),
@@ -47,14 +48,14 @@ describe('ListingIndexerStable Function Unit Test', () => {
     expect(listingIndexer).toBeInstanceOf(ListingIndexerStable);
   });
 
-  // test('prepareListing api should return prepareListing data', async () => {
-  //   try {
-  //     const result = await listingIndexer.prepareListing(mockNFTs);
-  //     expect(result).toEqual(mockListingStepData);
-  //   } catch (e) {
-  //     console.error(e);
-  //   }
-  // }, 10000);
+  test('prepareListing api should return prepareListing data', async () => {
+    try {
+      const result = await listingIndexer.prepareListing(mockNFTs);
+      expect(result).toEqual(mockListingStepData);
+    } catch (e) {
+      console.error(e);
+    }
+  }, 10000);
 
   // test('approveWithPolicy auto Approve', async () => {
   //   const data = [
@@ -77,18 +78,11 @@ describe('ListingIndexerStable Function Unit Test', () => {
   //   console.info(res);
   // });
 
-  test('main process', async () => {
-    const result = await listingIndexer.prepareListing(mockNFTs);
-    const data = [
-      listingIndexer.parseApprovalData(mockListingStepData),
-      listingIndexer.parseListingData(mockListingStepData),
-    ];
-    const res = await listingIndexer.approveWithPolicy(data as any, {
-      autoApprove: true,
-    });
-    const res2 = await listingIndexer.listingWithPolicy(res);
-    expect(true).toEqual(true);
-  }, 20000);
+  // test('main process', async () => {
+  //   const result = await listingIndexer.bulkListing(mockNFTs);
+  //   console.info(result);
+  //   expect(true).toEqual(true);
+  // }, 20000);
 
   //   test('bulkListing should call runPipeline with correct parameters', async () => {
   //     const nfts: NFTInfoForListing[] = [];

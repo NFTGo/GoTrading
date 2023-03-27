@@ -81,7 +81,7 @@ export interface ListingIndexer {
    */
   postListingOrder(params: PostListingOrderParams): Promise<PostListingOrderResponse>;
 
-  bulkListing(nfts: NFTInfoForListing[], config: BulkListingOptions): Promise<void>;
+  bulkListing(nfts: NFTInfoForListing[], config?: BulkListingOptions): Promise<[number[], ErrorListingItem[]]>;
 }
 
 export type TransactionHashHandler = ((hash: string) => void) | null | undefined;

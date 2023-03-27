@@ -5,11 +5,13 @@ export type Marketplace = 'OpenSea' | 'LooksRare' | 'X2Y2';
 export interface ApprovePolicyOption {
   /**
    * If true, automatically approves all unapproved NFTs.
+   * default: false
    */
   autoApprove?: boolean;
 
   /**
    * If true, skips unapproved NFTs and proceeds with the approved ones.
+   * default: false
    */
   skipUnapproved?: boolean;
 }
@@ -114,22 +116,7 @@ export interface BulkListingParams {
 /**
  * Interface for bulk listing options.
  */
-export interface BulkListingOptions {
-  /**
-   * If true, automatically approves all unapproved NFTs.
-   */
-  autoApprove: boolean;
-
-  /**
-   * If true, skips unapproved NFTs and proceeds with the approved ones.
-   */
-  skipUnapproved: boolean;
-
-  /**
-   * If true, the whole operation fails if there are unapproved NFTs.
-   */
-  failOnUnapproved: boolean;
-
-  onFinish: (successIndexes: number[], failedItems?: ErrorListingItem[]) => void;
-  onError: (err: Error) => void;
+export interface BulkListingOptions extends ApprovePolicyOption {
+  onFinish?: (successIndexes: number[], failedItems?: ErrorListingItem[]) => void;
+  onError?: (err: Error) => void;
 }
