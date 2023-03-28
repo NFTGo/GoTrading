@@ -4,14 +4,16 @@ import Web3 from 'web3';
 import { ListingIndexerStable } from '../listing-indexer';
 import { ExternalHTTPClient } from '../../internal-http-client';
 import { AggregatorUtils } from '../utils';
-import { mockListingStepData, mockNFTs } from './mock';
+import { mockListingStepData, mockNFTs, mockPostOrderParams } from './mock';
 
 // const providerUrl = 'https://rpc.tenderly.co/fork/d73c8e08-3381-4d11-9f4d-b38c2a13ffa7';
 // const providerUrl = 'https://mainnet.infura.io/v3/b1a0f70afcec4336be3baedce97b486e';
 const providerUrl = 'https://cloudflare-eth.com/';
 // export https_proxy=http://10.10.36.44:9999 http_proxy=http://10.10.36.44:9999
 // proxy env
-const HTTP_PROXY = 'http://10.10.36.44:9999';
+// export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 all_proxy=socks5://127.0.0.1:7890
+// const HTTP_PROXY = 'http://10.10.36.44:9999';
+const HTTP_PROXY = 'http://127.0.0.1:7890';
 const openseaApi = {
   apiKey: process.env.OPENSEA_API_KEY || '',
   requestsPerInterval: 2,
@@ -91,8 +93,8 @@ describe('ListingIndexerStable Function Unit Test', () => {
   //   console.info(res);
   // });
 
-  // test('main process default', async () => {
-  //   const result = await listingIndexer.bulkListing(mockNFTs);
+  // test('post order with mock', async () => {
+  //   const result = await listingIndexer.postListingOrder(mockPostOrderParams);
   //   console.info(result);
   //   expect(true).toEqual(true);
   // }, 20000);

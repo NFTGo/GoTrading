@@ -30,6 +30,7 @@ import { marketplaceMeta } from './listing/const';
 import { AggregatorUtils } from './utils';
 import { BASE_URL } from '../conifg';
 import { camel } from '../../helpers/key-format';
+import { mockPostOrderParams } from './__test__/mock';
 
 export class ListingIndexerStable implements ListingIndexer {
   private postOrderHandlers = new Map<ListingOrderProtocol, IPostOrderHandler>();
@@ -59,6 +60,7 @@ export class ListingIndexerStable implements ListingIndexer {
    * @param params
    */
   async postListingOrder(params: PostListingOrderParams): Promise<PostListingOrderResponse> {
+    console.info('postListingOrder:', JSON.stringify(params));
     const payload = params.payload;
     const signature = params.signature ?? payload.order.data.signature;
     // get post order handler by protocol
@@ -81,7 +83,6 @@ export class ListingIndexerStable implements ListingIndexer {
               r,
               s,
             };
-            debugger;
             result = await handler.handle(payload);
             return {
               code: 'SUCCESS',
@@ -399,12 +400,25 @@ class SeaportV1D4Handler implements IPostOrderHandler {
     if (!['opensea'].includes(payload.orderbook)) {
       throw ListingIndexerApiException.unsupportedOrderbookError(orderbook, this.protocol);
     }
-    const seaportOrder: Models.SeaportV1D4.Types.ListingOrderParams = order.data;
+    const seaportOrder: Models.SeaportV1D4.Types.ListingOrderParams = {
+      offerer: order.data.offerer,
+      zone: order.data.zone,
+      offer: order.data.offer,
+      consideration: order.data.consideration,
+      orderType: order.data.orderType,
+      startTime: order.data.startTime,
+      endTime: order.data.endTime,
+      zoneHash: order.data.zoneHash,
+      salt: order.data.salt,
+      conduitKey: order.data.conduitKey,
+      counter: order.data.counter,
+      signature: order.data.signature,
+    };
 
     const apiKey = await this.rateLimiter.getAPIKeyWithRateLimiter();
     console.info('this.url', this.url, ':', apiKey);
-    return this.client.post(
-      this.url,
+    console.info(
+      'request',
       JSON.stringify({
         parameters: {
           ...seaportOrder,
@@ -412,9 +426,28 @@ class SeaportV1D4Handler implements IPostOrderHandler {
         },
         signature: order.data.signature,
         protocol_address: Models.SeaportV1D4.Addresses.Exchange[Models.Utils.Network.Ethereum],
-      }),
-      { 'X-Api-Key': apiKey }
+      })
     );
+    try {
+      const result = await this.client.post(
+        this.url,
+        // JSON.stringify({
+        //   parameters: {
+        //     ...seaportOrder,
+        //     totalOriginalConsiderationItems: order.data.consideration.length,
+        //   },
+        //   signature: order.data.signature,
+        //   protocol_address: Models.SeaportV1D4.Addresses.Exchange[Models.Utils.Network.Ethereum],
+        // }),
+        JSON.stringify(mockPostOrderParams),
+        { 'X-Api-Key': apiKey }
+      );
+      console.log('result', result);
+      return result;
+    } catch (error) {
+      console.error('error', error);
+      throw error;
+    }
   }
 }
 
