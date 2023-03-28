@@ -1,43 +1,56 @@
-import { HTTPClient, ListingIndexerConfig, EVMChain } from '../../interface';
 const HttpsProxyAgent = require('https-proxy-agent');
+import { HTTPClient, ListingIndexerConfig, EVMChain } from '../../interface';
 import Web3 from 'web3';
-import { bootstrap } from 'global-agent';
 import { ListingIndexerStable } from '../listing-indexer';
 import { ExternalHTTPClient } from '../../internal-http-client';
 import { AggregatorUtils } from '../utils';
 import { mockListingStepData, mockNFTs } from './mock';
 
-const providerUrl = 'https://rpc.tenderly.co/fork/d73c8e08-3381-4d11-9f4d-b38c2a13ffa7';
-// const providerUrl = 'https://mainnet.infura.io/v3/';
+// const providerUrl = 'https://rpc.tenderly.co/fork/d73c8e08-3381-4d11-9f4d-b38c2a13ffa7';
+// const providerUrl = 'https://mainnet.infura.io/v3/b1a0f70afcec4336be3baedce97b486e';
+const providerUrl = 'https://cloudflare-eth.com/';
+// export https_proxy=http://10.10.36.44:9999 http_proxy=http://10.10.36.44:9999
 // proxy env
-bootstrap();
-process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
-
-const HTTP_PROXY = 'http://192.168.31.186:9090';
-
-const mockApi = {
-  apiKey: '11',
+const HTTP_PROXY = 'http://10.10.36.44:9999';
+const openseaApi = {
+  apiKey: process.env.OPENSEA_API_KEY || '',
   requestsPerInterval: 2,
   interval: 1000,
 };
+const looksrareApi = {
+  apiKey: process.env.LOOKSRARE_API_KEY || '',
+  requestsPerInterval: 2,
+  interval: 1000,
+};
+const x2y2Api = {
+  apiKey: process.env.X2Y2_API_KEY || '',
+  requestsPerInterval: 2,
+  interval: 1000,
+};
+
+const web3Provider = new Web3.providers.HttpProvider(providerUrl);
+// const web3 = new Web3(web3Provider);
+// web3.eth.getBlockNumber().then((result) => {
+//   console.log('Latest Ethereum Block is ', result);
+// });
 let config: ListingIndexerConfig = {
   apiKey: process.env.API_KEY || '', // Replace with your own API Key.
   baseUrl: 'https://data-api.nftgo.dev/',
   chain: EVMChain.ETH,
-  web3Provider: new Web3.providers.HttpProvider(providerUrl),
+  web3Provider,
   walletConfig: {
     address: process.env.ADDRESS || '',
     privateKey: process.env.PRIVATE_KEY || '',
   },
   agent: new HttpsProxyAgent(HTTP_PROXY),
-  openSeaApiKeyConfig: mockApi,
-  looksRareApiKeyConfig: mockApi,
-  x2y2ApiKeyConfig: mockApi,
+  openSeaApiKeyConfig: openseaApi,
+  looksRareApiKeyConfig: looksrareApi,
+  x2y2ApiKeyConfig: x2y2Api,
 };
 
+let httpClient: HTTPClient = new ExternalHTTPClient(config?.agent);
 describe('ListingIndexerStable Function Unit Test', () => {
   const utils = new AggregatorUtils(config.web3Provider, config.walletConfig);
-  let httpClient: HTTPClient = new ExternalHTTPClient(config?.agent);
   let listingIndexer: ListingIndexerStable;
 
   beforeEach(() => {
@@ -48,14 +61,14 @@ describe('ListingIndexerStable Function Unit Test', () => {
     expect(listingIndexer).toBeInstanceOf(ListingIndexerStable);
   });
 
-  test('prepareListing api should return prepareListing data', async () => {
-    try {
-      const result = await listingIndexer.prepareListing(mockNFTs);
-      expect(result).toEqual(mockListingStepData);
-    } catch (e) {
-      console.error(e);
-    }
-  }, 10000);
+  // test('prepareListing api should return prepareListing data', async () => {
+  //   try {
+  //     const result = await listingIndexer.prepareListing(mockNFTs);
+  //     expect(result).toEqual(mockListingStepData);
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // }, 10000);
 
   // test('approveWithPolicy auto Approve', async () => {
   //   const data = [
@@ -78,19 +91,25 @@ describe('ListingIndexerStable Function Unit Test', () => {
   //   console.info(res);
   // });
 
-  // test('main process', async () => {
+  // test('main process default', async () => {
   //   const result = await listingIndexer.bulkListing(mockNFTs);
   //   console.info(result);
   //   expect(true).toEqual(true);
   // }, 20000);
+  test('main process test(auto approval)', async () => {
+    const result = await listingIndexer.bulkListing(mockNFTs, {
+      autoApprove: true,
+    });
+    expect(result).toHaveReturned();
+  }, 30000);
 
-  //   test('bulkListing should call runPipeline with correct parameters', async () => {
-  //     const nfts: NFTInfoForListing[] = [];
-  //     const config: BulkListingOptions = {};
+  // test('bulkListing should call runPipeline with correct parameters', async () => {
+  //   const nfts: NFTInfoForListing[] = [];
+  //   const config: BulkListingOptions = {};
 
-  //     const runPipelineSpy = jest.spyOn(require('../../helpers/pipeline'), 'runPipeline');
-  //     await listingIndexer.bulkListing(nfts, config);
+  //   const runPipelineSpy = jest.spyOn(require('../../helpers/pipeline'), 'runPipeline');
+  //   await listingIndexer.bulkListing(nfts, config);
 
-  //     expect(runPipelineSpy).toBeCalledWith(expect.any(Array), nfts);
-  //   });
+  //   expect(runPipelineSpy).toBeCalledWith(expect.any(Array), nfts);
+  // });
 });

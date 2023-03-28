@@ -68,7 +68,7 @@ export class ListingIndexerStable implements ListingIndexer {
     }
 
     let result;
-
+    console.info('signature', signature);
     switch (params.version) {
       case '/order/v3':
         if (signature) {
@@ -81,17 +81,19 @@ export class ListingIndexerStable implements ListingIndexer {
               r,
               s,
             };
+            debugger;
+            result = await handler.handle(payload);
+            return {
+              code: 'SUCCESS',
+              msg: 'success',
+              data: result,
+            };
           } catch (e: any) {
+            console.error(e);
             throw ListingIndexerApiException.invalidSignatureError(signature);
           }
         }
 
-        result = await handler.handle(payload);
-        return {
-          code: 'SUCCESS',
-          msg: 'success',
-          data: result,
-        };
       case '/order/v4':
         const bulkData = payload.bulkData;
         if (signature) {
@@ -348,10 +350,14 @@ export class ListingIndexerStable implements ListingIndexer {
         autoApprove,
         skipUnapproved,
       });
+      console.info('approvalResult', approvalResult);
+
       /**
        * Next, sign the post order for the authorized items.
        */
       const [listingResult, errorOrders] = await this.signListingOrders(approvalResult);
+      console.info('listingResult', listingResult);
+
       /**
        * Finally, for each different exchange, make post order requests using different strategies.
        */
@@ -396,12 +402,13 @@ class SeaportV1D4Handler implements IPostOrderHandler {
     const seaportOrder: Models.SeaportV1D4.Types.ListingOrderParams = order.data;
 
     const apiKey = await this.rateLimiter.getAPIKeyWithRateLimiter();
+    console.info('this.url', this.url, ':', apiKey);
     return this.client.post(
       this.url,
       JSON.stringify({
         parameters: {
           ...seaportOrder,
-          totalOriginalConsiderationItems: order.params.consideration.length,
+          totalOriginalConsiderationItems: order.data.consideration.length,
         },
         signature: order.data.signature,
         protocol_address: Models.SeaportV1D4.Addresses.Exchange[Models.Utils.Network.Ethereum],

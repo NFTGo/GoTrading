@@ -5,7 +5,7 @@ export const mockNFTs: NFTInfoForListing[] = [
     marketplace: 'OpenSea',
     contract: '0xa342f5d851e866e18ff98f351f2c6637f4478db5',
     tokenId: '24526111578964355427464788391204295010760968458116003736309517252594046615553',
-    ethPrice: 10,
+    ethPrice: 20,
     listingTime: 1689031810000,
     expirationTime: 1679031810000,
   },
