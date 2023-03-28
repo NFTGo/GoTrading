@@ -30,7 +30,6 @@ import { marketplaceMeta } from './listing/const';
 import { AggregatorUtils } from './utils';
 import { BASE_URL } from '../conifg';
 import { camel } from '../../helpers/key-format';
-import { mockPostOrderParams } from './__test__/mock';
 
 export class ListingIndexerStable implements ListingIndexer {
   private postOrderHandlers = new Map<ListingOrderProtocol, IPostOrderHandler>();
@@ -60,7 +59,6 @@ export class ListingIndexerStable implements ListingIndexer {
    * @param params
    */
   async postListingOrder(params: PostListingOrderParams): Promise<PostListingOrderResponse> {
-    console.info('postListingOrder:', JSON.stringify(params));
     const payload = params.payload;
     const signature = params.signature ?? payload.order.data.signature;
     // get post order handler by protocol
@@ -70,7 +68,6 @@ export class ListingIndexerStable implements ListingIndexer {
     }
 
     let result;
-    console.info('signature', signature);
     switch (params.version) {
       case '/order/v3':
         if (signature) {
@@ -137,14 +134,17 @@ export class ListingIndexerStable implements ListingIndexer {
   }
 
   async prepareListing(nfts: NFTInfoForListing[]): Promise<ListingStepsDetailInfo> {
+    if (nfts.length === 0) {
+      throw ListingIndexerApiException.invalidParam('nfts', 'nfts should not be empty');
+    }
     const params = nfts.map<PrepareListingParams>((param) => {
-      const { contract, tokenId, marketplace, ethPrice, listingTime, expirationTime, isCreatorFeesEnforced } = param;
+      const { contract, tokenId, marketplace, ethPrice, listingTime, expirationTime } = param;
       const { orderKind, orderbook, options } = marketplaceMeta[marketplace];
       return {
         orderKind,
         orderbook,
-        automatedRoyalties: true,
-        royaltyBps: isCreatorFeesEnforced === false ? 50 : undefined,
+        // automatedRoyalties: true,
+        // royaltyBps: isCreatorFeesEnforced === false ? 50 : undefined,
         options,
         currency: '0x0000000000000000000000000000000000000000',
         token: `${contract}:${tokenId}`,
@@ -417,29 +417,17 @@ class SeaportV1D4Handler implements IPostOrderHandler {
 
     const apiKey = await this.rateLimiter.getAPIKeyWithRateLimiter();
     console.info('this.url', this.url, ':', apiKey);
-    console.info(
-      'request',
-      JSON.stringify({
-        parameters: {
-          ...seaportOrder,
-          totalOriginalConsiderationItems: order.data.consideration.length,
-        },
-        signature: order.data.signature,
-        protocol_address: Models.SeaportV1D4.Addresses.Exchange[Models.Utils.Network.Ethereum],
-      })
-    );
     try {
       const result = await this.client.post(
         this.url,
-        // JSON.stringify({
-        //   parameters: {
-        //     ...seaportOrder,
-        //     totalOriginalConsiderationItems: order.data.consideration.length,
-        //   },
-        //   signature: order.data.signature,
-        //   protocol_address: Models.SeaportV1D4.Addresses.Exchange[Models.Utils.Network.Ethereum],
-        // }),
-        JSON.stringify(mockPostOrderParams),
+        {
+          parameters: {
+            ...seaportOrder,
+            totalOriginalConsiderationItems: order.data.consideration.length,
+          },
+          signature: order.data.signature,
+          protocol_address: Models.SeaportV1D4.Addresses.Exchange[Models.Utils.Network.Ethereum],
+        },
         { 'X-Api-Key': apiKey }
       );
       console.log('result', result);
@@ -474,7 +462,7 @@ class LooksRareHandler implements IPostOrderHandler {
 
     return this.client.post(
       this.url,
-      JSON.stringify({
+      {
         ...looksrareOrder,
         signature: joinSignature({
           v: order.params.v,
@@ -483,7 +471,7 @@ class LooksRareHandler implements IPostOrderHandler {
         }),
         tokenId: order.params.tokenId,
         params: [],
-      }),
+      },
       { 'X-Api-Key': apiKey }
     );
   }
@@ -544,12 +532,6 @@ class X2Y2Handler implements IPostOrderHandler {
       isCollection: order.dataMask !== '0x',
     };
 
-    return this.client.post(
-      this.url,
-      JSON.stringify({
-        ...orderParams,
-      }),
-      { 'X-Api-Key': apiKey }
-    );
+    return this.client.post(this.url, orderParams, { 'X-Api-Key': apiKey });
   }
 }

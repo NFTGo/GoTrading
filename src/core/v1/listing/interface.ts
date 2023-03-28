@@ -22,7 +22,7 @@ export interface PrepareListingParams {
   weiPrice: string;
   orderKind: string;
   orderbook: string;
-  automatedRoyalties: boolean;
+  automatedRoyalties?: boolean;
   listingTime: string;
   expirationTime: string;
   currency: '0x0000000000000000000000000000000000000000';
@@ -87,7 +87,7 @@ export interface ApprovalItem {
     from: string;
     to: string;
     data: string;
-  };
+  } | null;
 }
 
 interface StepInfo<T> {
