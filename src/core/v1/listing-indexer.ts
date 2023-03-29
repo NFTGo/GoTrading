@@ -530,10 +530,8 @@ class X2Y2Handler implements IPostOrderHandler {
       bundleDesc: '',
       orderIds: [],
       changePrice: false,
-      isCollection: order.dataMask !== '0x',
+      isCollection: order.data.dataMask !== '0x',
     };
-
-    console.info('orderParams', orderParams);
 
     return this.client.post(this.url, orderParams, { 'X-Api-Key': apiKey });
   }
