@@ -27,6 +27,56 @@ export interface PrepareListingParams {
   expirationTime: string;
   currency: '0x0000000000000000000000000000000000000000';
 }
+interface BulkSeaPortOrder {
+  order: {
+    kind: 'seaport-v1.4';
+    data: {
+      kind: 'single-token';
+      offerer: string;
+      zone: string;
+      offer: {
+        itemType: number;
+        token: string;
+        identifierOrCriteria: string;
+        startAmount: string;
+        endAmount: string;
+      }[];
+      consideration: {
+        itemType: number;
+        token: string;
+        identifierOrCriteria: string;
+        startAmount: string;
+        endAmount: string;
+        recipient: string;
+      }[];
+      orderType: number;
+      startTime: number;
+      endTime: number;
+      zoneHash: string;
+      salt: string;
+      conduitKey: string;
+      counter: string;
+      signature: string;
+    };
+  };
+  orderbook: string;
+  bulkData: {
+    kind: 'seaport-v1.4';
+    data: {
+      orderIndex: number;
+      merkleProof: string[];
+    };
+  };
+}
+
+export interface BulkSeaPortPostData {
+  body: {
+    items: BulkSeaPortOrder[];
+    source: string;
+  };
+  endpoint: '/order/v4';
+  method: 'POST';
+}
 
 export interface PostData {
   body: {
@@ -58,7 +108,7 @@ export interface SignData {
 }
 
 interface ListingAction {
-  post: PostData;
+  post: PostData | BulkSeaPortPostData;
   sign: SignData;
 }
 
@@ -70,7 +120,7 @@ export interface ListingItem {
 
 export interface SignedListingItem {
   signature: string;
-  post: PostData;
+  post: PostData | BulkSeaPortPostData;
   orderIndexes: number[];
 }
 

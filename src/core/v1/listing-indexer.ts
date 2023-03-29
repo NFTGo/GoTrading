@@ -2,10 +2,12 @@ import {
   ApprovalItem,
   ApprovePolicyOption,
   BulkListingOptions,
+  BulkSeaPortPostData,
   ErrorListingItem,
   ListingItem,
   ListingStepsDetailInfo,
   NFTInfoForListing,
+  PostData,
   PrepareListingParams,
   SignData,
   SignedListingItem,
@@ -255,37 +257,63 @@ export class ListingIndexerStable implements ListingIndexer {
   }
 
   async bulkPostListingOrders(signaturedOrders: SignedListingItem[]): Promise<[number[], ErrorListingItem[]]> {
-    const bulkPostOrders = signaturedOrders.map((e) => {
-      const { signature, post } = e;
-      const { endpoint, body } = post;
-      return this.postListingOrder({
-        version: endpoint,
-        protocol: body.order.kind as any,
-        payload: body,
-        signature: signature,
-      });
-    });
+    function isBulkSeaPortV4(postData: PostData | BulkSeaPortPostData): postData is BulkSeaPortPostData {
+      return (postData as BulkSeaPortPostData).body.items !== undefined;
+    }
+    const bulkPostOrderIndexes = signaturedOrders
+      .map((e) => {
+        const { post, orderIndexes } = e;
+        if (isBulkSeaPortV4(post)) {
+          return post.body.items.map((ele) => ele.bulkData.data.orderIndex);
+        } else {
+          return orderIndexes;
+        }
+      })
+      .flat();
+    const bulkPostOrders = signaturedOrders
+      .map((e) => {
+        const { signature, post, orderIndexes } = e;
+        const { endpoint, body } = post;
+        if (isBulkSeaPortV4(post)) {
+          return post.body.items.map((ele) => {
+            return this.postListingOrder({
+              version: endpoint,
+              protocol: post.body.items[0].order.kind as ListingOrderProtocol,
+              payload: ele,
+              signature: signature,
+            });
+          });
+        } else {
+          return this.postListingOrder({
+            version: endpoint,
+            protocol: post.body.order.kind as ListingOrderProtocol,
+            payload: body,
+            signature: signature,
+          });
+        }
+      })
+      .flat();
     const data = await Promise.allSettled(bulkPostOrders);
     const successItems: number[] = [];
     const errorItems: ErrorListingItem[] = [];
     data.forEach((e, i) => {
-      const indexes = signaturedOrders[i].orderIndexes;
+      const index = bulkPostOrderIndexes[i];
       if (e.status === 'fulfilled') {
         const { code } = e.value;
         if (code === 'SUCCESS') {
-          successItems.push(...indexes);
+          successItems.push(index);
         } else {
           errorItems.push({
             reason: 'post listing failed',
             reasonStep: 'post listing response error',
-            orderIndexes: indexes,
+            orderIndexes: [index],
           });
         }
       } else {
         errorItems.push({
           reason: 'post listing request failed:' + (e as PromiseRejectedResult).reason,
           reasonStep: 'post listing request error',
-          orderIndexes: indexes,
+          orderIndexes: [index],
         });
       }
     });

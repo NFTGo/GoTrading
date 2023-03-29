@@ -2,7 +2,14 @@ import { HTTPClient } from '../../interface';
 import { ListingIndexerStable } from '../listing-indexer';
 import { ExternalHTTPClient } from '../../internal-http-client';
 import { AggregatorUtils } from '../utils';
-import { mockListingStepData, mockLooksRareOrder, mockNFTs, mockOpenSeaOrder, mockX2y2Order } from './mock';
+import {
+  bulk1155NFTS,
+  mockBulkOpenSeaStepData,
+  mockListingStepData,
+  mockLooksRareOrder,
+  mockOpenSeaOrder,
+  mockX2y2Order,
+} from './mock';
 import { initConfig } from './config';
 
 const config = initConfig();
@@ -33,6 +40,15 @@ describe('prepareListing api testing [OpenSea,LooksRare,X2Y2] ', () => {
     try {
       const result = await listingIndexer.prepareListing([mockOpenSeaOrder]);
       expect(result).toMatchObject(mockListingStepData);
+    } catch (e) {
+      console.error(e);
+    }
+  }, 3000);
+
+  test('bulk opensea prepare listing', async () => {
+    try {
+      const result = await listingIndexer.prepareListing(bulk1155NFTS);
+      expect(result).toMatchObject(mockBulkOpenSeaStepData);
     } catch (e) {
       console.error(e);
     }
