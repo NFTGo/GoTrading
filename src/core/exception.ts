@@ -1,4 +1,4 @@
-import {ListingOrderProtocol, NFTBaseInfo} from './interface';
+import { ListingOrderProtocol, NFTBaseInfo } from './interface';
 
 /**
  * NFTGo SDK's base error types
@@ -24,7 +24,6 @@ export class BaseException extends Error {
     return new BaseException(ExceptionType.EXTERNAL_SERVICE_ERROR, msg);
   }
 }
-
 
 export class AggregatorBaseException extends Error {
   constructor(public code: number | string, public message: string = '') {
@@ -61,6 +60,7 @@ enum ApiExceptionType {
   API_CHAIN_ERROR = 'api_chain_error',
   REQUEST_ERROR = 'request_error',
   SIGNATURE_ERROR = 'signature_error',
+  MARKETPLACE_ERROR = 'marketplace_error',
 }
 
 /**
@@ -169,18 +169,37 @@ export class ListingIndexerApiException extends ListingIndexerBaseException {
   }
 
   static invalidPostOrderVersionError(version: string) {
-    return new ListingIndexerApiException(ExceptionType.PARAM_ERROR, this.invalidParam('version', `capped at ${version}`));
+    return new ListingIndexerApiException(
+      ExceptionType.PARAM_ERROR,
+      this.invalidParam('version', `capped at ${version}`)
+    );
   }
 
   static invalidSignatureError(signature: string) {
-    return new ListingIndexerApiException(ApiExceptionType.SIGNATURE_ERROR, this.invalidParam('signature', `invalid signature ${signature}`));
+    return new ListingIndexerApiException(
+      ApiExceptionType.SIGNATURE_ERROR,
+      this.invalidParam('signature', `invalid signature ${signature}`)
+    );
+  }
+
+  static marketplacePostOrderError(msg: string) {
+    return new ListingIndexerApiException(ApiExceptionType.MARKETPLACE_ERROR, this.invalidParam('marketplace', msg));
   }
 
   static unsupportedOrderbookError(orderbook: string, protocol: string) {
-    return new ListingIndexerApiException(ExceptionType.PARAM_ERROR, this.invalidParam('orderbook', `capped at ${orderbook} for ${protocol}`));
+    return new ListingIndexerApiException(
+      ExceptionType.PARAM_ERROR,
+      this.invalidParam('orderbook', `capped at ${orderbook} for ${protocol}`)
+    );
   }
 
   static unsupportedListProtocolError(protocol: string) {
-    return new ListingIndexerApiException(ExceptionType.PARAM_ERROR, this.invalidParam('protocol', `available listing protocols: ${JSON.stringify(Object.values(ListingOrderProtocol))}, got ${protocol}`));
+    return new ListingIndexerApiException(
+      ExceptionType.PARAM_ERROR,
+      this.invalidParam(
+        'protocol',
+        `available listing protocols: ${JSON.stringify(Object.values(ListingOrderProtocol))}, got ${protocol}`
+      )
+    );
   }
 }

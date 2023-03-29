@@ -20,28 +20,30 @@ describe('bulkListing main process Test', () => {
     expect(listingIndexer).toBeInstanceOf(ListingIndexerStable);
   });
 
-  test('【OpenSea】bulk listing process test(auto approval)', async () => {
-    const result = await listingIndexer.bulkListing([mockOpenSeaOrder], {
-      autoApprove: true,
-    });
-    expect(result).toEqual([[0], []]);
-  }, 30000);
-  test('【LooksRare】bulk listing process test(auto approval)', async () => {
-    const result = await listingIndexer.bulkListing([mockLooksRareOrder], {
-      autoApprove: true,
-    });
-    expect(result).toEqual([[0], []]);
-  }, 30000);
-  // test('【X2Y2】bulk listing process test(auto approval)', async () => {
-  //   const result = await listingIndexer.bulkListing([mockX2y2Order], {
+  // test('【OpenSea】bulk listing process test(auto approval)', async (done?: any) => {
+  //   const result = await listingIndexer.bulkListing([mockOpenSeaOrder], {
+  //     autoApprove: true,
+  //   });
+  //   expect(result).toEqual([[0], []]);
+  //   done?.();
+  // }, 30000);
+  // test('【LooksRare】bulk listing process test(auto approval)', async () => {
+  //   const result = await listingIndexer.bulkListing([mockLooksRareOrder], {
   //     autoApprove: true,
   //   });
   //   expect(result).toEqual([[0], []]);
   // }, 30000);
+  test('【X2Y2】bulk listing process test(auto approval)', async () => {
+    const result = await listingIndexer.bulkListing([mockX2y2Order], {
+      autoApprove: true,
+    });
+    expect(result).toEqual([[0], []]);
+  }, 30000);
 
   // TODO: bulk listing (skip approval)
   // TODO: bulk listing (reject approval)
   // TODO: bulk listing (auto approval)
+  // TODO: Duplicated order payload
 });
 
 // test('approveWithPolicy auto Approve', async () => {

@@ -88,7 +88,7 @@ export class ListingIndexerStable implements ListingIndexer {
             };
           } catch (e: any) {
             console.error(e);
-            throw ListingIndexerApiException.invalidSignatureError(signature);
+            throw ListingIndexerApiException.marketplacePostOrderError(e.message);
           }
         }
 
@@ -119,7 +119,8 @@ export class ListingIndexerStable implements ListingIndexer {
               };
             }
           } catch (e: any) {
-            throw ListingIndexerApiException.invalidSignatureError(signature);
+            console.error(e);
+            throw ListingIndexerApiException.marketplacePostOrderError(e.message);
           }
         }
         result = await handler.handle(payload);
@@ -282,7 +283,7 @@ export class ListingIndexerStable implements ListingIndexer {
         }
       } else {
         errorItems.push({
-          reason: 'post listing request failed',
+          reason: 'post listing request failed:' + (e as PromiseRejectedResult).reason,
           reasonStep: 'post listing request error',
           orderIndexes: indexes,
         });
@@ -465,11 +466,11 @@ class LooksRareHandler implements IPostOrderHandler {
       {
         ...looksrareOrder,
         signature: joinSignature({
-          v: order.params.v,
-          r: order.params.r as string,
-          s: order.params.s,
+          v: order.data.v,
+          r: order.data.r as string,
+          s: order.data.s,
         }),
-        tokenId: order.params.tokenId,
+        tokenId: order.data.tokenId,
         params: [],
       },
       { 'X-Api-Key': apiKey }
@@ -531,6 +532,8 @@ class X2Y2Handler implements IPostOrderHandler {
       changePrice: false,
       isCollection: order.dataMask !== '0x',
     };
+
+    console.info('orderParams', orderParams);
 
     return this.client.post(this.url, orderParams, { 'X-Api-Key': apiKey });
   }

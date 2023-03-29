@@ -18,7 +18,7 @@ function getMockOrder(item: any, market: Marketplace): NFTInfoForListing {
     tokenId: item.tokenId,
     ethPrice: item.ethPrice,
     listingTime: +Date.now(),
-    expirationTime: +Date.now() + 86400000, // add one day
+    expirationTime: +Date.now() + 3600000, // add one hour
   };
 }
 
