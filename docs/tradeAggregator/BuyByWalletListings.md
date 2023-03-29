@@ -114,9 +114,9 @@ utils?.sendTransaction({
 });
 ```
 >
-> This is [Safe Mode Example](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/BuyByCollectionListings.md).
+> This is [Safe Mode Example](https://github.com/NFTGo/GoTrading/blob/master/docs/tradeAggregator/tradeWithSafeMode.md).
 
 ## ***interface***
-  - [***SingleAddressListingsResponse***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/SingleAddressListingsResponse.md)
-  - [***AggregateParams***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/TradeAggregatorParams.md)
-  - [***AggregateResponse***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/TradeAggregatorResponse.md)
+  - [***SingleAddressListingsResponse***](https://github.com/NFTGo/GoTrading/blob/master/docs/interfaces/SingleAddressListingsResponse.md)
+  - [***AggregateParams***](https://github.com/NFTGo/GoTrading/blob/master/docs/interfaces/TradeAggregatorParams.md)
+  - [***AggregateResponse***](https://github.com/NFTGo/GoTrading/blob/master/docs/interfaces/TradeAggregatorResponse.md)

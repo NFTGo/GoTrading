@@ -213,22 +213,22 @@ utils?.sendTransaction({
 ![image info](model_diagram.jpg)
 
 ## Complete example
-  - [***BuyByCollectionListings***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/tradeAggregator/BuyByCollectionListings.md)
+  - [***BuyByCollectionListings***](https://github.com/NFTGo/GoTrading/blob/master/docs/tradeAggregator/BuyByCollectionListings.md)
 
-  - [***BuyByNFTListings***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/tradeAggregator/BuyByNFTListings.md)
+  - [***BuyByNFTListings***](https://github.com/NFTGo/GoTrading/blob/master/docs/tradeAggregator/BuyByNFTListings.md)
 
-  - [***BuyByWalletListings***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/tradeAggregator/BuyByWalletListings.md)
+  - [***BuyByWalletListings***](https://github.com/NFTGo/GoTrading/blob/master/docs/tradeAggregator/BuyByWalletListings.md)
 
-  - [***BulkBuy***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/tradeAggregator/BulkBuy.md)
+  - [***BulkBuy***](https://github.com/NFTGo/GoTrading/blob/master/docs/tradeAggregator/BulkBuy.md)
 
 
 ## Interface example
-  - [***SingleAddressListingsResponse***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/SingleAddressListingsResponse.md)
-  - [***SingleNFTListingsResponse***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/SingleNftListingResponse.md)
-  - [***CollectionListingsParam***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/CollectionListingsParam.md)
-  - [***CollectionListingResponse***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/CollectionListingResponse.md)
-  - [***AggregateParams***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/TradeAggregatorParams.md)
-  - [***AggregateResponse***](https://github.com/NFTGo/GoTrading-js/blob/feat/draft/docs/interfaces/TradeAggregatorResponse.md)
+  - [***SingleAddressListingsResponse***](https://github.com/NFTGo/GoTrading/blob/master/docs/interfaces/SingleAddressListingsResponse.md)
+  - [***SingleNFTListingsResponse***](https://github.com/NFTGo/GoTrading/blob/master/docs/interfaces/SingleNftListingResponse.md)
+  - [***CollectionListingsParam***](https://github.com/NFTGo/GoTrading/blob/master/docs/interfaces/CollectionListingsParam.md)
+  - [***CollectionListingResponse***](https://github.com/NFTGo/GoTrading/blob/master/docs/interfaces/CollectionListingResponse.md)
+  - [***AggregateParams***](https://github.com/NFTGo/GoTrading/blob/master/docs/interfaces/TradeAggregatorParams.md)
+  - [***AggregateResponse***](https://github.com/NFTGo/GoTrading/blob/master/docs/interfaces/TradeAggregatorResponse.md)
 
 
 ## Questions & Feedback
