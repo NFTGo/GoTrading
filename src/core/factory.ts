@@ -1,16 +1,11 @@
-import { Aggregator, Config, EVMChain, GoTrading } from './interface';
+import { Aggregator, Config, EVMChain, GoTrading, ListingIndexerConfig } from './interface';
 import { AggregatorStable } from './v1/aggregator';
-import { InternalHTTPClient } from './internal-http-client';
+import { ExternalHTTPClient, InternalHTTPClient } from './internal-http-client';
 import { AggregatorUtils } from './v1/utils';
 import { AggregatorApiException, AggregatorBaseException } from './exception';
+import { ListingIndexerStable } from './v1/listing-indexer';
 
-/**
- * user-land create aggregator client method
- * @param config init client config {@link Config}
- * @returns sdk-client {@link Aggregator} {@link AggregatorUtils}
- *
- */
-export function init(config: Config): GoTrading {
+function initAggregatorUtils(config: Config) {
   if (!config.apiKey) {
     throw AggregatorApiException.missApiKeyError();
   }
@@ -21,9 +16,32 @@ export function init(config: Config): GoTrading {
     (globalThis as any)?.ethereum || config?.web3Provider || config?.walletConfig
       ? new AggregatorUtils(config.web3Provider, config.walletConfig)
       : undefined;
+
+  return aggregatorUtils;
+}
+/**
+ * user-land create aggregator client method
+ * @param config init client config {@link Config}
+ * @returns sdk-client {@link Aggregator} {@link AggregatorUtils}
+ *
+ */
+export function init(config: Config): GoTrading {
+  const aggregatorUtils = initAggregatorUtils(config);
   const aggregatorApi = new AggregatorStable(new InternalHTTPClient(config.agent), config, aggregatorUtils);
   return {
     aggregator: aggregatorApi,
+    utils: aggregatorUtils,
+  };
+}
+
+export function initListingIndexer(config: ListingIndexerConfig) {
+  const aggregatorUtils = initAggregatorUtils(config);
+  if (!aggregatorUtils) {
+    throw AggregatorBaseException.missingParamError('web3Provider');
+  }
+  const listingIndexer = new ListingIndexerStable(new ExternalHTTPClient(config.agent), config, aggregatorUtils);
+  return {
+    listingIndexer,
     utils: aggregatorUtils,
   };
 }

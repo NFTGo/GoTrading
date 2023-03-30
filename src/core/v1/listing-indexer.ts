@@ -371,14 +371,12 @@ export class ListingIndexerStable implements ListingIndexer {
 
   // bulk listing
   async bulkListing(nfts: NFTInfoForListing[], config?: BulkListingOptions) {
-    console.info('bulkListing');
     const { autoApprove, skipUnapproved, onFinish, onError } = config ?? {};
     try {
       /**
        * The first step is to obtain the items that need to be listed, relevant authorization signatures, and listing parameters
        */
       const data = await this.prepareListing(nfts);
-      console.info('data', data);
       /**
        * Then, do some simple data formatting and prepare to hand it over to the next process.
        */
@@ -391,14 +389,11 @@ export class ListingIndexerStable implements ListingIndexer {
         autoApprove,
         skipUnapproved,
       });
-      console.info('approvalResult', approvalResult);
 
       /**
        * Next, sign the post order for the authorized items.
        */
       const [listingResult, errorOrders] = await this.signListingOrders(approvalResult);
-      console.info('listingResult', listingResult);
-
       /**
        * Finally, for each different exchange, make post order requests using different strategies.
        */

@@ -17,7 +17,6 @@ export interface ApprovePolicyOption {
 }
 
 export interface PrepareListingParams {
-  // contract:tokenId
   token: string;
   weiPrice: string;
   orderKind: string;
@@ -155,7 +154,9 @@ export interface ListingStepsDetailInfo {
 export interface NFTInfoForListing extends NFTBaseInfo {
   marketplace: Marketplace;
   ethPrice: number;
+  // The meaning of the field is the time when the order was placed, usually either now or at some specific point in time. It is measured in milliseconds.
   listingTime: number;
+  // the expiration time of the order, measured in milliseconds.
   expirationTime: number;
   // List of fees (formatted as `feeRecipient:feeBps`) to be bundled within the order. Example: `0xF296178d553C8Ec21A2fBD2c5dDa8CA9ac905A00:100`
   fees?: string[];

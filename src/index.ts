@@ -1,3 +1,3 @@
-export { init } from './core/factory';
+export { init, initListingIndexer } from './core/factory';
 
 export * from './core/interface';
