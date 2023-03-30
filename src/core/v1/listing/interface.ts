@@ -26,6 +26,7 @@ export interface PrepareListingParams {
   listingTime: string;
   expirationTime: string;
   currency: '0x0000000000000000000000000000000000000000';
+  fees?: string[];
 }
 interface BulkSeaPortOrder {
   order: {
@@ -156,7 +157,11 @@ export interface NFTInfoForListing extends NFTBaseInfo {
   ethPrice: number;
   listingTime: number;
   expirationTime: number;
-  isCreatorFeesEnforced?: boolean;
+  // List of fees (formatted as `feeRecipient:feeBps`) to be bundled within the order. Example: `0xF296178d553C8Ec21A2fBD2c5dDa8CA9ac905A00:100`
+  fees?: string[];
+  royaltyBps?: number;
+  // Only Opensea requires this field to be configured, which means that the royalty set by the exchange will be automatically used.
+  automatedRoyalties?: boolean;
 }
 
 export interface BulkListingParams {

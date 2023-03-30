@@ -141,13 +141,24 @@ export class ListingIndexerStable implements ListingIndexer {
       throw ListingIndexerApiException.invalidParam('nfts', 'nfts should not be empty');
     }
     const params = nfts.map<PrepareListingParams>((param) => {
-      const { contract, tokenId, marketplace, ethPrice, listingTime, expirationTime } = param;
+      const {
+        contract,
+        tokenId,
+        marketplace,
+        ethPrice,
+        listingTime,
+        expirationTime,
+        automatedRoyalties,
+        royaltyBps,
+        fees,
+      } = param;
       const { orderKind, orderbook, options } = marketplaceMeta[marketplace];
       return {
         orderKind,
         orderbook,
-        // automatedRoyalties: true,
-        // royaltyBps: isCreatorFeesEnforced === false ? 50 : undefined,
+        automatedRoyalties,
+        royaltyBps: royaltyBps ?? undefined,
+        fees: fees ?? undefined,
         options,
         currency: '0x0000000000000000000000000000000000000000',
         token: `${contract}:${tokenId}`,
