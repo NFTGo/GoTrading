@@ -174,8 +174,7 @@ export class ListingIndexerStable implements ListingIndexer {
         maker: this.config.walletConfig?.address,
         source: 'nftgo.io',
       },
-      this.headers,
-      true
+      this.headers
     );
     const camelData = camel(data);
     return camelData as ListingStepsDetailInfo;
@@ -463,7 +462,8 @@ class SeaportV1D4Handler implements IPostOrderHandler {
           signature: order.data.signature,
           protocol_address: Models.SeaportV1D4.Addresses.Exchange[Models.Utils.Network.Ethereum],
         },
-        { 'X-Api-Key': apiKey }
+        { 'X-Api-Key': apiKey },
+        true
       );
       console.log('result', result);
       return result;
@@ -507,7 +507,8 @@ class LooksRareHandler implements IPostOrderHandler {
         tokenId: order.data.tokenId,
         params: [],
       },
-      { 'X-Api-Key': apiKey }
+      { 'X-Api-Key': apiKey },
+      true
     );
   }
 }
@@ -567,6 +568,6 @@ class X2Y2Handler implements IPostOrderHandler {
       isCollection: order.data.dataMask !== '0x',
     };
 
-    return this.client.post(this.url, orderParams, { 'X-Api-Key': apiKey });
+    return this.client.post(this.url, orderParams, { 'X-Api-Key': apiKey }, true);
   }
 }

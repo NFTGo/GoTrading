@@ -1,6 +1,6 @@
 import { HTTPClient } from '../../interface';
 import { ListingIndexerStable } from '../listing-indexer';
-import { ExternalHTTPClient } from '../../internal-http-client';
+import { HTTPClientStable } from '../../http-client';
 import { AggregatorUtils } from '../utils';
 import {
   bulk1155NFTS,
@@ -13,7 +13,7 @@ import {
 import { initConfig } from './config';
 
 const config = initConfig('https://cloudflare-eth.com/');
-let httpClient: HTTPClient = new ExternalHTTPClient(config?.agent);
+let httpClient: HTTPClient = new HTTPClientStable(config?.agent);
 
 describe('bulkListing main process Test', () => {
   const utils = new AggregatorUtils(config.web3Provider, config.walletConfig);

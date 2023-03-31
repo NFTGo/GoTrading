@@ -1,6 +1,6 @@
 import { Aggregator, Config, EVMChain, GoTrading, ListingIndexerConfig } from './interface';
 import { AggregatorStable } from './v1/aggregator';
-import { ExternalHTTPClient, InternalHTTPClient } from './internal-http-client';
+import { HTTPClientStable } from './http-client';
 import { AggregatorUtils } from './v1/utils';
 import { AggregatorApiException, AggregatorBaseException } from './exception';
 import { ListingIndexerStable } from './v1/listing-indexer';
@@ -27,7 +27,7 @@ function initAggregatorUtils(config: Config) {
  */
 export function init(config: Config): GoTrading {
   const aggregatorUtils = initAggregatorUtils(config);
-  const aggregatorApi = new AggregatorStable(new InternalHTTPClient(config.agent), config, aggregatorUtils);
+  const aggregatorApi = new AggregatorStable(new HTTPClientStable(config.agent), config, aggregatorUtils);
   return {
     aggregator: aggregatorApi,
     utils: aggregatorUtils,
@@ -39,7 +39,7 @@ export function initListingIndexer(config: ListingIndexerConfig) {
   if (!aggregatorUtils) {
     throw AggregatorBaseException.missingParamError('web3Provider');
   }
-  const listingIndexer = new ListingIndexerStable(new ExternalHTTPClient(config.agent), config, aggregatorUtils);
+  const listingIndexer = new ListingIndexerStable(new HTTPClientStable(config.agent), config, aggregatorUtils);
   return {
     listingIndexer,
     utils: aggregatorUtils,
