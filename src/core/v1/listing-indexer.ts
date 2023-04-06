@@ -45,15 +45,23 @@ export class ListingIndexerStable implements ListingIndexer {
   }
 
   constructor(private client: HTTPClient, private config: ListingIndexerConfig, private utils: AggregatorUtils) {
-    this.postOrderHandlers.set(
-      ListingOrderProtocol.SEAPORTV14,
-      new SeaportV1D4Handler(client, config.openSeaApiKeyConfig)
-    );
-    this.postOrderHandlers.set(
-      ListingOrderProtocol.LOOKSRARE,
-      new LooksRareHandler(client, config.looksRareApiKeyConfig)
-    );
-    this.postOrderHandlers.set(ListingOrderProtocol.X2Y2, new X2Y2Handler(client, config.x2y2ApiKeyConfig));
+    if (config.openSeaApiKeyConfig) {
+      this.postOrderHandlers.set(
+        ListingOrderProtocol.SEAPORTV14,
+        new SeaportV1D4Handler(client, config.openSeaApiKeyConfig)
+      );
+    }
+
+    if (config.looksRareApiKeyConfig) {
+      this.postOrderHandlers.set(
+        ListingOrderProtocol.LOOKSRARE,
+        new LooksRareHandler(client, config.looksRareApiKeyConfig)
+      );
+    }
+
+    if (config.x2y2ApiKeyConfig) {
+      this.postOrderHandlers.set(ListingOrderProtocol.X2Y2, new X2Y2Handler(client, config.x2y2ApiKeyConfig));
+    }
   }
   /**
    * post single listing order
@@ -136,7 +144,7 @@ export class ListingIndexerStable implements ListingIndexer {
     }
   }
 
-  async prepareListing(nfts: NFTInfoForListing[]): Promise<ListingStepsDetailInfo> {
+  async prepareListing(nfts: NFTInfoForListing[], maker: string): Promise<ListingStepsDetailInfo> {
     if (nfts.length === 0) {
       throw ListingIndexerApiException.invalidParam('nfts', 'nfts should not be empty');
     }
@@ -171,7 +179,7 @@ export class ListingIndexerStable implements ListingIndexer {
       this.url + '/nft-aggregate/listings',
       {
         params,
-        maker: this.config.walletConfig?.address,
+        maker,
         source: 'nftgo.io',
       },
       this.headers
@@ -370,12 +378,16 @@ export class ListingIndexerStable implements ListingIndexer {
 
   // bulk listing
   async bulkListing(nfts: NFTInfoForListing[], config?: BulkListingOptions) {
-    const { autoApprove, skipUnapproved, onFinish, onError } = config ?? {};
+    const { autoApprove, skipUnapproved, onFinish, onError, maker: configMaker } = config ?? {};
     try {
       /**
        * The first step is to obtain the items that need to be listed, relevant authorization signatures, and listing parameters
        */
-      const data = await this.prepareListing(nfts);
+      const maker = configMaker ?? this.config.walletConfig?.address;
+      if (!maker) {
+        throw ListingIndexerApiException.invalidParam('maker', 'maker address is required');
+      }
+      const data = await this.prepareListing(nfts, maker ?? this.config.walletConfig?.address);
       /**
        * Then, do some simple data formatting and prepare to hand it over to the next process.
        */

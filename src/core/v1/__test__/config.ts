@@ -5,8 +5,8 @@ import Web3 from 'web3';
 const DefaultProviderUrl = 'https://rpc.tenderly.co/fork/d73c8e08-3381-4d11-9f4d-b38c2a13ffa7';
 // const providerUrl = 'https://mainnet.infura.io/v3/b1a0f70afcec4336be3baedce97b486e';
 // const DefaultProviderUrl = 'https://cloudflare-eth.com/';
-// const HTTP_PROXY = 'http://10.10.36.44:9999';
-const HTTP_PROXY = 'http://127.0.0.1:7890';
+const HTTP_PROXY = 'http://10.10.36.62:9999';
+// const HTTP_PROXY = 'http://127.0.0.1:7890';
 const openseaApi = {
   apiKey: process.env.OPENSEA_API_KEY || '',
   requestsPerInterval: 2,

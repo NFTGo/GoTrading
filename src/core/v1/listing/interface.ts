@@ -173,6 +173,8 @@ export interface BulkListingParams {
  * Interface for bulk listing options.
  */
 export interface BulkListingOptions extends ApprovePolicyOption {
+  // When used on the browser, you need to manually pass in the maker's address information, for example, obtained asynchronously through window.ethereum
+  maker?: string;
   onFinish?: (successIndexes: number[], failedItems?: ErrorListingItem[]) => void;
   onError?: (err: Error) => void;
 }

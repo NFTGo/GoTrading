@@ -68,7 +68,7 @@ export interface Aggregator {
  * ListingIndexer allows instances of listings to be indexed into different marketplaces
  */
 export interface ListingIndexer {
-  prepareListing(nfts: NFTInfoForListing[]): Promise<ListingStepsDetailInfo>;
+  prepareListing(nfts: NFTInfoForListing[], maker: string): Promise<ListingStepsDetailInfo>;
 
   approveWithPolicy(data: [ApprovalItem[], ListingItem[]], policyOption: ApprovePolicyOption): Promise<ListingItem[]>;
 
