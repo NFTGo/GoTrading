@@ -23,7 +23,7 @@ import {
   PostListingOrderParams,
   PostListingOrderResponse,
 } from '../interface';
-import { ListingIndexerApiException } from '../exception';
+import { AggregatorApiException, ListingIndexerApiException } from '../exception';
 import { arrayify, defaultAbiCoder, joinSignature, splitSignature } from 'ethers/lib/utils';
 import * as Models from '../../models';
 import { ExternalServiceRateLimiter } from './utils/rate-limiter';
@@ -32,6 +32,7 @@ import { marketplaceMeta } from './listing/const';
 import { AggregatorUtils } from './utils';
 import { BASE_URL } from '../conifg';
 import { camel } from '../../helpers/key-format';
+import { isInvalidParam } from '../../helpers/is-invalid-param';
 
 export class ListingIndexerStable implements ListingIndexer {
   private postOrderHandlers = new Map<ListingOrderProtocol, IPostOrderHandler>();
@@ -145,8 +146,11 @@ export class ListingIndexerStable implements ListingIndexer {
   }
 
   async prepareListing(nfts: NFTInfoForListing[], maker: string): Promise<ListingStepsDetailInfo> {
-    if (nfts.length === 0) {
+    if (!Array.isArray(nfts) || nfts.length === 0) {
       throw ListingIndexerApiException.invalidParam('nfts', 'nfts should not be empty');
+    }
+    if (isInvalidParam(maker)) {
+      throw ListingIndexerApiException.invalidParam('maker', 'prepare need check nfts maker');
     }
     const params = nfts.map<PrepareListingParams>((param) => {
       const {
@@ -204,6 +208,12 @@ export class ListingIndexerStable implements ListingIndexer {
     data: [ApprovalItem[], ListingItem[]],
     policyOption: ApprovePolicyOption
   ): Promise<ListingItem[]> {
+    if (!Array.isArray(data) || data.length !== 2) {
+      throw ListingIndexerApiException.invalidParam('data', "The length of the array for 'data' should be 2.");
+    }
+    if (isInvalidParam(policyOption)) {
+      throw ListingIndexerApiException.invalidParam('policyOption', 'policyOption should not be empty');
+    }
     const [approvalItems, listingItems] = data;
     const { autoApprove, skipUnapproved } = policyOption;
 
@@ -238,6 +248,9 @@ export class ListingIndexerStable implements ListingIndexer {
   }
 
   async signListingOrders(listingItems: ListingItem[]): Promise<[SignedListingItem[], ErrorListingItem[]]> {
+    if (!Array.isArray(listingItems) || listingItems.length === 0) {
+      throw ListingIndexerApiException.invalidParam('listingItems', 'listingItems should not be empty');
+    }
     const listings = listingItems.map((item) => {
       const { status, data, orderIndexes } = item;
       if (status === 'complete' || !data || orderIndexes?.length === 0) {
@@ -275,6 +288,9 @@ export class ListingIndexerStable implements ListingIndexer {
   }
 
   async bulkPostListingOrders(signaturedOrders: SignedListingItem[]): Promise<[number[], ErrorListingItem[]]> {
+    if (!Array.isArray(signaturedOrders) || signaturedOrders.length === 0) {
+      throw ListingIndexerApiException.invalidParam('signaturedOrders', 'signaturedOrders should not be empty');
+    }
     function isBulkSeaPortV4(postData: PostData | BulkSeaPortPostData): postData is BulkSeaPortPostData {
       return (postData as BulkSeaPortPostData).body.items !== undefined;
     }
@@ -380,6 +396,9 @@ export class ListingIndexerStable implements ListingIndexer {
   async bulkListing(nfts: NFTInfoForListing[], config?: BulkListingOptions) {
     const { autoApprove, skipUnapproved, onFinish, onError, maker: configMaker } = config ?? {};
     try {
+      if (!Array.isArray(nfts) || nfts.length === 0) {
+        throw ListingIndexerApiException.invalidParam('nfts', 'nfts should not be empty');
+      }
       /**
        * The first step is to obtain the items that need to be listed, relevant authorization signatures, and listing parameters
        */
