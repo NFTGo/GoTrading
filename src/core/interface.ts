@@ -4,6 +4,16 @@ import { Log, provider, TransactionConfig, TransactionReceipt } from 'web3-core'
 import { AggregatorUtils } from './v1/utils';
 import { AggregatorStable } from './v1/aggregator';
 import { HttpsProxyAgent } from 'https-proxy-agent';
+import {
+  ListingItem,
+  ListingStepsDetailInfo,
+  NFTInfoForListing,
+  ApprovePolicyOption,
+  BulkListingOptions,
+  ApprovalItem,
+  SignedListingItem,
+  ErrorListingItem,
+} from './v1/listing/interface';
 
 // # user-land interface , core  should implement this
 export enum EVMChain {
@@ -52,6 +62,26 @@ export interface Aggregator {
    * @returns Promise<{@link CollectionListingResponse}>
    */
   getListingsOfCollection(contract: string, params?: CollectionListingsParam): Promise<CollectionListingResponse>;
+}
+
+/**
+ * ListingIndexer allows instances of listings to be indexed into different marketplaces
+ */
+export interface ListingIndexer {
+  prepareListing(nfts: NFTInfoForListing[], maker: string): Promise<ListingStepsDetailInfo>;
+
+  approveWithPolicy(data: [ApprovalItem[], ListingItem[]], policyOption: ApprovePolicyOption): Promise<ListingItem[]>;
+
+  signListingOrders(data: ListingItem[]): Promise<[SignedListingItem[], ErrorListingItem[]]>;
+
+  bulkPostListingOrders(data: SignedListingItem[]): Promise<[number[], ErrorListingItem[]]>;
+  /**
+   * post a listing order to the target marketplace
+   * @param params
+   */
+  postListingOrder(params: PostListingOrderParams): Promise<PostListingOrderResponse>;
+
+  bulkListing(nfts: NFTInfoForListing[], config?: BulkListingOptions): Promise<[number[], ErrorListingItem[]]>;
 }
 
 export type TransactionHashHandler = ((hash: string) => void) | null | undefined;
@@ -145,7 +175,12 @@ export interface GoTrading {
 
 export interface HTTPClient {
   get<R, Q = undefined>(url: string, query: Q | undefined, headers?: Record<string, string>): Promise<R>;
-  post<R, P = undefined>(url: string, data: P, headers?: Record<string, string>): Promise<R>;
+  post<R, P = undefined>(
+    url: string,
+    data: P,
+    headers?: Record<string, string>,
+    needOriginResponse?: boolean
+  ): Promise<R>;
 }
 
 export interface WalletConfig {
@@ -161,6 +196,14 @@ export interface Config {
   web3Provider?: provider;
   agent?: HttpsProxyAgent;
 }
+
+export interface ListingIndexerConfig extends Config {
+  openSeaApiKeyConfig: ApiKeyConfig;
+  looksRareApiKeyConfig: ApiKeyConfig;
+  x2y2ApiKeyConfig: ApiKeyConfig;
+}
+
+export type ApiKeyConfig = { apiKey: string; requestsPerInterval: number; interval: number };
 
 // # all below is POJO for response
 
@@ -599,6 +642,25 @@ export interface AggregateResponse {
    * Used Gas，gas used on testnet for this transaction simulation.
    */
   usedGas: number;
+}
+
+export interface PostListingOrderParams {
+  version: '/order/v3' | '/order/v4';
+  protocol: ListingOrderProtocol;
+  payload: any; // order payload
+  signature: string; // wallet address signature
+}
+
+export enum ListingOrderProtocol {
+  SEAPORTV14 = 'seaport-v1.4',
+  LOOKSRARE = 'looks-rare',
+  X2Y2 = 'x2y2',
+}
+
+export interface PostListingOrderResponse {
+  code: string; // SUCCESS or ERROR
+  msg: string;
+  data: any;
 }
 
 export interface NFTBaseInfo {
