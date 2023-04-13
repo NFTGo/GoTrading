@@ -166,6 +166,9 @@ export interface Utils {
    * @returns transaction {@link Transaction}
    */
   inspectTransaction(params: InspectTransactionParams): Transaction;
+
+  // standard sign message
+  signMessage(message: string): Promise<string>;
 }
 
 export interface GoTrading {
@@ -619,6 +622,10 @@ export interface AggregateParams {
    * Order Ids，A list of orderIds.order id is from listing API.
    */
   orderIds: string[];
+  /**
+   * This is about the token for blur.
+   */
+  accessToken?: string;
 }
 
 /**

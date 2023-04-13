@@ -24,13 +24,17 @@ import {
   Config,
 } from '../interface';
 import { AggregatorUtils } from './utils';
+import { BlurAuthService, BlurAuthServiceImpl } from './utils/blur-auth';
 
 /**
  * @description
  * implement aggregator version 1 for nftgo-aggregator
  */
 export class AggregatorStable implements Aggregator {
-  constructor(private client: HTTPClient, private config: Config, private utils?: AggregatorUtils) {}
+  blurLoginAuthService: BlurAuthServiceImpl;
+  constructor(private client: HTTPClient, private config: Config, private utils?: AggregatorUtils) {
+    this.blurLoginAuthService = new BlurAuthService(this.utils as AggregatorUtils, this.client);
+  }
 
   getListingsOfNFT(contract: string, tokenId: string): Promise<SingleNFTListingsResponse> {
     if (isInvalidParam(contract)) {
@@ -214,10 +218,14 @@ export class AggregatorStable implements Aggregator {
         ordersUsedToTrade: ListingOrder[]
       ) => {
         const buyerAddress = this.utils?.account || (await this.utils?._web3Instance.eth.getAccounts())?.[0];
+        if (ordersUsedToTrade.some((order) => order?.marketName !== 'blur')) {
+          this.blurLoginAuthService.authorize(buyerAddress as any);
+        }
         const aggregateResult = await this.getAggregateInfo({
           buyerAddress: buyerAddress as string,
           orderIds: ordersUsedToTrade?.map((order) => order.orderId),
           isSafe: withSafeMode,
+          accessToken: this.blurLoginAuthService.getAccessToken(),
         });
         const invalidIds = aggregateResult?.invalidIds;
         if (invalidIds?.length > 0) {
