@@ -33,7 +33,7 @@ import { BlurAuthService, BlurAuthServiceImpl } from './utils/blur-auth';
 export class AggregatorStable implements Aggregator {
   blurLoginAuthService: BlurAuthServiceImpl;
   constructor(private client: HTTPClient, private config: Config, private utils?: AggregatorUtils) {
-    this.blurLoginAuthService = new BlurAuthService(this.utils as AggregatorUtils, this.client);
+    this.blurLoginAuthService = new BlurAuthService(this.utils as AggregatorUtils, this.client, this.config);
   }
 
   getListingsOfNFT(contract: string, tokenId: string): Promise<SingleNFTListingsResponse> {
