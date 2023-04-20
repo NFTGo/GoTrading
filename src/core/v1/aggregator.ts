@@ -213,13 +213,28 @@ export class AggregatorStable implements Aggregator {
         onError?.(AggregatorBulkBuyException.noValidOrder(), listInfos);
         return;
       }
-
+      [
+        {
+          contractAddress: '0xed5af388653567af2f388e6224dc7c4b3241c544',
+          tokenId: '2418',
+          orderId: 'cmVzZXJ2b2lyOjo2NDQwZjBkZTEyMzZhYjgwNDRkOTdhMzg=',
+          listingTime: 1681977493000,
+          expiredTime: 1682236693000,
+          ethPrice: 15.4,
+          usdPrice: 30071.7366363824,
+          marketName: 'blur',
+          marketLink: 'https://blur.io/asset/0xed5af388653567af2f388e6224dc7c4b3241c544/2418',
+          sellerAddress: '0x62e724226009de1edb66b8b8be841781aeb256de',
+        },
+      ];
       const getAggregateResult: (ordersUsedToTrade: ListingOrder[]) => Promise<AggregateResponse | undefined> = async (
         ordersUsedToTrade: ListingOrder[]
       ) => {
         const buyerAddress = this.utils?.account || (await this.utils?._web3Instance.eth.getAccounts())?.[0];
-        if (ordersUsedToTrade.some((order) => order?.marketName !== 'blur')) {
-          this.blurLoginAuthService.authorize(buyerAddress as any);
+        if (ordersUsedToTrade.some((order) => order?.marketName === 'blur')) {
+          console.info('ready to authorize blur login');
+          const token = await this.blurLoginAuthService.authorize(buyerAddress as any);
+          console.info('finished login:', token);
         }
         const aggregateResult = await this.getAggregateInfo({
           buyerAddress: buyerAddress as string,

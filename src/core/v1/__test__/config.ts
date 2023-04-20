@@ -2,11 +2,10 @@ const HttpsProxyAgent = require('https-proxy-agent');
 import { ListingIndexerConfig, EVMChain } from '../../interface';
 import Web3 from 'web3';
 
-const DefaultProviderUrl = 'https://rpc.tenderly.co/fork/d73c8e08-3381-4d11-9f4d-b38c2a13ffa7';
+const DefaultProviderUrl = 'https://rpc.tenderly.co/fork/66ebeb77-c3c1-468f-a66c-b5f4bdf608d0';
 // const providerUrl = 'https://mainnet.infura.io/v3/b1a0f70afcec4336be3baedce97b486e';
 // const DefaultProviderUrl = 'https://cloudflare-eth.com/';
-const HTTP_PROXY = 'http://10.10.36.62:9999';
-// const HTTP_PROXY = 'http://127.0.0.1:7890';
+
 const openseaApi = {
   apiKey: process.env.OPENSEA_API_KEY || '',
   requestsPerInterval: 2,
@@ -22,6 +21,9 @@ const x2y2Api = {
   requestsPerInterval: 2,
   interval: 1000,
 };
+
+const HTTP_PROXY = 'http://10.10.36.62:9999';
+// const HTTP_PROXY = 'http://127.0.0.1:7890';
 
 export function initConfig(providerUrl = DefaultProviderUrl) {
   const web3Provider = new Web3.providers.HttpProvider(providerUrl);

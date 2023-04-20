@@ -66,6 +66,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "global-agent": "^3.0.0",
+    "global-tunnel-ng": "^2.7.1",
     "https-proxy-agent": "^5.0.1",
     "husky": "^6.0.0",
     "jest": "^29.5.0",
