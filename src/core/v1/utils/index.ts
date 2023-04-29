@@ -39,6 +39,7 @@ export class AggregatorUtils implements Utils {
   }
   public _web3Instance: Web3;
   public account: string | undefined = this.walletConfig?.address;
+  public blurAccessToken: string | undefined;
   private TRANSFER_TOPIC: string;
   private TRANSFER_BATCH_TOPIC: string;
   private TRANSFER_SINGLE_TOPIC: string;
@@ -318,6 +319,21 @@ export class AggregatorUtils implements Utils {
         }
       });
     return transactionInstance;
+  }
+
+  async signMessage(message: string): Promise<string> {
+    if ((globalThis as any).ethereum) {
+      const provider = (globalThis as any).ethereum;
+      const accounts = await provider.request({ method: 'eth_requestAccounts' });
+      const account = accounts[0];
+      const signature = await this._web3Instance.eth.personal.sign(message, account, '');
+      return signature;
+    } else {
+      // server side
+      const signResult = this._web3Instance.eth.accounts.sign(message, this.walletConfig?.privateKey as string);
+      console.info('signResult', signResult);
+      return signResult.signature;
+    }
   }
 }
 
