@@ -2,7 +2,7 @@ import { NFTBaseInfo, NFTInfoForTrade, NftsListingInfo } from '../../interface';
 import { init } from '../../../index';
 import { initConfig } from './config';
 
-const maker = process.env.ADDRESS ?? '';
+// const maker = process.env.ADDRESS ?? '';
 const config = initConfig();
 
 const bulkBuyConfig = {
@@ -14,8 +14,8 @@ const bulkBuyConfig = {
 
 const nfts: NFTInfoForTrade[] = [
   {
-    contract: '0xed5af388653567af2f388e6224dc7c4b3241c544',
-    tokenId: '2418',
+    contract: '0x3901c7528140b4b417c083afa82e39c381efd9ac',
+    tokenId: '1984',
     amount: 1, // How many you want to buy. Usually used in ERC1155 nfts
   },
 ];

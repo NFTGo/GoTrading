@@ -1,5 +1,5 @@
 const HttpsProxyAgent = require('https-proxy-agent');
-import { ListingIndexerConfig, EVMChain } from '../../interface';
+import { EVMChain } from '../../interface';
 import Web3 from 'web3';
 
 const DefaultProviderUrl = 'https://rpc.tenderly.co/fork/66ebeb77-c3c1-468f-a66c-b5f4bdf608d0';
@@ -22,12 +22,12 @@ const x2y2Api = {
   interval: 1000,
 };
 
-const HTTP_PROXY = 'http://10.10.36.62:9999';
+const HTTP_PROXY = 'http://192.168.31.242:9999';
 // const HTTP_PROXY = 'http://127.0.0.1:7890';
 
 export function initConfig(providerUrl = DefaultProviderUrl) {
   const web3Provider = new Web3.providers.HttpProvider(providerUrl);
-  let config: ListingIndexerConfig = {
+  let config = {
     apiKey: process.env.API_KEY || '', // Replace with your own API Key.
     baseUrl: 'https://data-api.nftgo.dev/',
     chain: EVMChain.ETH,

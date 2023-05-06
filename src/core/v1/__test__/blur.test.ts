@@ -1,12 +1,12 @@
 import { HTTPClient } from '../../interface';
-import { HTTPClientStable } from '../../http-client';
+import { InternalHTTPClient } from '../../internal-http-client';
 import { BlurAuthService } from '../utils/blur-auth';
 import { initConfig } from './config';
 import { AggregatorUtils } from '../utils';
 
 const maker = process.env.ADDRESS ?? '';
 const config = initConfig();
-let httpClient: HTTPClient = new HTTPClientStable(config?.agent);
+let httpClient: HTTPClient = new InternalHTTPClient(config?.agent);
 const utils = new AggregatorUtils(config.web3Provider, config.walletConfig);
 
 describe('BlurAuthService', () => {
