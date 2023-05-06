@@ -218,9 +218,7 @@ export class AggregatorStable implements Aggregator {
       ) => {
         const buyerAddress = this.utils?.account || (await this.utils?._web3Instance.eth.getAccounts())?.[0];
         if (ordersUsedToTrade.some((order) => order?.marketName === 'blur')) {
-          console.info('ready to authorize blur login');
-          const token = await this.blurLoginAuthService.authorize(buyerAddress as any);
-          console.info('finished login:', token);
+          await this.blurLoginAuthService.authorize(buyerAddress as any);
         }
         const aggregateResult = await this.getAggregateInfo({
           buyerAddress: buyerAddress as string,

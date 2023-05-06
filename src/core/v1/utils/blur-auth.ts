@@ -1,5 +1,5 @@
 import { BASE_URL } from '../../conifg';
-import { BaseException } from '../../exception';
+import { AggregatorBaseException } from '../../exception';
 import { EVMChain, HTTPClient } from '../../interface';
 
 interface BlurAuthChallenge {
@@ -67,7 +67,7 @@ export class BlurAuthService implements BlurAuthServiceImpl {
   }
   async authorize(address: string) {
     if (!address) {
-      throw new BaseException('address is required');
+      throw new AggregatorBaseException('address is required');
     }
     if (this.accessToken) {
       return this.accessToken;

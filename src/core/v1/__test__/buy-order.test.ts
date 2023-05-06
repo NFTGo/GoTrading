@@ -1,7 +1,6 @@
 import { NFTBaseInfo, NFTInfoForTrade, NftsListingInfo } from '../../interface';
 import { init } from '../../../index';
 import { initConfig } from './config';
-
 // const maker = process.env.ADDRESS ?? '';
 const config = initConfig();
 
@@ -14,8 +13,8 @@ const bulkBuyConfig = {
 
 const nfts: NFTInfoForTrade[] = [
   {
-    contract: '0x3901c7528140b4b417c083afa82e39c381efd9ac',
-    tokenId: '1984',
+    contract: '',
+    tokenId: '',
     amount: 1, // How many you want to buy. Usually used in ERC1155 nfts
   },
 ];
@@ -30,7 +29,6 @@ describe('Bulk Buy aggregator', () => {
   describe('bulk buy', () => {
     it('should return the access token if already exists', async () => {
       const result = await blurAuthService.getAccessToken();
-      console.info('result', result);
       expect(result).toBe(undefined);
     });
     it('should return bulk buy result', async () => {
@@ -51,7 +49,7 @@ describe('Bulk Buy aggregator', () => {
     it('should return the access token if already exists', async () => {
       const token = await blurAuthService.getAccessToken();
       console.info('token', token);
-      expect(token).toBe(undefined);
+      expect(typeof token).toEqual('string');
     });
   });
 });

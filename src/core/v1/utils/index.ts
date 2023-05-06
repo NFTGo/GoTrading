@@ -331,7 +331,6 @@ export class AggregatorUtils implements Utils {
     } else {
       // server side
       const signResult = this._web3Instance.eth.accounts.sign(message, this.walletConfig?.privateKey as string);
-      console.info('signResult', signResult);
       return signResult.signature;
     }
   }
