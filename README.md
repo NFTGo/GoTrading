@@ -13,6 +13,7 @@ GoTrading is an open-source development kit that enables you to build your own N
  - Simple and easy-to-use API
  - Real-time market data access
  - Code is easy to customize and extend
+ - Supports Blur NFT Exchange order purchases
 
 
 ## Requirements
@@ -85,6 +86,10 @@ import { NFTInfoForTrade } from '@nftgo/gotrading';
 
 // List the NFTs you want to buy.
 // We recommend using the aggregator.getListingOfNFT method to check whether your NFTs have valid listings.
+
+// Note: If a Blur order is detected, an additional signature login will be performed to support Blur order purchases.
+// The signature login process could take 5-15 seconds or even more.
+
 const nfts: NFTInfoForTrade[] = [ // Replace with your own list of NFTs.
   {
     contract: "0xcfff4c8c0df0e2431977eba7df3d3de857f4b76e",

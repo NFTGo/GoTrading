@@ -18,3 +18,5 @@ yarn-error.log
 tsconfig.build.tsbuildinfo
 
 dist/*
+
+.env

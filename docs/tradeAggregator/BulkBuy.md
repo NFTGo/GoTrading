@@ -24,6 +24,11 @@ const {aggregator, utils} = init(configs);
 
 // List some NFTs you want to buy
 // We recommend you using our aggregator.getListingsOfNFT method to check whether your nfts have valid listings
+
+/**
+ * Note: If you experience a slower response time when placing orders, it might be due to the presence of a Blur order, which requires an additional signature login to support the order purchase.
+ The signature login process could take 5-15 seconds or even more.
+ */
 const nfts: NFTInfoForTrade[] = [ // Replace with your own nft list
   {
     contract: "0xcfff4c8c0df0e2431977eba7df3d3de857f4b76e",
