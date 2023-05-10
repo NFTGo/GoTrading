@@ -481,7 +481,6 @@ class SeaportV1D4Handler implements IPostOrderHandler {
     };
 
     const apiKey = await this.rateLimiter.getAPIKeyWithRateLimiter();
-    console.info('this.url', this.url, ':', apiKey);
     try {
       const result = await this.client.post(
         this.url,

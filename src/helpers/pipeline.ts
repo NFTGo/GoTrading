@@ -13,10 +13,8 @@ export async function runPipeline<T, R>(
     let currentInput: any = initialInput;
     for (const [index, task] of tasks.entries()) {
       if (Array.isArray(task)) {
-        console.info(`Executing parallel tasks at position ${index + 1}`);
         currentInput = await Promise.all(task.map((subTask) => subTask(currentInput)));
       } else {
-        console.info(`Executing task at position ${index + 1}`);
         currentInput = await task(currentInput);
       }
     }
