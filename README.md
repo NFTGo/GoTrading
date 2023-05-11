@@ -14,6 +14,25 @@ GoTrading is an open-source development kit that enables you to build your own N
  - Real-time market data access
  - Code is easy to customize and extend
  - Supports Blur NFT Exchange order purchases
+ - Supports Bulk Listing and Bulk Buying
+
+## Supported Marketplaces
+GoTrading currently aggregates the following marketplaces, and we will continue to add more marketplaces in the future.
+
+| **Marketplace** | **Bulk Listing** | **Bulk Buying** | **Protocol**     |
+|-------------|--------------|-------------|--------------|
+| OpenSea     | Yes          | Yes         | seaport-v1.5 |
+|     Blur        |  Comming Soon   | Yes         | blur         | 
+| LooksRare   | Comming Soon | Comming Soon         | looksrare-v2 |
+| X2Y2        | Yes           | Yes        | x2y2         |
+
+
+
+## Supported Chains
+GoTrading currently supports the following chains: 
+- Ethereum Mainnet
+- Polygon Mainnet ( Comming Soon )
+
 
 
 ## Requirements
