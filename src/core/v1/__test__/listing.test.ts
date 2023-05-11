@@ -27,12 +27,12 @@ describe('bulkListing main process Test', () => {
     expect(listingIndexer).toBeInstanceOf(ListingIndexerStable);
   });
 
-  // test('【OpenSea】single listing process test(auto approval)', async () => {
-  //   const result = await listingIndexer.bulkListing([mockOpenSeaOrder], {
-  //     autoApprove: true,
-  //   });
-  //   expect(result).toEqual([[0], []]);
-  // }, 30000);
+  test('【OpenSea】single listing process test(auto approval)', async () => {
+    const result = await listingIndexer.bulkListing([mockOpenSeaOrder], {
+      autoApprove: true,
+    });
+    expect(result).toEqual([[0], []]);
+  }, 30000);
   test('【OpenSea】bulk listing 1155 process test(auto approval)', async () => {
     const result = await listingIndexer.bulkListing(bulk1155NFTS, {
       autoApprove: true,
@@ -57,21 +57,3 @@ describe('bulkListing main process Test', () => {
   // TODO: bulk listing (auto approval)
   // TODO: Duplicated order payload
 });
-
-// test('approveWithPolicy auto Approve', async () => {
-//   const data = [
-//     listingIndexer.parseApprovalData(mockListingStepData),
-//     listingIndexer.parseListingData(mockListingStepData),
-//   ];
-//   const res = await listingIndexer.approveWithPolicy(data as any, {
-//     autoApprove: true,
-//   });
-//   console.info(res);
-//   expect(true).toEqual(true);
-// });
-
-// test('post order with mock', async () => {
-//   const result = await listingIndexer.postListingOrder(mockPostOrderParams);
-//   console.info(result);
-//   expect(true).toEqual(true);
-// }, 20000);

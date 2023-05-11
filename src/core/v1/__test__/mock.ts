@@ -31,7 +31,8 @@ export const mockOpenSea1155Order: NFTInfoForListing = getMockOrder(mock1155Orde
 export const bulkNFTS: NFTInfoForListing[] = [mockOpenSeaOrder, mockLooksRareOrder, mockX2y2Order];
 export const bulk1155NFTS: NFTInfoForListing[] = [mockOpenSea1155Order, mockOpenSea1155Order];
 export const mockNFTs: NFTInfoForListing[] = [
-  mockX2y2Order,
+  mockOpenSeaOrder,
+  // mockX2y2Order,
   // mockLooksRareOrder,
 ];
 
@@ -210,7 +211,7 @@ export const mockListingStepData: ListingStepsDetailInfo = {
               method: 'POST',
               body: {
                 order: {
-                  kind: 'seaport-v1.4',
+                  kind: 'seaport-v1.5',
                   data: {
                     kind: 'single-token',
                     offerer: '0xdc97a0c27c25e867e7e7b15e83f3297ea8c48c0a',
@@ -493,7 +494,7 @@ export const mockBulkOpenSeaStepData: ListingStepsDetailInfo = {
                 items: [
                   {
                     order: {
-                      kind: 'seaport-v1.4',
+                      kind: 'seaport-v1.5',
                       data: {
                         kind: 'single-token',
                         offerer: '0xdc97a0c27c25e867e7e7b15e83f3297ea8c48c0a',
@@ -538,7 +539,7 @@ export const mockBulkOpenSeaStepData: ListingStepsDetailInfo = {
                     },
                     orderbook: 'opensea',
                     bulkData: {
-                      kind: 'seaport-v1.4',
+                      kind: 'seaport-v1.5',
                       data: {
                         orderIndex: 0,
                         merkleProof: ['0x820a0abefe6dfa50fd6391682909bd3fe848481167e2a28d07d006da9a4a540d'],
@@ -547,7 +548,7 @@ export const mockBulkOpenSeaStepData: ListingStepsDetailInfo = {
                   },
                   {
                     order: {
-                      kind: 'seaport-v1.4',
+                      kind: 'seaport-v1.5',
                       data: {
                         kind: 'single-token',
                         offerer: '0xdc97a0c27c25e867e7e7b15e83f3297ea8c48c0a',
@@ -592,7 +593,7 @@ export const mockBulkOpenSeaStepData: ListingStepsDetailInfo = {
                     },
                     orderbook: 'opensea',
                     bulkData: {
-                      kind: 'seaport-v1.4',
+                      kind: 'seaport-v1.5',
                       data: {
                         orderIndex: 1,
                         merkleProof: ['0xb7b433eab5ef5e2cd8e36bec25052e1a79091a10bafe53b308b56acbc1001bc3'],

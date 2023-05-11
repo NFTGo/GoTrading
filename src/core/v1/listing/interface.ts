@@ -29,7 +29,7 @@ export interface PrepareListingParams {
 }
 interface BulkSeaPortOrder {
   order: {
-    kind: 'seaport-v1.4';
+    kind: 'seaport-v1.5';
     data: {
       kind: 'single-token';
       offerer: string;
@@ -61,7 +61,7 @@ interface BulkSeaPortOrder {
   };
   orderbook: string;
   bulkData: {
-    kind: 'seaport-v1.4';
+    kind: 'seaport-v1.5';
     data: {
       orderIndex: number;
       merkleProof: string[];

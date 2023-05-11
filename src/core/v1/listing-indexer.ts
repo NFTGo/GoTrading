@@ -109,7 +109,7 @@ export class ListingIndexerStable implements ListingIndexer {
           try {
             const { v, r, s } = splitSignature(signature);
 
-            if (bulkData?.kind === 'seaport-v1.4') {
+            if (bulkData?.kind === 'seaport-v1.5') {
               // Encode the merkle proof of inclusion together with the signature
               payload.order.data.signature = Models.SeaportV1D5.Utils.encodeBulkOrderProofAndSignature(
                 bulkData.data.orderIndex,

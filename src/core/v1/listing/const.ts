@@ -11,10 +11,10 @@ export const marketplaceMeta: Record<
   { orderKind: string; orderbook: string; options?: Record<string, any> }
 > = {
   OpenSea: {
-    orderKind: 'seaport-v1.4',
+    orderKind: 'seaport-v1.5',
     orderbook: 'opensea',
     options: {
-      'seaport-v1.4': {
+      'seaport-v1.5': {
         useOffChainCancellation: false,
       },
     },
