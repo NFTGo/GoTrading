@@ -495,7 +495,6 @@ class SeaportV1D5Handler implements IPostOrderHandler {
         { 'X-Api-Key': apiKey },
         true
       );
-      console.log('result', result);
       return result;
     } catch (error) {
       console.error('error', error);
