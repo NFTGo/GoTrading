@@ -1,17 +1,17 @@
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import { camel, underline } from '../helpers/key-format';
-import { AggregatorApiException } from './exception';
+import { AggregatorApiException, BaseException } from './exception';
 
 import { HTTPClient } from './interface';
 
-export class InternalHTTPClient implements HTTPClient {
+export class HTTPClientStable implements HTTPClient {
   constructor(private agent?: HttpsProxyAgent) {}
-  fetch<R>(input: RequestInfo | URL, init?: RequestInit | undefined) {
+  fetch<R>(input: RequestInfo | URL, init?: RequestInit | undefined, needOriginResponse?: boolean) {
     const agentOption = this.agent ? { agent: this.agent } : {};
     return new Promise<R>((resolve, reject) => {
       fetch(input, { ...init, ...agentOption })
         .then(async (res) => {
-          if (res.status !== 200) {
+          if (!isHttpResponseSuccess(res.status)) {
             reject(
               new AggregatorApiException(
                 res.status,
@@ -29,7 +29,11 @@ export class InternalHTTPClient implements HTTPClient {
           if (!res) {
             reject(AggregatorApiException.apiEmptyResponseError(input?.toString()));
           } else {
-            resolve(camel(res));
+            if (needOriginResponse) {
+              resolve(res);
+            } else {
+              resolve(camel(res));
+            }
           }
         });
     });
@@ -56,11 +60,16 @@ export class InternalHTTPClient implements HTTPClient {
     return this.fetch<R>(actualUrl, { headers, method: 'GET' });
   }
 
-  post<R, P = Object>(url: string, data: P, headers: Record<string, string>): Promise<R> {
+  post<R, P = undefined>(url: string, data: P, headers?: Record<string, string>, useOriginData?: boolean): Promise<R> {
+    const body = useOriginData ? JSON.stringify(data) : JSON.stringify(underline(data));
     return this.fetch<R>(url, {
       method: 'POST',
-      body: JSON.stringify(underline(data)),
+      body: body,
       headers: { ...headers, 'Content-Type': 'application/json' },
     });
   }
+}
+
+function isHttpResponseSuccess(status: number): boolean {
+  return status >= 200 && status < 300;
 }

@@ -1,7 +1,15 @@
 # GoTrading-js
 [![node](https://img.shields.io/badge/node-%3E%3D%2016.14-brightgreen.svg)](https://nodejs.org/en/) [![Discord][discord-image]][discord-url] [![Twitter][twitter-image]][twitter-url]
 
-
+# Table of Contents
+- [Introduction](#Introduction)
+- [Key Features](#Key-Features)
+- [Supported Marketplaces](#Supported-Marketplaces)
+- [Supported Chains](#Supported-Chains)
+- [Requirements](#Requirements)
+- [Quickstart](#quickstart)
+- [Bulk Buying](#Bulk-Buying-Process)
+- [Bulk Listing](#Bulk-Listing-Process)
 
 ## Introduction
 
@@ -13,7 +21,25 @@ GoTrading is an open-source development kit that enables you to build your own N
  - Simple and easy-to-use API
  - Real-time market data access
  - Code is easy to customize and extend
- - Supports Blur NFT Exchange order purchases
+ - Supports Bulk Listing and Bulk Buying
+
+## Supported Marketplaces
+GoTrading currently aggregates the following marketplaces, and we will continue to add more marketplaces in the future.
+
+| **Marketplace** | **Bulk Listing** | **Bulk Buying** | **Protocol**     |
+|-------------|--------------|-------------|--------------|
+| OpenSea     | Yes          | Yes         | seaport-v1.5 |
+|     Blur        |  Comming Soon   | Yes         | blur         | 
+| LooksRare   | Comming Soon | Comming Soon         | looksrare-v2 |
+| X2Y2        | Yes           | Yes        | x2y2         |
+
+
+
+## Supported Chains
+GoTrading currently supports the following chains: 
+- Ethereum Mainnet
+- Polygon Mainnet ( Comming Soon )
+
 
 
 ## Requirements
@@ -126,7 +152,7 @@ aggregator.bulkBuy({
 });
 ```
 
-## GoTrading Purchase Process
+## Bulk Buying Process
 ![image info](process.jpg)
 ### Step1 Get listing info
   - ***1.1 Get the listing info of a single nft.***
@@ -157,7 +183,7 @@ for (const nft of nfts) {
 
   - ***1.3 Get the listing info of a Wallet address.***
 ```ts
-// rollbot wallet address.
+// Rollbot wallet address.
 const walletAddress = "0x8ae57a027c63fca8070d1bf38622321de8004c67";
 const { nfts: walletNFTList } = await aggregator.getListingsOfWallet(walletAddress);
 
@@ -168,7 +194,7 @@ for (const nft of walletNFTList) {
 ```
 ### Step2 Select desired NFT listing order
 ```ts
-//eg: get all listing NFT order ids of a wallet address.
+//eg: Get all listing NFT order ids of a wallet address.
 const orderIds: string[] = [];
 for (const nft of walletNFTList) {
   orderIds.push(nft.listingData?.listingOrders[0].orderId as string);
@@ -204,7 +230,7 @@ utils?.sendTransaction({
 }).on('receipt', (receipt)=>{
   if (receipt.logs.length) {
     for (const log of receipt.logs) {
-      // not every log with useful info
+      // Not every log with useful info
       const decodedLog = utils.decodeLog(log);
     }
   }else {
@@ -214,6 +240,107 @@ utils?.sendTransaction({
   console.log('transaction fail: ', error);
 });
 ```
+## Bulk Listing Process
+### For Server-end
+
+![image_info](docs/asset/bulk_listing_server.png)
+
+### ***complete example***
+- For server-side:
+```ts
+// Init sdk client
+import Web3 from 'web3';
+import { initListingIndexer, NFTInfoForListing } from '@nftgo/gotrading';
+
+// Server
+const provider = new Web3.providers.HttpProvider('https://cloudflare-eth.com/');
+
+const openseaApi = {
+  apiKey: 'apiKey', // Replace with your own api key
+  requestsPerInterval: 2,
+  interval: 1000,
+};
+//Replace with your own provider
+const config = {
+  apiKey: 'api key', // Replace with your own API Key.
+  web3Provider: provider, // Replace with your provider,
+  walletConfig: {
+    address: 'Your wallet address',
+    privateKey: 'Your private key',
+  }, // Replace with your wallet info.
+  openSeaApiKeyConfig: openseaApi,
+  //   looksRareApiKeyConfig: looksrareApi,
+  //   x2y2ApiKeyConfig: x2y2Api,
+};
+// Create Indexer client
+const { listingIndexer } = initListingIndexer(config);
+
+// Get the listing info of BAYC No.1
+const baycContract = '0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D';
+const maker = '0x0000' ?? this.config.walletConfig?.address
+
+const listingNFTS: NFTInfoForListing[] = [
+  {
+    contract: baycContract,
+    tokenId: '1',
+    ethPrice: 60,
+    marketplace: 'OpenSea',
+  },
+  {
+    contract: baycContract,
+    tokenId: '2',
+    ethPrice: 60,
+    marketplace: 'OpenSea',
+  },
+  {
+    contract: baycContract,
+    tokenId: '2',
+    ethPrice: 60,
+    marketplace: 'LooksRare',
+  },
+];
+
+  const bulkListing = () => {
+    /**
+     * Step 1: Prepare listing:
+     * This function takes two parameters: a list of NFTs to be listed and the owner's address.
+     * The prepareListing function returns the specific parameter details required for the subsequent steps of the process
+     * such as the parameters needed for signing and posting.
+     */
+    const data = await listingIndexer.prepareListing(listingNFTS, maker);
+    /**
+     * Then, do some simple data formatting and prepare to hand it over to the next process.
+     */
+    const approvalData = listingIndexer.parseApprovalData(data);
+    const listingData = listingIndexer.parseListingData(data);
+     /**
+     * Step 2: Approve Listing Item with Policy:
+     * This function will authorize the approvedItems and return the final set of ListingItems.
+     * Note that NFTs must be authorized before being listed, and only one authorization is required per collection per address.
+     */
+    const approvalResult = await listingIndexer.approveWithPolicy([approvalData, listingData]);
+    /**
+     * Step 3: Sign Listing Item:
+     * This function takes in an array of ListingItem objects that need to be listed.
+     * The user will sign these items using their configured private key, typically stored in their wallet on the client-side.
+     * Once signed, the function returns an array containing two elements:
+        SignedListingItem[]: the successfully signed ListingItems.
+        ErrorListingItem[]: any ListingItems that failed to be signed.
+    */
+    const [listingResult, errorOrders] = await listingIndexer.signListingOrders(approvalResult);
+    /**
+     * Step 4: Post Listing Item:
+     * This function will post the listing order to the target marketplace.
+     * It takes as input the SignedListingItem that was previously signed in the previous step.
+     * This is the final step of the listing process, where a request is made to the market API.
+     * The function will return information about the final result of the listing.
+     */
+    const [successIndexes, errorItems] = await listingIndexer.bulkPostListingOrders(listingResult);
+    const errorIndexes = [...errorOrders, ...errorItems];
+  }
+
+```
+
 ## Model Diagram
 ![image info](model_diagram.jpg)
 
@@ -225,6 +352,8 @@ utils?.sendTransaction({
   - [***BuyByWalletListings***](https://github.com/NFTGo/GoTrading/blob/master/docs/tradeAggregator/BuyByWalletListings.md)
 
   - [***BulkBuy***](https://github.com/NFTGo/GoTrading/blob/master/docs/tradeAggregator/BulkBuy.md)
+
+  - [***BulkList***](https://github.com/NFTGo/GoTrading/blob/master/docs/tradeAggregator/BulkList.md)
 
 
 ## Interface example

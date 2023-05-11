@@ -48,7 +48,6 @@ describe('Bulk Buy aggregator', () => {
     }, 30000);
     it('should return the access token if already exists', async () => {
       const token = await blurAuthService.getAccessToken();
-      console.info('token', token);
       expect(typeof token).toEqual('string');
     });
   });

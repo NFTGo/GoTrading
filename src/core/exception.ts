@@ -1,4 +1,4 @@
-import { NFTBaseInfo } from './interface';
+import { ListingOrderProtocol, NFTBaseInfo } from './interface';
 
 /**
  * NFTGo SDK's base error types
@@ -6,10 +6,25 @@ import { NFTBaseInfo } from './interface';
 enum ExceptionType {
   PARAM_ERROR = 'param_error',
   RESPONSE_DATA_EMPTY = 'response_data_empty',
+  EXTERNAL_SERVICE_ERROR = 'external_service_error',
 }
 /**
  * NFTGo SDK's base wrapper error object
  */
+export class BaseException extends Error {
+  constructor(public code: number | string, public message: string = '') {
+    super(message);
+  }
+
+  static httpUnsuccessfulResponse(msg: string) {
+    return new BaseException(ExceptionType.EXTERNAL_SERVICE_ERROR, msg);
+  }
+
+  static httpRequestError(msg: string) {
+    return new BaseException(ExceptionType.EXTERNAL_SERVICE_ERROR, msg);
+  }
+}
+
 export class AggregatorBaseException extends Error {
   constructor(public code: number | string, public message: string = '') {
     super(message);
@@ -44,6 +59,8 @@ enum ApiExceptionType {
   API_KEY_ERROR = 'api_key_error',
   API_CHAIN_ERROR = 'api_chain_error',
   REQUEST_ERROR = 'request_error',
+  SIGNATURE_ERROR = 'signature_error',
+  MARKETPLACE_ERROR = 'marketplace_error',
 }
 
 /**
@@ -133,5 +150,56 @@ export class AggregatorBulkBuyException extends AggregatorBaseException {
 
   static noValidOrder() {
     return new AggregatorBulkBuyException(BulkBuyExceptionType.NO_VALID_ORDER, `None of the NFTs has valid listing`);
+  }
+}
+
+export class ListingIndexerBaseException extends Error {
+  constructor(public code: number | string, public message: string = '') {
+    super(message);
+  }
+
+  static invalidParam(paramName: string, extMsg?: string) {
+    return `The param '${paramName}' is invalid. ${extMsg || ''}`;
+  }
+}
+
+export class ListingIndexerApiException extends ListingIndexerBaseException {
+  constructor(public code: number | string, public message: string = '', public url?: string) {
+    super(message);
+  }
+
+  static invalidPostOrderVersionError(version: string) {
+    return new ListingIndexerApiException(
+      ExceptionType.PARAM_ERROR,
+      this.invalidParam('version', `capped at ${version}`)
+    );
+  }
+
+  static invalidSignatureError(signature: string) {
+    return new ListingIndexerApiException(
+      ApiExceptionType.SIGNATURE_ERROR,
+      this.invalidParam('signature', `invalid signature ${signature}`)
+    );
+  }
+
+  static marketplacePostOrderError(msg: string) {
+    return new ListingIndexerApiException(ApiExceptionType.MARKETPLACE_ERROR, this.invalidParam('marketplace', msg));
+  }
+
+  static unsupportedOrderbookError(orderbook: string, protocol: string) {
+    return new ListingIndexerApiException(
+      ExceptionType.PARAM_ERROR,
+      this.invalidParam('orderbook', `capped at ${orderbook} for ${protocol}`)
+    );
+  }
+
+  static unsupportedListProtocolError(protocol: string) {
+    return new ListingIndexerApiException(
+      ExceptionType.PARAM_ERROR,
+      this.invalidParam(
+        'protocol',
+        `available listing protocols: ${JSON.stringify(Object.values(ListingOrderProtocol))}, got ${protocol}`
+      )
+    );
   }
 }
