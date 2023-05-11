@@ -13,7 +13,6 @@ GoTrading is an open-source development kit that enables you to build your own N
  - Simple and easy-to-use API
  - Real-time market data access
  - Code is easy to customize and extend
- - Supports Blur NFT Exchange order purchases
  - Supports Bulk Listing and Bulk Buying
 
 ## Supported Marketplaces
