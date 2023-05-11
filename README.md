@@ -214,6 +214,9 @@ utils?.sendTransaction({
   console.log('transaction fail: ', error);
 });
 ```
+## GoTrading Bulk Listing Process (For Server-end)
+![image_info](docs/asset/bulk_listing_server.png)
+
 ## Model Diagram
 ![image info](model_diagram.jpg)
 
