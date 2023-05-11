@@ -183,7 +183,7 @@ for (const nft of nfts) {
 
   - ***1.3 Get the listing info of a Wallet address.***
 ```ts
-// rollbot wallet address.
+// Rollbot wallet address.
 const walletAddress = "0x8ae57a027c63fca8070d1bf38622321de8004c67";
 const { nfts: walletNFTList } = await aggregator.getListingsOfWallet(walletAddress);
 
@@ -194,7 +194,7 @@ for (const nft of walletNFTList) {
 ```
 ### Step2 Select desired NFT listing order
 ```ts
-//eg: get all listing NFT order ids of a wallet address.
+//eg: Get all listing NFT order ids of a wallet address.
 const orderIds: string[] = [];
 for (const nft of walletNFTList) {
   orderIds.push(nft.listingData?.listingOrders[0].orderId as string);
@@ -230,7 +230,7 @@ utils?.sendTransaction({
 }).on('receipt', (receipt)=>{
   if (receipt.logs.length) {
     for (const log of receipt.logs) {
-      // not every log with useful info
+      // Not every log with useful info
       const decodedLog = utils.decodeLog(log);
     }
   }else {
@@ -248,15 +248,15 @@ utils?.sendTransaction({
 ### ***complete example***
 - For server-side:
 ```ts
-// init sdk client
+// Init sdk client
 import Web3 from 'web3';
 import { initListingIndexer, NFTInfoForListing } from '@nftgo/gotrading';
 
-// server
+// Server
 const provider = new Web3.providers.HttpProvider('https://cloudflare-eth.com/');
 
 const openseaApi = {
-  apiKey: 'apiKey', // replace with your own api key
+  apiKey: 'apiKey', // Replace with your own api key
   requestsPerInterval: 2,
   interval: 1000,
 };
@@ -272,7 +272,7 @@ const config = {
   //   looksRareApiKeyConfig: looksrareApi,
   //   x2y2ApiKeyConfig: x2y2Api,
 };
-// create Indexer client
+// Create Indexer client
 const { listingIndexer } = initListingIndexer(config);
 
 // Get the listing info of BAYC No.1
