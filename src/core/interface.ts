@@ -68,19 +68,45 @@ export interface Aggregator {
  * ListingIndexer allows instances of listings to be indexed into different marketplaces
  */
 export interface ListingIndexer {
+  /**
+   * Step 1: Prepare listing:
+   * This function takes two parameters: a list of NFTs to be listed and the owner's address.
+   * The prepareListing function returns the specific parameter details required for the subsequent steps of the process
+   * such as the parameters needed for signing and posting.
+   */
   prepareListing(nfts: NFTInfoForListing[], maker: string): Promise<ListingStepsDetailInfo>;
 
+  /**
+   * Step 2: Approve Listing Item with Policy:
+   * This function will authorize the approvedItems and return the final set of ListingItems.
+   * Note that NFTs must be authorized before being listed, and only one authorization is required per collection per address.
+   */
   approveWithPolicy(data: [ApprovalItem[], ListingItem[]], policyOption: ApprovePolicyOption): Promise<ListingItem[]>;
-
+  /**
+   * Step 3: Sign Listing Item:
+   * This function takes in an array of ListingItem objects that need to be listed.
+   * The user will sign these items using their configured private key, typically stored in their wallet on the client-side.
+   * Once signed, the function returns an array containing two elements:
+      SignedListingItem[]: the successfully signed ListingItems.
+      ErrorListingItem[]: any ListingItems that failed to be signed.
+   */
   signListingOrders(data: ListingItem[]): Promise<[SignedListingItem[], ErrorListingItem[]]>;
 
-  bulkPostListingOrders(data: SignedListingItem[]): Promise<[number[], ErrorListingItem[]]>;
   /**
-   * post a listing order to the target marketplace
-   * @param params
+   * Step 4: Post Listing Item:
+   * This function will post the listing order to the target marketplace.
+   * It takes as input the SignedListingItem that was previously signed in the previous step.
+   * This is the final step of the listing process, where a request is made to the market API.
+   * The function will return information about the final result of the listing.
    */
+  bulkPostListingOrders(data: SignedListingItem[]): Promise<[number[], ErrorListingItem[]]>;
   postListingOrder(params: PostListingOrderParams): Promise<PostListingOrderResponse>;
 
+  /**
+   * bulkListing is a combined version of the previous four functions.
+   * It integrates all four steps and only requires the nfts that need to be listed as input.
+   * The config parameter can be used to control callbacks.
+   */
   bulkListing(nfts: NFTInfoForListing[], config?: BulkListingOptions): Promise<[number[], ErrorListingItem[]]>;
 }
 

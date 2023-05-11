@@ -75,25 +75,8 @@ const listingDataResult = await listingIndexer.bulkListing(listingNFTS, {
 
 ```
 
-## Client-Side Usage
-On the client-side, users need to interact with the MetaMask wallet for authorization, so we need to reassemble the entire listing process.
-
-Here, React framework is used as an example for the code.
-
-- For client-side:
-
 ```ts
-import React from 'react';
-import { initListingIndexer, NFTInfoForListing } from '@nftgo/gotrading';
-// You also need to pass in similar configurations to initialize a ListingIndexerStable instance.
-const config = {};
-const { listingIndexer } = initListingIndexer(config);
-
-// Get the listing info of BAYC No.1
-const baycContract = '0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D';
-
-function YourApp() {
-  // listingNFTS may be obtained by confirming the price with the user, concatenating aggregator.getListingsOfNFT or other interfaces.
+  // You need to initialize a listingIndexer as shown in the code above.
   const listingNFTS: NFTInfoForListing[] = [
     {
       contract: baycContract,
@@ -102,38 +85,45 @@ function YourApp() {
       marketplace: 'OpenSea',
     },
   ];
-  // For each asynchronous operation below, you may need to maintain UI loading, error, and success states based on actual business needs.
-  const startListing = () => {
+  const maker = '0x0000' ?? this.config.walletConfig?.address
+
+  const bulkListing = () => {
     /**
-     * The first step is to obtain the items that need to be listed, relevant authorization signatures, and listing parameters
+     * Step 1: Prepare listing:
+     * This function takes two parameters: a list of NFTs to be listed and the owner's address.
+     * The prepareListing function returns the specific parameter details required for the subsequent steps of the process
+     * such as the parameters needed for signing and posting.
      */
-    const data = await listingIndexer.prepareListing(listingNFTS);
+    const data = await listingIndexer.prepareListing(listingNFTS, maker);
     /**
      * Then, do some simple data formatting and prepare to hand it over to the next process.
      */
     const approvalData = listingIndexer.parseApprovalData(data);
     const listingData = listingIndexer.parseListingData(data);
-    /**
-     * Next: authorize unlicensed items or skip them.
+     /**
+     * Step 2: Approve Listing Item with Policy:
+     * This function will authorize the approvedItems and return the final set of ListingItems.
+     * Note that NFTs must be authorized before being listed, and only one authorization is required per collection per address.
      */
     const approvalResult = await listingIndexer.approveWithPolicy([approvalData, listingData]);
     /**
-     * Next, sign the post order for the authorized items.
-     */
+     * Step 3: Sign Listing Item:
+     * This function takes in an array of ListingItem objects that need to be listed.
+     * The user will sign these items using their configured private key, typically stored in their wallet on the client-side.
+     * Once signed, the function returns an array containing two elements:
+        SignedListingItem[]: the successfully signed ListingItems.
+        ErrorListingItem[]: any ListingItems that failed to be signed.
+    */
     const [listingResult, errorOrders] = await listingIndexer.signListingOrders(approvalResult);
     /**
-     * Finally, for each different exchange, make post order requests using different strategies.
+     * Step 4: Post Listing Item:
+     * This function will post the listing order to the target marketplace.
+     * It takes as input the SignedListingItem that was previously signed in the previous step.
+     * This is the final step of the listing process, where a request is made to the market API.
+     * The function will return information about the final result of the listing.
      */
     const [successIndexes, errorItems] = await listingIndexer.bulkPostListingOrders(listingResult);
     const errorIndexes = [...errorOrders, ...errorItems];
-  };
-  return (
-    <div>
-      <button onClick={startListing}>bulk listing</button>
-    </div>
-  );
-}
-
 ```
 >
 

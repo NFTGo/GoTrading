@@ -400,7 +400,10 @@ export class ListingIndexerStable implements ListingIndexer {
         throw ListingIndexerApiException.invalidParam('nfts', 'nfts should not be empty');
       }
       /**
-       * The first step is to obtain the items that need to be listed, relevant authorization signatures, and listing parameters
+       * Step 1: Prepare listing:
+       * This function takes two parameters: a list of NFTs to be listed and the owner's address.
+       * The prepareListing function returns the specific parameter details required for the subsequent steps of the process
+       * such as the parameters needed for signing and posting.
        */
       const maker = configMaker ?? this.config.walletConfig?.address;
       if (!maker) {
@@ -413,19 +416,29 @@ export class ListingIndexerStable implements ListingIndexer {
       const approvalData = this.parseApprovalData(data);
       const listingData = this.parseListingData(data);
       /**
-       * Next: authorize unlicensed items or skip them.
+       * Step 2: Approve Listing Item with Policy:
+       * This function will authorize the approvedItems and return the final set of ListingItems.
+       * Note that NFTs must be authorized before being listed, and only one authorization is required per collection per address.
        */
       const approvalResult = await this.approveWithPolicy([approvalData, listingData], {
         autoApprove,
         skipUnapproved,
       });
-
       /**
-       * Next, sign the post order for the authorized items.
-       */
+       * Step 3: Sign Listing Item:
+       * This function takes in an array of ListingItem objects that need to be listed.
+       * The user will sign these items using their configured private key, typically stored in their wallet on the client-side.
+       * Once signed, the function returns an array containing two elements:
+          SignedListingItem[]: the successfully signed ListingItems.
+          ErrorListingItem[]: any ListingItems that failed to be signed.
+      */
       const [listingResult, errorOrders] = await this.signListingOrders(approvalResult);
       /**
-       * Finally, for each different exchange, make post order requests using different strategies.
+       * Step 4: Post Listing Item:
+       * This function will post the listing order to the target marketplace.
+       * It takes as input the SignedListingItem that was previously signed in the previous step.
+       * This is the final step of the listing process, where a request is made to the market API.
+       * The function will return information about the final result of the listing.
        */
       const [successIndexes, errorItems] = await this.bulkPostListingOrders(listingResult);
       const errorIndexes = [...errorOrders, ...errorItems];
