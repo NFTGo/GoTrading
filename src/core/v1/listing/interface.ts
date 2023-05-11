@@ -101,7 +101,7 @@ export interface SignData {
   signatureKind: 'eip191' | 'eip712';
   types: Record<string, any[]>;
   value: Record<string, any>;
-  // If it is not seaportv1.4, the following fields will be included.
+  // If it is not seaportv1.5, the following fields will be included.
   orderIndex?: number;
   status?: 'complete' | 'incomplete';
   message?: string;
