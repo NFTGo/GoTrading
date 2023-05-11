@@ -659,7 +659,7 @@ export interface PostListingOrderParams {
 }
 
 export enum ListingOrderProtocol {
-  SEAPORTV14 = 'seaport-v1.4',
+  SEAPORTV15 = 'seaport-v1.5',
   LOOKSRARE = 'looks-rare',
   X2Y2 = 'x2y2',
 }

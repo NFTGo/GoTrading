@@ -48,8 +48,8 @@ export class ListingIndexerStable implements ListingIndexer {
   constructor(private client: HTTPClient, private config: ListingIndexerConfig, private utils: AggregatorUtils) {
     if (config.openSeaApiKeyConfig) {
       this.postOrderHandlers.set(
-        ListingOrderProtocol.SEAPORTV14,
-        new SeaportV1D4Handler(client, config.openSeaApiKeyConfig)
+        ListingOrderProtocol.SEAPORTV15,
+        new SeaportV1D5Handler(client, config.openSeaApiKeyConfig)
       );
     }
 
@@ -111,7 +111,7 @@ export class ListingIndexerStable implements ListingIndexer {
 
             if (bulkData?.kind === 'seaport-v1.4') {
               // Encode the merkle proof of inclusion together with the signature
-              payload.order.data.signature = Models.SeaportV1D4.Utils.encodeBulkOrderProofAndSignature(
+              payload.order.data.signature = Models.SeaportV1D5.Utils.encodeBulkOrderProofAndSignature(
                 bulkData.data.orderIndex,
                 bulkData.data.merkleProof,
                 signature
@@ -448,8 +448,8 @@ export interface IPostOrderHandler {
   handle: (payload: any) => Promise<any>;
 }
 
-class SeaportV1D4Handler implements IPostOrderHandler {
-  protocol = ListingOrderProtocol.SEAPORTV14;
+class SeaportV1D5Handler implements IPostOrderHandler {
+  protocol = ListingOrderProtocol.SEAPORTV15;
   url = 'https://api.opensea.io/v2/orders/ethereum/seaport/listings';
   rateLimiter: ExternalServiceRateLimiter;
   constructor(private client: HTTPClient, apiKeyConfig: ApiKeyConfig) {
@@ -465,7 +465,7 @@ class SeaportV1D4Handler implements IPostOrderHandler {
     if (!['opensea'].includes(payload.orderbook)) {
       throw ListingIndexerApiException.unsupportedOrderbookError(orderbook, this.protocol);
     }
-    const seaportOrder: Models.SeaportV1D4.Types.ListingOrderParams = {
+    const seaportOrder: Models.SeaportV1D5.Types.ListingOrderParams = {
       offerer: order.data.offerer,
       zone: order.data.zone,
       offer: order.data.offer,
@@ -490,7 +490,7 @@ class SeaportV1D4Handler implements IPostOrderHandler {
             totalOriginalConsiderationItems: order.data.consideration.length,
           },
           signature: order.data.signature,
-          protocol_address: Models.SeaportV1D4.Addresses.Exchange[Models.Utils.Network.Ethereum],
+          protocol_address: Models.SeaportV1D5.Addresses.Exchange[Models.Utils.Network.Ethereum],
         },
         { 'X-Api-Key': apiKey },
         true

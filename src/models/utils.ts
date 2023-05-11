@@ -4,6 +4,8 @@ export enum Network {
   EthereumGoerli = 5,
   // Optimism
   Optimism = 10,
+  // Bsc
+  Bsc = 56,
   // Gnosis
   Gnosis = 100,
   // Polygon
@@ -14,6 +16,9 @@ export enum Network {
   // Avalanche
   Avalanche = 43114,
   AvalancheFuji = 43113,
+  // Scroll
+  ScrollAlpha = 534353,
+  MantleTestnet = 5001,
 }
 
 export type ChainIdToAddress = { [chainId: number]: string };
