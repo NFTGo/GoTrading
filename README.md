@@ -1,7 +1,15 @@
 # GoTrading-js
 [![node](https://img.shields.io/badge/node-%3E%3D%2016.14-brightgreen.svg)](https://nodejs.org/en/) [![Discord][discord-image]][discord-url] [![Twitter][twitter-image]][twitter-url]
 
-
+# Table of Contents
+- [Introduction](#Introduction)
+- [Key Features](#Key-Features)
+- [Supported Marketplaces](#Supported-Marketplaces)
+- [Supported Chains](#Supported-Chains)
+- [Requirements](#Requirements)
+- [Quickstart](#quickstart)
+- [Bulk Buying](#Bulk-Buying-Process)
+- [Bulk Listing](#Bulk-Listing-Process)
 
 ## Introduction
 
@@ -232,10 +240,12 @@ utils?.sendTransaction({
   console.log('transaction fail: ', error);
 });
 ```
-## Bulk Listing Process (For Server-end)
+## Bulk Listing Process
+### For Server-end
+
 ![image_info](docs/asset/bulk_listing_server.png)
 
-## ***complete example***
+### ***complete example***
 - For server-side:
 ```ts
 // init sdk client
