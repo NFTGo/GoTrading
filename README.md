@@ -145,7 +145,7 @@ aggregator.bulkBuy({
 });
 ```
 
-## GoTrading Purchase Process
+## Bulk Buying Process
 ![image info](process.jpg)
 ### Step1 Get listing info
   - ***1.1 Get the listing info of a single nft.***
@@ -233,7 +233,7 @@ utils?.sendTransaction({
   console.log('transaction fail: ', error);
 });
 ```
-## GoTrading Bulk Listing Process (For Server-end)
+## Bulk Listing Process (For Server-end)
 ![image_info](docs/asset/bulk_listing_server.png)
 
 ## ***complete example***
