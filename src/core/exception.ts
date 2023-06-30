@@ -149,7 +149,7 @@ export class AggregatorBulkBuyException extends AggregatorBaseException {
   }
 
   static noValidOrder() {
-    return new AggregatorBulkBuyException(BulkBuyExceptionType.NO_VALID_ORDER, `None of the NFTs has valid listing`);
+    return new AggregatorBulkBuyException(BulkBuyExceptionType.NO_VALID_ORDER, 'None of the NFTs has valid listing');
   }
 }
 
