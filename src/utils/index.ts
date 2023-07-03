@@ -3,21 +3,19 @@ import Web3 from 'web3';
 
 import { Log, provider, TransactionConfig, TransactionReceipt } from 'web3-core';
 import { PUNK_CONTRACT_ADDRESS } from './consts';
-import { AggregatorBaseException, AggregatorUtilsException } from '../../exception';
+import { ERC1155Abi } from '../abi/ERC1155';
+import { ERC721Abi, CryptoPunkAbi } from '../abi/ERC721';
 import {
+  WalletConfig,
+  InspectTransactionParams,
+  TransactionHashHandler,
+  ReceiptHandler,
   ErrorHandler,
   FinallyHandler,
-  InspectTransactionParams as InspectTransactionParams,
-  NFTBaseInfo,
-  NFTInfoForTrade,
-  ReceiptHandler,
-  Transaction,
-  TransactionHashHandler,
   Utils,
-  WalletConfig,
-} from '../../interface';
-import { CryptoPunkAbi, ERC721Abi } from '../abi/ERC721';
-import { ERC1155Abi } from '../abi/ERC1155';
+  Transaction,
+} from '../interface';
+import { UtilsException } from '../exceptions';
 
 export class AggregatorUtils implements Utils {
   constructor(private provider?: provider, private walletConfig?: WalletConfig) {
@@ -26,10 +24,10 @@ export class AggregatorUtils implements Utils {
     this._ethersProvider = new ethers.providers.Web3Provider(this.provider || (globalThis as any)?.ethereum);
     if (walletConfig) {
       if (typeof walletConfig?.address !== 'string') {
-        throw AggregatorBaseException.invalidParamError('walletConfig.address');
+        throw UtilsException.invalidParamError('walletConfig.address');
       }
       if (typeof walletConfig?.privateKey !== 'string') {
-        throw AggregatorBaseException.invalidParamError('walletConfig.privateKey');
+        throw UtilsException.invalidParamError('walletConfig.privateKey');
       }
 
       this._ethersSigner = this.provider
@@ -74,7 +72,7 @@ export class AggregatorUtils implements Utils {
   }
   decodeLog(log: Log) {
     if (!log) {
-      throw AggregatorUtilsException.decodeLogError('log is empty');
+      throw UtilsException.decodeLogError('log is empty');
     }
     let contract;
     let tokenId;
@@ -161,43 +159,10 @@ export class AggregatorUtils implements Utils {
         to,
       };
     } catch (error) {
-      throw AggregatorUtilsException.decodeLogError(error?.toString());
+      throw UtilsException.decodeLogError(error?.toString());
     }
   }
-  genUniqueKeyForNFT({ contract, tokenId }: NFTBaseInfo): string {
-    return `${contract?.toLowerCase?.()}_${tokenId}`;
-  }
-  parseTransactedNFTs(receipt: TransactionReceipt): Map<string, NFTInfoForTrade> | undefined {
-    if (receipt?.logs.length === 0 || !receipt?.status) {
-      return undefined;
-    }
-    // Use map to prevent duplication.
-    // Because there will be multiple logs for one nft transaction
-    // multiple identical nft information may be parsed
-    const successList = new Map<string, NFTInfoForTrade>();
-    for (let i = 0; i < receipt?.logs.length; i++) {
-      const log = receipt.logs[i];
-      const { contract, tokenId, is1155, amount, to } = this.decodeLog(log);
-      // Not every log can parse contract and tokenId
-      // Only Log whose destination address equal to buyer address is useful
-      if ((!contract && !tokenId) || to?.toLowerCase() !== this.walletConfig?.address?.toLowerCase()) {
-        continue;
-      }
-      const key = this.genUniqueKeyForNFT({ contract, tokenId });
-      if (is1155) {
-        if (successList.has(key)) {
-          const old1155 = successList.get(key) as NFTInfoForTrade;
-          (old1155.amount as number) += amount ?? 0;
-          successList.set(key, old1155);
-        } else {
-          successList.set(key, { contract, tokenId, amount });
-        }
-      } else {
-        successList.set(key, { contract, tokenId, amount });
-      }
-    }
-    return successList;
-  }
+
   sendSafeModeTransaction(transactionConfig: Partial<ethers.Transaction>) {
     const transactionInstance = new SendTransaction();
     // safe mode need more transaction detail than normal, including nonce, gasLimit, type and etc.
@@ -269,10 +234,7 @@ export class AggregatorUtils implements Utils {
       this.walletConfig?.address &&
       transactionConfig?.from?.toString?.()?.toLowerCase?.() !== this.walletConfig?.address?.toLowerCase?.()
     ) {
-      throw AggregatorUtilsException.invalidParamError(
-        'transactionConfig.from',
-        'Buyer address must equal to wallet address'
-      );
+      throw UtilsException.invalidParamError('transactionConfig.from', 'Buyer address must equal to wallet address');
     }
     const transactionInstance = new SendTransaction();
     this._web3Instance.eth

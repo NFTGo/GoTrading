@@ -1,4 +1,4 @@
-import { NFTBaseInfo } from '../../interface';
+import { NFTBaseInfo } from '../../../interface';
 
 export type Marketplace = 'OpenSea' | 'LooksRare' | 'X2Y2';
 

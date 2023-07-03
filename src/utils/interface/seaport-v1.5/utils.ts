@@ -1,4 +1,4 @@
-import {defaultAbiCoder, hexConcat} from "ethers/lib/utils";
+import { defaultAbiCoder, hexConcat } from 'ethers/lib/utils';
 
 export function encodeBulkOrderProofAndSignature(orderIndex: number, merkleProof: string[], signature: string): string {
   return hexConcat([

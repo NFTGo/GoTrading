@@ -3,7 +3,13 @@ export function isInvalidParam(param: unknown) {
     return false;
   }
 
-  if (param === undefined || param == null || param === 'null' || param === 'undefined' || typeof param === 'boolean') {
+  if (
+    param === undefined ||
+    param === null ||
+    param === 'null' ||
+    param === 'undefined' ||
+    typeof param === 'boolean'
+  ) {
     return true;
   }
 
