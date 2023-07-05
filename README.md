@@ -26,21 +26,21 @@ GoTrading is an open-source development kit that enables you to build your own N
 ## Supported Marketplaces
 GoTrading currently aggregates the following marketplaces, and we will continue to add more marketplaces in the future.
 
-| **Marketplace** | **Bulk Listing** | **Bulk Buying** | **Protocol**         |
-|-----------------|------------------|-----------------|----------------------|
-| OpenSea         | Yes              | Yes             | seaport-v1.5         |
-| Blur            | Yes              | Yes             | blur                 | 
-| LooksRare       | Yes              | Yes             | looksrare-v2         |
-| X2Y2            | Yes              | Yes             | x2y2                 |
-| Sudoswap        | No               | Yes             | sudoswap/sudoswap-v2 |
-| CryptoPunks     | No               | Yes             | cryptopunks          |
-| Artblocks       | No               | Yes             | seaport-v1.5         |
-| Reservoir       | No               | Yes             | seaport-v1.5         |
-| ENSVision       | No               | Yes             | seaport-v1.5         |
-| Magically       | No               | Yes             | seaport-v1.5         |
-| Alienswap       | No               | Yes             | seaport-v1.5         |
-| Ordinals        | No               | Yes             | seaport-v1.5         |
-| Sound           | No               | Yes             | seaport-v1.5         |
+| **Marketplace** | **Create Listings** | **Fulfill Listings** | **Create Offers** | **Fulfill Offers** | **Cancel Listings/Offers** | **Protocol**         |
+|-----------------|---------------------|----------------------|-------------------|--------------------|----------------------------|----------------------|
+| OpenSea         | Yes                 | Yes                  | Yes               | Yes                | Yes                        | seaport-v1.5         |
+| Blur            | Yes                 | Yes                  | Yes               | Yes                | Yes                        | blur                 | 
+| LooksRare       | Yes                 | Yes                  | Yes               | Yes                | Yes                        | looksrare-v2         |
+| X2Y2            | Yes                 | Yes                  | Yes               | Yes                | Yes                        | x2y2                 |
+| Sudoswap        | No                  | Yes                  | No                | Yes                | Yes                        | sudoswap/sudoswap-v2 |
+| CryptoPunks     | No                  | Yes                  | No                | Yes                | Yes                        | cryptopunks          |
+| Artblocks       | No                  | Yes                  | No                | Yes                | Yes                        | seaport-v1.5         |
+| Reservoir       | No                  | Yes                  | No                | Yes                | Yes                        | seaport-v1.5         |
+| ENSVision       | No                  | Yes                  | No                | Yes                | Yes                        | seaport-v1.5         |
+| Magically       | No                  | Yes                  | No                | Yes                | Yes                        | seaport-v1.5         |
+| Alienswap       | No                  | Yes                  | No                | Yes                | Yes                        | seaport-v1.5         |
+| Ordinals        | No                  | Yes                  | No                | Yes                | Yes                        | seaport-v1.5         |
+| Sound           | No                  | Yes                  | No                | Yes                | Yes                        | seaport-v1.5         |
 
 
 
