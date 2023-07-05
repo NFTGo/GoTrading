@@ -98,10 +98,14 @@ export class Aggregator implements AggregatorInterface {
         '/create-listings/v1',
         params
       ).then(res => {
+        console.info('res', res);
+        // FIXME: common error message handler
+        const {data} = res as any;
+        const {actions} = data;
         resolve({
-          actions: res.actions,
+          actions: actions,
           executeActions: () => {
-            return executeAllActions(res.actions, this.utils);
+            return executeAllActions(actions, this.utils);
           },
         });
       });
@@ -153,6 +157,7 @@ export class Aggregator implements AggregatorInterface {
       (this.config?.baseUrl ?? BASE_URL) +
       '/aggregator' +
       '/v1' +
+      '/' +
       (this.config?.chain ?? EVMChain.ETH) +
       '/nft'
     );

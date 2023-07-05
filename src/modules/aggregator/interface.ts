@@ -145,7 +145,7 @@ export interface CreateListingInput {
 }
 
 export interface Options {
-  'seaport-v1.5': SeaportV14;
+  'seaport-v1.5'?: SeaportV14;
 }
 
 export interface SeaportV14 {

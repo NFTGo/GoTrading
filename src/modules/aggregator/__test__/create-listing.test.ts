@@ -4,6 +4,12 @@ import {AggregatorUtils} from '../../../utils';
 import {HTTPClientStable} from '../../../http-client';
 import {OrderKind, Orderbook} from '../../interface';
 import {getCurrentTimeStamp, getWeiPrice} from './utils';
+import {setGlobalDispatcher, ProxyAgent} from 'undici';
+
+const HTTP_PROXY = 'http://127.0.0.1:9999';
+
+const proxyAgent = new ProxyAgent(HTTP_PROXY);
+setGlobalDispatcher(proxyAgent);
 
 const config = initConfig();
 const provider = initWeb3Provider();
@@ -18,29 +24,72 @@ const mock721Order = {
   ethPrice: 1.45,
 };
 
-console.info(walletConfig);
-describe('create listing', () => {
+const orders = [
+  {
+    token: mock721Order.contract + ':' + mock721Order.tokenId,
+    weiPrice: getWeiPrice(mock721Order.ethPrice),
+    listingTime: getCurrentTimeStamp(0).toString(),
+    expirationTime: getCurrentTimeStamp(3600000).toString(),
+    options: {
+      'seaport-v1.5': {
+        useOffChainCancellation: false,
+      },
+    },
+    orderbook: Orderbook.Opensea,
+    orderKind: OrderKind.SeaportV15,
+  },
+  {
+    token: mock721Order.contract + ':' + mock721Order.tokenId,
+    weiPrice: getWeiPrice(mock721Order.ethPrice),
+    listingTime: getCurrentTimeStamp(0).toString(),
+    expirationTime: getCurrentTimeStamp(3600000).toString(),
+    options: {},
+    orderbook: Orderbook.LooksRare,
+    orderKind: OrderKind.LooksRareV2,
+  },
+  {
+    token: mock721Order.contract + ':' + mock721Order.tokenId,
+    weiPrice: getWeiPrice(mock721Order.ethPrice),
+    listingTime: getCurrentTimeStamp(0).toString(),
+    expirationTime: getCurrentTimeStamp(3600000).toString(),
+    options: {},
+    orderbook: Orderbook.Blur,
+    orderKind: OrderKind.Blur,
+  },
+];
+
+describe('create listing main process', () => {
   test('should return create listing actions', async () => {
     const maker = walletConfig.address;
-    const actions = await aggregator.createListings({
+    const res = await aggregator.createListings({
       maker,
-      params: [
-        {
-          token: mock721Order.contract + ':' + mock721Order.tokenId,
-          weiPrice: getWeiPrice(mock721Order.ethPrice),
-          listingTime: getCurrentTimeStamp(0).toString(),
-          expirationTime: getCurrentTimeStamp(3600000).toString(),
-          options: {
-            'seaport-v1.5': {
-              useOffChainCancellation: false,
-            },
-          },
-          orderbook: Orderbook.Opensea,
-          orderKind: OrderKind.SeaportV15,
-        },
-      ],
+      params: orders,
     });
-    console.info('actions', actions);
-    expect(actions).toEqual([]);
+    const {actions, executeActions} = res;
+    expect(executeActions).toEqual(expect.any(Function));
+    expect(actions).toEqual(expect.any(Array));
+  });
+  test('should excute actions', async () => {
+    const maker = '0x3e24914f74Cd66e3ee7d1F066A880A6c69404E13';
+    const res = await aggregator.createListings({
+      maker,
+      params: orders,
+    });
+    const {actions, executeActions} = res;
+    expect(executeActions).toEqual(expect.any(Function));
+    expect(actions).toEqual(expect.any(Array));
+  });
+});
+
+describe('create listing error', () => {
+  test('should return error when maker is incorrect', async () => {
+    const maker = '0x3e24914f74Cd66e3ee7d1F066A880A6c69404E13';
+    const res = await aggregator.createListings({
+      maker,
+      params: orders,
+    });
+    const {actions, executeActions} = res;
+    expect(executeActions).toEqual(expect.any(Function));
+    expect(actions).toEqual(expect.any(Array));
   });
 });

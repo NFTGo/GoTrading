@@ -26,8 +26,9 @@ const x2y2Api = {
 export function initConfig() {
   const config: Config = {
     apiKey: process.env.API_KEY || '', // Replace with your own API Key.
-    baseUrl: 'https://data-api.nftgo.dev/',
-    chain: EVMChain.ETH,
+    baseUrl: 'https://data-api.nftgo.dev',
+    // chain: EVMChain.ETH,
+    chain: 'ETH' as any,
   };
   return config;
 }

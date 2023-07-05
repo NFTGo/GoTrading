@@ -6,7 +6,7 @@ import {AggregatorUtils} from './utils';
 
 // # user-land interface , core  should implement this
 export enum EVMChain {
-  ETH = 'eth',
+  ETH = 'ETH',
 }
 
 export type TransactionHashHandler =
