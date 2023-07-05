@@ -1,6 +1,6 @@
 import { BASE_URL } from '../config';
 import { BaseException } from '../exceptions/base';
-import { EVMChain, HTTPClient } from '../interface';
+import { EVMChain, HTTPClient, Config } from '../interface';
 
 interface BlurAuthChallenge {
   expiresOn: string;
@@ -26,9 +26,9 @@ export class BlurAuthService implements BlurAuthServiceImpl {
   private accessToken: string | undefined;
   private signer: Signer;
   private httpClient: HTTPClient;
-  private config: any;
+  private config: Config;
   // FIXME: config and httpClient should be merged into one
-  constructor(signer: Signer, httpClient: HTTPClient, config: any) {
+  constructor(signer: Signer, httpClient: HTTPClient, config: Config) {
     this.signer = signer;
     this.httpClient = httpClient;
     this.config = config;
