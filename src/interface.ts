@@ -1,17 +1,22 @@
-import { ethers } from 'ethers';
-import { Log, TransactionConfig, TransactionReceipt } from 'web3-core';
-import { HttpsProxyAgent } from 'https-proxy-agent';
-import { OrderFetcherInterface } from './modules/order-fetcher/interface';
-import { AggregatorInterface } from './modules/aggregator/interface';
-import { AggregatorUtils } from './utils';
+import {ethers} from 'ethers';
+import {Log, TransactionConfig, TransactionReceipt} from 'web3-core';
+import {OrderFetcherInterface} from './modules/order-fetcher/interface';
+import {AggregatorInterface} from './modules/aggregator/interface';
+import {AggregatorUtils} from './utils';
 
 // # user-land interface , core  should implement this
 export enum EVMChain {
   ETH = 'eth',
 }
 
-export type TransactionHashHandler = ((hash: string) => void) | null | undefined;
-export type ReceiptHandler = ((receipt: TransactionReceipt) => void) | null | undefined;
+export type TransactionHashHandler =
+  | ((hash: string) => void)
+  | null
+  | undefined;
+export type ReceiptHandler =
+  | ((receipt: TransactionReceipt) => void)
+  | null
+  | undefined;
 export type ErrorHandler = ((error: Error) => void) | null | undefined;
 export type FinallyHandler = (() => void) | null | undefined;
 export interface BuyNFTsWithOrderIdsParams {
@@ -63,7 +68,9 @@ export interface Utils {
    * @param transactionConfig {@link https://docs.ethers.io/v5/api/providers/types/#providers-TransactionRequest} transaction config
    * @returns transaction {@link Transaction}
    */
-  sendSafeModeTransaction(transactionConfig: Partial<ethers.Transaction>): Transaction;
+  sendSafeModeTransaction(
+    transactionConfig: Partial<ethers.Transaction>
+  ): Transaction;
   /**
    * Send transaction
    * - details: {@link }
@@ -90,7 +97,11 @@ export interface GoTrading {
 }
 
 export interface HTTPClient {
-  get<R, Q = undefined>(url: string, query: Q | undefined, headers?: Record<string, string>): Promise<R>;
+  get<R, Q = undefined>(
+    url: string,
+    query: Q | undefined,
+    headers?: Record<string, string>
+  ): Promise<R>;
   post<R, P = undefined>(
     url: string,
     data: P,
@@ -108,8 +119,6 @@ export interface Config {
   apiKey: string;
   chain?: EVMChain;
   baseUrl?: string;
-
-  agent?: HttpsProxyAgent;
 }
 
 export interface ListingIndexerConfig extends Config {
@@ -118,4 +127,8 @@ export interface ListingIndexerConfig extends Config {
   x2y2ApiKeyConfig: ApiKeyConfig;
 }
 
-export type ApiKeyConfig = { apiKey: string; requestsPerInterval: number; interval: number };
+export type ApiKeyConfig = {
+  apiKey: string;
+  requestsPerInterval: number;
+  interval: number;
+};

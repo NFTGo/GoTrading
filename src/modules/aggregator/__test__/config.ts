@@ -1,7 +1,6 @@
 require('dotenv').config();
-const HttpsProxyAgent = require('https-proxy-agent');
 
-import { ListingIndexerConfig, EVMChain } from '../../interface';
+import {EVMChain, Config, WalletConfig} from '../../../interface';
 import Web3 from 'web3';
 
 // const DefaultProviderUrl = 'https://cloudflare-eth.com/';
@@ -24,28 +23,28 @@ const x2y2Api = {
   interval: 1000,
 };
 
-export function initConfig(providerUrl = DefaultProviderUrl) {
-  const web3Provider = new Web3.providers.HttpProvider(providerUrl);
-  let config: ListingIndexerConfig = {
+export function initConfig() {
+  const config: Config = {
     apiKey: process.env.API_KEY || '', // Replace with your own API Key.
     baseUrl: 'https://data-api.nftgo.dev/',
     chain: EVMChain.ETH,
-    web3Provider,
-    walletConfig: {
-      address: process.env.ADDRESS || '',
-      privateKey: process.env.PRIVATE_KEY || '',
-    },
-    agent: new HttpsProxyAgent(HTTP_PROXY),
-    openSeaApiKeyConfig: openseaApi,
-    looksRareApiKeyConfig: looksrareApi,
-    x2y2ApiKeyConfig: x2y2Api,
   };
   return config;
 }
 
-export function testProvider(provider: any) {
+export const walletConfig: WalletConfig = {
+  address: process.env.ADDRESS || '',
+  privateKey: process.env.PRIVATE_KEY || '',
+};
+
+export function initWeb3Provider(providerUrl = DefaultProviderUrl) {
+  const web3Provider = new Web3.providers.HttpProvider(providerUrl);
+  return web3Provider;
+}
+
+export function checkProviderIsValid(provider: any) {
   const web3 = new Web3(provider);
-  web3.eth.getBlockNumber().then((result) => {
+  web3.eth.getBlockNumber().then(result => {
     console.log('Latest Ethereum Block is ', result);
   });
 }

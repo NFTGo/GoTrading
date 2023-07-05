@@ -1,6 +1,6 @@
-import { BASE_URL } from '../../config';
-import { isInvalidParam } from '../../helpers/is-invalid-param';
-import { HTTPClient, EVMChain, Config, Utils } from '../../interface';
+import {BASE_URL} from '../../config';
+import {isInvalidParam} from '../../helpers/is-invalid-param';
+import {HTTPClient, EVMChain, Config, Utils} from '../../interface';
 import {
   AggregatorApiResponse,
   AggregatorInterface,
@@ -11,10 +11,14 @@ import {
   FulfillListingsReq,
   FulfillOffersReq,
 } from './interface';
-import { executeAllActions } from './use-cases';
+import {executeAllActions} from './use-cases';
 
 export class Aggregator implements AggregatorInterface {
-  constructor(private client: HTTPClient, private config: Config, private utils: Utils) {}
+  constructor(
+    private client: HTTPClient,
+    private config: Config,
+    private utils: Utils
+  ) {}
 
   /**
    *
@@ -24,7 +28,10 @@ export class Aggregator implements AggregatorInterface {
    */
   createOffers(params: CreateOffersReq): Promise<AggregatorResponse<any>> {
     return new Promise<AggregatorResponse<any>>((resolve, reject) => {
-      this.post<AggregatorApiResponse, CreateOffersReq>('/create-offers/v1', params).then((res) => {
+      this.post<AggregatorApiResponse, CreateOffersReq>(
+        '/create-offers/v1',
+        params
+      ).then(res => {
         resolve({
           actions: res.actions,
           executeActions: () => {
@@ -43,7 +50,10 @@ export class Aggregator implements AggregatorInterface {
    */
   fulfillOffers(params: FulfillOffersReq): Promise<AggregatorResponse<any>> {
     return new Promise<AggregatorResponse<any>>((resolve, reject) => {
-      this.post<AggregatorApiResponse, FulfillOffersReq>('/aggregate-accept-offers', params).then((res) => {
+      this.post<AggregatorApiResponse, FulfillOffersReq>(
+        '/aggregate-accept-offers',
+        params
+      ).then(res => {
         resolve({
           actions: res.actions,
           executeActions: () => {
@@ -62,7 +72,10 @@ export class Aggregator implements AggregatorInterface {
    */
   cancelOrders(params: CancelOrdersReq): Promise<AggregatorResponse<any>> {
     return new Promise<AggregatorResponse<any>>((resolve, reject) => {
-      this.post<AggregatorApiResponse, CancelOrdersReq>('/cancel-orders', params).then((res) => {
+      this.post<AggregatorApiResponse, CancelOrdersReq>(
+        '/cancel-orders',
+        params
+      ).then(res => {
         resolve({
           actions: res.actions,
           executeActions: () => {
@@ -81,7 +94,10 @@ export class Aggregator implements AggregatorInterface {
    */
   createListings(params: CreateListingsReq): Promise<AggregatorResponse<any>> {
     return new Promise<AggregatorResponse<any>>((resolve, reject) => {
-      this.post<AggregatorApiResponse, CreateListingsReq>('/create-listings/v1', params).then((res) => {
+      this.post<AggregatorApiResponse, CreateListingsReq>(
+        '/create-listings/v1',
+        params
+      ).then(res => {
         resolve({
           actions: res.actions,
           executeActions: () => {
@@ -98,9 +114,14 @@ export class Aggregator implements AggregatorInterface {
    * @param params {@link FulfillListingsReq}
    * @returns Promise<{@link }>
    */
-  fulfillListings(params: FulfillListingsReq): Promise<AggregatorResponse<any>> {
+  fulfillListings(
+    params: FulfillListingsReq
+  ): Promise<AggregatorResponse<any>> {
     return new Promise<AggregatorResponse<any>>((resolve, reject) => {
-      this.post<AggregatorApiResponse, FulfillListingsReq>('/aggregate-accept-listings', params).then((res) => {
+      this.post<AggregatorApiResponse, FulfillListingsReq>(
+        '/aggregate-accept-listings',
+        params
+      ).then(res => {
         resolve({
           actions: res.actions,
           executeActions: () => {
@@ -124,11 +145,17 @@ export class Aggregator implements AggregatorInterface {
   }
 
   private get headers() {
-    return { 'X-API-KEY': this.config.apiKey, 'X-FROM': 'js_sdk' };
+    return {'X-API-KEY': this.config.apiKey, 'X-FROM': 'js_sdk'};
   }
 
   private get url() {
-    return (this.config?.baseUrl ?? BASE_URL) + '/aggregator' + '/v1' + (this.config?.chain ?? EVMChain.ETH) + '/nft';
+    return (
+      (this.config?.baseUrl ?? BASE_URL) +
+      '/aggregator' +
+      '/v1' +
+      (this.config?.chain ?? EVMChain.ETH) +
+      '/nft'
+    );
   }
 
   private post<R, P = undefined>(path: string, params: P) {

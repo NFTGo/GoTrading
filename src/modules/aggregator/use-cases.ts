@@ -1,6 +1,6 @@
-import { Utils } from '../../interface';
-import { AggregateAction } from './interface';
+import {Utils} from '../../interface';
+import {AggregateAction} from './interface';
 
 export function executeAllActions(actions: AggregateAction[], utils: Utils) {
-  return new Promise();
+  return Promise.resolve(true);
 }

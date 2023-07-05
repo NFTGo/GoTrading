@@ -1,4 +1,4 @@
-import { Order, OrderKind, Orderbook } from '../interface';
+import {Order, OrderKind, Orderbook} from '../interface';
 
 /**
  * ActionKind
@@ -35,7 +35,14 @@ export interface ActionData {
   usdGas?: string;
   endpoint?: string;
   method?: string;
-  payload?: any[] | boolean | number | number | Record<string, any> | null | string;
+  payload?:
+    | any[]
+    | boolean
+    | number
+    | number
+    | Record<string, any>
+    | null
+    | string;
   body?: Record<string, any>;
   orderIndexes?: number[];
   sign?: Record<string, any>;
@@ -90,7 +97,7 @@ export interface CreateListingsReq {
   /**
    * app domain
    */
-  source: string;
+  source?: string;
 }
 
 export interface CreateListingInput {
@@ -138,7 +145,7 @@ export interface CreateListingInput {
 }
 
 export interface Options {
-  'seaport-v1.4': SeaportV14;
+  'seaport-v1.5': SeaportV14;
 }
 
 export interface SeaportV14 {
@@ -213,7 +220,7 @@ export interface CreateOfferInput {
    * Optional. Set a custom nonce
    */
   nonce?: string;
-  options?: { [key: string]: any };
+  options?: {[key: string]: any};
   /**
    * Orderbook where order is placed. Example: `Reservoir`
    */

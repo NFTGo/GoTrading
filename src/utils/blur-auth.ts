@@ -1,6 +1,6 @@
-import { BASE_URL } from '../config';
-import { BaseException } from '../exceptions/base';
-import { EVMChain, HTTPClient, Config } from '../interface';
+import {BASE_URL} from '../config';
+import {BaseException} from '../exceptions/base';
+import {EVMChain, HTTPClient, Config} from '../interface';
 
 interface BlurAuthChallenge {
   expiresOn: string;
@@ -34,18 +34,22 @@ export class BlurAuthService implements BlurAuthServiceImpl {
     this.config = config;
   }
   private get headers() {
-    return { 'X-API-KEY': this.config.apiKey, 'X-FROM': 'js_sdk' };
+    return {'X-API-KEY': this.config.apiKey, 'X-FROM': 'js_sdk'};
   }
 
   private get url() {
-    return (this.config?.baseUrl ?? BASE_URL) + (this.config?.chain ?? EVMChain.ETH) + '/v1';
+    return (
+      (this.config?.baseUrl ?? BASE_URL) +
+      (this.config?.chain ?? EVMChain.ETH) +
+      '/v1'
+    );
   }
   private async getBlurAuthSignature(message: string) {
     const signature = this.signer.signMessage(message);
     return signature;
   }
   private async getBlurAuthChallenge(address: string) {
-    const res = await this.httpClient.get<BlurAuthChallenge, { address: string }>(
+    const res = await this.httpClient.get<BlurAuthChallenge, {address: string}>(
       this.url + '/nft-aggregate/blur_auth_challenge',
       {
         address,
@@ -54,12 +58,13 @@ export class BlurAuthService implements BlurAuthServiceImpl {
     );
     return res;
   }
-  private async signBlurAuthChallenge(params: BlurAuthLoginParams): Promise<string> {
-    const res = await this.httpClient.post<{ accessToken: string }, BlurAuthLoginParams>(
-      this.url + '/nft-aggregate/blur_login',
-      params,
-      this.headers
-    );
+  private async signBlurAuthChallenge(
+    params: BlurAuthLoginParams
+  ): Promise<string> {
+    const res = await this.httpClient.post<
+      {accessToken: string},
+      BlurAuthLoginParams
+    >(this.url + '/nft-aggregate/blur_login', params, this.headers);
     return res?.accessToken;
   }
   getAccessToken() {
@@ -73,7 +78,7 @@ export class BlurAuthService implements BlurAuthServiceImpl {
       return this.accessToken;
     }
     const challenge = await this.getBlurAuthChallenge(address);
-    const { message } = challenge;
+    const {message} = challenge;
     const signature = await this.getBlurAuthSignature(message);
     const token = await this.signBlurAuthChallenge({
       ...challenge,
@@ -85,7 +90,7 @@ export class BlurAuthService implements BlurAuthServiceImpl {
 }
 
 export function isHasBlurOrder(cartItem: any) {
-  const { itemOrders } = cartItem ?? {};
+  const {itemOrders} = cartItem ?? {};
   if (!itemOrders || itemOrders.length === 0) {
     return false;
   }
