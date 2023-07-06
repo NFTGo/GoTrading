@@ -363,6 +363,10 @@ export class AggregatorUtils implements Utils {
       return signResult.signature;
     }
   }
+
+  getSigner() {
+    return this._ethersSigner;
+  }
 }
 
 class SendTransaction implements Transaction {

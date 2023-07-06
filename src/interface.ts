@@ -88,6 +88,9 @@ export interface Utils {
 
   // standard sign message
   signMessage(message: string): Promise<string>;
+
+  // TODO: signer
+  getSigner(): any;
 }
 
 export interface GoTrading {

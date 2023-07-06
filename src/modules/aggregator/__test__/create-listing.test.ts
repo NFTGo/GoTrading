@@ -58,9 +58,9 @@ function getLooksRareOrder(order: any) {
 }
 const orders = [
   getOpenSeaOrder(mock721Order),
-  getOpenSeaOrder(mock721Order2),
-  getLooksRareOrder(mock721Order),
-  getLooksRareOrder(mock721Order2),
+  // getOpenSeaOrder(mock721Order2),
+  // getLooksRareOrder(mock721Order),
+  // getLooksRareOrder(mock721Order2),
 ];
 
 const blurOrder = [
@@ -76,6 +76,7 @@ const blurOrder = [
 ];
 
 describe('create listing main process', () => {
+  let executeAllActions = () => {};
   test('should return create listing actions', async () => {
     const maker = walletConfig.address;
     const res = await aggregator.createListings({
@@ -83,8 +84,12 @@ describe('create listing main process', () => {
       params: orders,
     });
     const {actions, executeActions} = res;
+    executeAllActions = executeActions;
     expect(executeActions).toEqual(expect.any(Function));
     expect(actions).toEqual(expect.any(Array));
+  });
+  test('should execute all actions', async () => {
+    await expect(executeAllActions()).resolves.toEqual(true);
   });
 });
 

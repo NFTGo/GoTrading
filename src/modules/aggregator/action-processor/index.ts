@@ -1,43 +1,32 @@
 import {Utils} from '../../../interface';
-import {ActionData, ActionName, AggregateAction} from '../interface';
-import {runPipeline} from './pipeline';
+import {AggregateAction} from '../interface';
+import {signApproveInfo} from './sign-listing-approve';
+import {signListingData} from './sign-listing-data';
 
-// listing action definition
-// const actionMap: any = {
-
-//   'order-signature': executeOrderSignature,
-//   'pass-through': executePassThrough,
-// };
-const listingActionMap: any = {
-  'order-signature': executeOrderSignature,
-  'pass-through': executePassThrough,
-};
-
-const signatureActionMap: Record<Partial<ActionName>, () => Promise<any>> = {
-  'order-signature': executeOrderSignature,
-};
-export function executeAllActions(actions: AggregateAction[], utils: Utils) {
-  const promises = actions.map(action => {
-    const {data, kind} = action;
-    const actionExecutor = listingActionMap[kind];
-    return () => actionExecutor(data, utils);
-  });
-  return runPipeline(promises);
+// order-signature
+export async function orderSignature(action: AggregateAction, utils: Utils) {
+  const {data} = action;
+  const {sign} = data;
+  if (!sign) {
+    throw new Error('sign is required');
+  }
+  const signature = await signListingData(sign, utils.getSigner());
+  return signature;
 }
 
-async function executeOrderSignature(data: ActionData, utils?: Utils) {
-  return Promise.resolve(true);
-}
-
-async function executePassThrough() {
-  // post-order
-  console.info('post-order');
-  return Promise.resolve(true);
-}
-
-interface AcceptOfferAggregateAction extends AggregateAction {
-  name: ActionName.AcceptOffer;
-}
-function executeAcceptOfferAction(action: AcceptOfferAggregateAction) {
-  return Promise.resolve(action);
+// nft-approval transaction
+export async function nftApprovalTransaction(
+  action: AggregateAction,
+  utils: Utils
+) {
+  const {data} = action;
+  const {txData, orderIndexes} = data;
+  if (!txData) {
+    throw new Error('txData is required');
+  }
+  await signApproveInfo(txData, utils);
+  return {
+    status: 'success',
+    orderIndexes,
+  };
 }

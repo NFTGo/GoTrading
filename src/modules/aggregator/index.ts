@@ -2,6 +2,7 @@ import {BASE_URL} from '../../config';
 import {AggregatorApiException} from '../../exceptions';
 import {isInvalidParam} from '../../helpers/is-invalid-param';
 import {HTTPClient, EVMChain, Config, Utils} from '../../interface';
+import {nftApprovalTransaction, orderSignature} from './action-processor';
 import {
   AggregatorApiResponse,
   AggregatorApiStatusResponse,
@@ -105,8 +106,22 @@ export class Aggregator implements AggregatorInterface {
 
     return {
       actions: actions,
-      executeActions: () => {
-        return Promise.resolve(true);
+      executeActions: async () => {
+        // 临时写一个for await
+        // const approvalTempResult =
+        const res = [];
+        for (const action of actions) {
+          if (action.name === 'nft-approval') {
+            const result1 = await nftApprovalTransaction(action, this.utils);
+            res.push(result1);
+          }
+          if (action.name === 'order-signature') {
+            const result = await orderSignature(action, this.utils);
+            res.push(result);
+          }
+        }
+        console.info('executeActions', res);
+        return res;
       },
     };
   }
