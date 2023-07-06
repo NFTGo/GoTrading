@@ -1,5 +1,5 @@
-import { BASE_URL } from '../../config';
-import { HTTPClient, EVMChain, Config } from '../../interface';
+import {BASE_URL} from '../../config';
+import {HTTPClient, EVMChain, Config} from '../../interface';
 import {
   GetOrdersByContractReq,
   GetOrdersByIdsReq,
@@ -12,7 +12,9 @@ import {
 export class OrderFetcher implements OrderFetcherInterface {
   constructor(private client: HTTPClient, private config: Config) {}
 
-  getOrdersByContract(params: GetOrdersByContractReq): Promise<OrdersFetcherResp> {
+  getOrdersByContract(
+    params: GetOrdersByContractReq
+  ): Promise<OrdersFetcherResp> {
     return this.post('/get-orders-by-contract', params);
   }
 
@@ -29,11 +31,17 @@ export class OrderFetcher implements OrderFetcherInterface {
   }
 
   private get headers() {
-    return { 'X-API-KEY': this.config.apiKey, 'X-FROM': 'js_sdk' };
+    return {'X-API-KEY': this.config.apiKey, 'X-FROM': 'js_sdk'};
   }
 
   private get url() {
-    return (this.config?.baseUrl ?? BASE_URL) + '/orderbook' + '/v1' + (this.config?.chain ?? EVMChain.ETH) + '/orders';
+    return (
+      (this.config?.baseUrl ?? BASE_URL) +
+      '/orderbook' +
+      '/v1' +
+      (this.config?.chain ?? EVMChain.ETH) +
+      '/orders'
+    );
   }
 
   private post<R, P = undefined>(path: string, params: P) {

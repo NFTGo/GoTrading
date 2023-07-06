@@ -3,8 +3,15 @@ import {Aggregator} from '..';
 import {AggregatorUtils} from '../../../utils';
 import {HTTPClientStable} from '../../../http-client';
 import {OrderKind, Orderbook} from '../../interface';
-import {getCurrentTimeStamp, getWeiPrice} from './utils';
+import {
+  getCurrentTimeStamp,
+  getX2Y2Order,
+  getOpenSeaOrder,
+  getWeiPrice,
+  getBlurOrder,
+} from './utils';
 import {setGlobalDispatcher, ProxyAgent} from 'undici';
+import {BlurMarketAuthenticator} from '../../../utils/blur-auth';
 
 const HTTP_PROXY = 'http://127.0.0.1:9999';
 
@@ -29,51 +36,15 @@ const mock721Order2 = {
   ethPrice: 1.45,
 };
 
-function getOpenSeaOrder(order: any) {
-  return {
-    token: order.contract + ':' + order.tokenId,
-    weiPrice: getWeiPrice(order.ethPrice),
-    listingTime: getCurrentTimeStamp(0).toString(),
-    expirationTime: getCurrentTimeStamp(3600000).toString(),
-    options: {
-      'seaport-v1.5': {
-        useOffChainCancellation: false,
-      },
-    },
-    orderbook: Orderbook.Opensea,
-    orderKind: OrderKind.SeaportV15,
-  };
-}
-
-function getLooksRareOrder(order: any) {
-  return {
-    token: order.contract + ':' + order.tokenId,
-    weiPrice: getWeiPrice(order.ethPrice),
-    listingTime: getCurrentTimeStamp(0).toString(),
-    expirationTime: getCurrentTimeStamp(3600000).toString(),
-    options: {},
-    orderbook: Orderbook.LooksRare,
-    orderKind: OrderKind.LooksRareV2,
-  };
-}
 const orders = [
-  getOpenSeaOrder(mock721Order),
+  getX2Y2Order(mock721Order),
+  // getBlurOrder(mock721Order),
   // getOpenSeaOrder(mock721Order2),
   // getLooksRareOrder(mock721Order),
   // getLooksRareOrder(mock721Order2),
 ];
 
-const blurOrder = [
-  {
-    token: mock721Order.contract + ':' + mock721Order.tokenId,
-    weiPrice: getWeiPrice(mock721Order.ethPrice),
-    listingTime: getCurrentTimeStamp(0).toString(),
-    expirationTime: getCurrentTimeStamp(3600000).toString(),
-    options: {},
-    orderbook: Orderbook.Blur,
-    orderKind: OrderKind.Blur,
-  },
-];
+const blurOrders = [getBlurOrder(mock721Order)];
 
 describe('create listing main process', () => {
   let executeAllActions = () => {};
@@ -93,13 +64,43 @@ describe('create listing main process', () => {
   });
 });
 
+describe('[blur order] create listing main process', () => {
+  let blurAuthToken = '';
+  beforeAll(async () => {
+    const authenticator = new BlurMarketAuthenticator(
+      utils,
+      httpClient,
+      config
+    );
+    blurAuthToken = await authenticator.authorize(walletConfig.address);
+    // 执行初始化操作或设置步骤
+    console.log('Starting test suite...');
+  });
+  let executeAllActions = () => {};
+  test('should return create listing actions', async () => {
+    const maker = walletConfig.address;
+    const res = await aggregator.createListings({
+      maker,
+      blurAuth: blurAuthToken,
+      params: blurOrders,
+    });
+    const {actions, executeActions} = res;
+    executeAllActions = executeActions;
+    expect(executeActions).toEqual(expect.any(Function));
+    expect(actions).toEqual(expect.any(Array));
+  });
+  test('should execute all actions', async () => {
+    await expect(executeAllActions()).resolves.toEqual(true);
+  });
+});
+
 describe('[error test] interface create listing', () => {
   test('[empty blur token] listing should return error when blur token is empty', async () => {
     const maker = walletConfig.address;
     const func = async () => {
       await aggregator.createListings({
         maker,
-        params: blurOrder,
+        params: [getBlurOrder(mock721Order)],
       });
     };
     await expect(func()).rejects.toThrow();

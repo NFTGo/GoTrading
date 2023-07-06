@@ -107,6 +107,7 @@ export interface CreateListingsReq {
    */
   maker: string;
   params: CreateListingInput[];
+  blurAuth?: string;
   /**
    * app domain
    */
