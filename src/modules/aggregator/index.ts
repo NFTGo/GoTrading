@@ -1,8 +1,10 @@
 import {BASE_URL} from '../../config';
+import {AggregatorApiException} from '../../exceptions';
 import {isInvalidParam} from '../../helpers/is-invalid-param';
 import {HTTPClient, EVMChain, Config, Utils} from '../../interface';
 import {
   AggregatorApiResponse,
+  AggregatorApiStatusResponse,
   AggregatorInterface,
   AggregatorResponse,
   CancelOrdersReq,
@@ -79,7 +81,7 @@ export class Aggregator implements AggregatorInterface {
         resolve({
           actions: res.actions,
           executeActions: () => {
-            return executeAllActions(res.actions, this.utils);
+            return Promise.resolve(true);
           },
         });
       });
@@ -92,24 +94,21 @@ export class Aggregator implements AggregatorInterface {
    * @param params {@link any}
    * @returns Promise<{@link any}>
    */
-  createListings(params: CreateListingsReq): Promise<AggregatorResponse<any>> {
-    return new Promise<AggregatorResponse<any>>((resolve, reject) => {
-      this.post<AggregatorApiResponse, CreateListingsReq>(
-        '/create-listings/v1',
-        params
-      ).then(res => {
-        console.info('res', res);
-        // FIXME: common error message handler
-        const {data} = res as any;
-        const {actions} = data;
-        resolve({
-          actions: actions,
-          executeActions: () => {
-            return executeAllActions(actions, this.utils);
-          },
-        });
-      });
-    });
+  async createListings(
+    params: CreateListingsReq
+  ): Promise<AggregatorResponse<any>> {
+    const data = await this.post<AggregatorApiResponse, CreateListingsReq>(
+      '/create-listings/v1',
+      params
+    );
+    const {actions} = data;
+
+    return {
+      actions: actions,
+      executeActions: () => {
+        return Promise.resolve(true);
+      },
+    };
   }
 
   /**
@@ -163,7 +162,16 @@ export class Aggregator implements AggregatorInterface {
     );
   }
 
-  private post<R, P = undefined>(path: string, params: P) {
-    return this.client.post<R, P>(this.url + path, params, this.headers);
+  private async post<ResData, Req = undefined>(path: string, params: Req) {
+    const response = await this.client.post<
+      AggregatorApiStatusResponse<ResData>,
+      Req
+    >(this.url + path, params, this.headers);
+    const {code, msg, data} = response;
+    if (code === 'SUCCESS') {
+      return data;
+    } else {
+      throw new AggregatorApiException(msg, code, path);
+    }
   }
 }

@@ -29,10 +29,10 @@ const mock721Order2 = {
   ethPrice: 1.45,
 };
 
-const orders = [
-  {
-    token: mock721Order.contract + ':' + mock721Order.tokenId,
-    weiPrice: getWeiPrice(mock721Order.ethPrice),
+function getOpenSeaOrder(order: any) {
+  return {
+    token: order.contract + ':' + order.tokenId,
+    weiPrice: getWeiPrice(order.ethPrice),
     listingTime: getCurrentTimeStamp(0).toString(),
     expirationTime: getCurrentTimeStamp(3600000).toString(),
     options: {
@@ -42,16 +42,28 @@ const orders = [
     },
     orderbook: Orderbook.Opensea,
     orderKind: OrderKind.SeaportV15,
-  },
-  {
-    token: mock721Order.contract + ':' + mock721Order.tokenId,
-    weiPrice: getWeiPrice(mock721Order.ethPrice),
+  };
+}
+
+function getLooksRareOrder(order: any) {
+  return {
+    token: order.contract + ':' + order.tokenId,
+    weiPrice: getWeiPrice(order.ethPrice),
     listingTime: getCurrentTimeStamp(0).toString(),
     expirationTime: getCurrentTimeStamp(3600000).toString(),
     options: {},
     orderbook: Orderbook.LooksRare,
     orderKind: OrderKind.LooksRareV2,
-  },
+  };
+}
+const orders = [
+  getOpenSeaOrder(mock721Order),
+  getOpenSeaOrder(mock721Order2),
+  getLooksRareOrder(mock721Order),
+  getLooksRareOrder(mock721Order2),
+];
+
+const blurOrder = [
   {
     token: mock721Order.contract + ':' + mock721Order.tokenId,
     weiPrice: getWeiPrice(mock721Order.ethPrice),
@@ -74,27 +86,27 @@ describe('create listing main process', () => {
     expect(executeActions).toEqual(expect.any(Function));
     expect(actions).toEqual(expect.any(Array));
   });
-  test('should excute actions', async () => {
-    const maker = '0x3e24914f74Cd66e3ee7d1F066A880A6c69404E13';
-    const res = await aggregator.createListings({
-      maker,
-      params: orders,
-    });
-    const {actions, executeActions} = res;
-    expect(executeActions).toEqual(expect.any(Function));
-    expect(actions).toEqual(expect.any(Array));
-  });
 });
 
-describe('create listing error', () => {
-  test('should return error when maker is incorrect', async () => {
+describe('[error test] interface create listing', () => {
+  test('[empty blur token] listing should return error when blur token is empty', async () => {
+    const maker = walletConfig.address;
+    const func = async () => {
+      await aggregator.createListings({
+        maker,
+        params: blurOrder,
+      });
+    };
+    await expect(func()).rejects.toThrow();
+  });
+  test('[incorrect maker] listing should return error when maker is incorrect', async () => {
     const maker = '0x3e24914f74Cd66e3ee7d1F066A880A6c69404E13';
-    const res = await aggregator.createListings({
-      maker,
-      params: orders,
-    });
-    const {actions, executeActions} = res;
-    expect(executeActions).toEqual(expect.any(Function));
-    expect(actions).toEqual(expect.any(Array));
+    const func = async () => {
+      await aggregator.createListings({
+        maker,
+        params: orders,
+      });
+    };
+    await expect(func()).rejects.toThrow();
   });
 });

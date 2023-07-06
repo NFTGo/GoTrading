@@ -292,6 +292,11 @@ export interface OfferFulfillmentIntention {
   tokenId: string;
 }
 
+export interface AggregatorApiStatusResponse<T> {
+  code: 'SUCCESS' | 'SYSTEM_ERROR';
+  msg: string;
+  data: T;
+}
 export interface AggregatorApiResponse {
   actions: AggregateAction[];
 }
