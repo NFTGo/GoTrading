@@ -234,7 +234,7 @@ export interface CreateOfferInput {
    * Optional. Set a custom nonce
    */
   nonce?: string;
-  options?: {[key: string]: any};
+  options?: { [key: string]: any };
   /**
    * Orderbook where order is placed. Example: `Reservoir`
    */
@@ -282,6 +282,40 @@ export interface FulfillOffersReq {
   sellerAddress: string;
 }
 
+/**
+ * post order (listings & offers)
+ */
+export interface PostOrderReq {
+  attribute?: Attribute;
+  bulkData?: {
+    kind: OrderKind;
+    data: {
+      orderIndex: number;
+      merkleProof: string[];
+    };
+  };
+  collection?: string;
+  extraArgs: {
+    version: string;
+  };
+  isNonFlagged?: boolean;
+  order: {
+    data: any;
+    kind: OrderKind;
+  };
+  orderbook: Orderbook;
+  orderbookApiKey?: string;
+  signature: string;
+  source?: string;
+  tokenSetId?: string;
+}
+
+export interface Attribute {
+  collection: string;
+  key: string;
+  value: string;
+}
+
 export interface ExtraArgs {
   blurAuthToken?: string;
 }
@@ -305,6 +339,10 @@ export interface AggregatorApiResponse {
 export interface AggregatorResponse<T> {
   actions: AggregateAction[];
   executeActions: () => Promise<T>;
+}
+
+export interface PostOrderResponse {
+  message: string;
 }
 
 export interface AggregatorInterface {
@@ -354,5 +392,5 @@ export interface AggregatorInterface {
    * @param params {@link }
    * @returns Promise<{@link }>
    */
-  postOrders(params: any): Promise<any>;
+  postOrders(params: PostOrderReq): Promise<PostOrderResponse>;
 }
