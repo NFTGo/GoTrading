@@ -35,26 +35,6 @@ async function executePassThrough() {
   return Promise.resolve(true);
 }
 
-// async function signListingInfo(sign: SignData): Promise<string> {
-//   const {domain, types, value} = sign;
-//   const signer = this.utils?._ethersSigner;
-//   let signature =
-//     '0x0000000000000000000000000000000000000000000000000000000000000000';
-//   if (signer) {
-//     if (sign.signatureKind === 'eip191') {
-//       if (sign.message?.match(/0x[0-9a-fA-F]{64}/)) {
-//         // If the message represents a hash, we need to convert it to raw bytes first
-//         signature = await signer.signMessage(arrayify(sign.message));
-//       } else {
-//         signature = await signer.signMessage(sign.message ?? '');
-//       }
-//     } else if (sign.signatureKind === 'eip712') {
-//       signature = await signer._signTypedData(domain, types, value);
-//     }
-//   }
-//   return signature;
-// }
-
 interface AcceptOfferAggregateAction extends AggregateAction {
   name: ActionName.AcceptOffer;
 }

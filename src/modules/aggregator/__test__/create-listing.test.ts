@@ -23,6 +23,11 @@ const mock721Order = {
   tokenId: '5745',
   ethPrice: 1.45,
 };
+const mock721Order2 = {
+  contract: '0xbe9371326f91345777b04394448c23e2bfeaa826',
+  tokenId: '19516',
+  ethPrice: 1.45,
+};
 
 const orders = [
   {

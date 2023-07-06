@@ -45,7 +45,20 @@ export interface ActionData {
     | string;
   body?: Record<string, any>;
   orderIndexes?: number[];
-  sign?: Record<string, any>;
+  sign?: SignData;
+}
+
+export interface SignData {
+  domain: {
+    name: string;
+    version: string;
+    chainId: number;
+    verifyingContract: string;
+  };
+  signatureKind: 'eip191' | 'eip712';
+  types: Record<string, any[]>;
+  value: Record<string, any>;
+  message?: string;
 }
 
 /**

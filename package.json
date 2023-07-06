@@ -44,6 +44,7 @@
   "devDependencies": {
     "@commitlint/cli": "^17.3.0",
     "@commitlint/config-conventional": "^17.3.0",
+    "@ethersproject/abstract-signer": "^5.7.0",
     "@types/jest": "^29.2.4",
     "@types/node": "^14.11.2",
     "@typescript-eslint/eslint-plugin": "latest",
