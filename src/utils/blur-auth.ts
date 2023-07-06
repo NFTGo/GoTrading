@@ -39,8 +39,11 @@ export class BlurMarketAuthenticator implements BlurAuthServiceImpl {
   private get url() {
     return (
       (this.config?.baseUrl ?? BASE_URL) +
+      '/aggregator' +
+      '/v1' +
+      '/' +
       (this.config?.chain ?? EVMChain.ETH) +
-      '/v1'
+      '/blur'
     );
   }
 
@@ -48,9 +51,13 @@ export class BlurMarketAuthenticator implements BlurAuthServiceImpl {
     const signature = this.signer.signMessage(message);
     return signature;
   }
+
   private async getAuthChallenge(address: string) {
-    const res = await this.httpClient.get<BlurAuthChallenge, {address: string}>(
-      this.url + '/nft-aggregate/blur_auth_challenge',
+    const res = await this.httpClient.post<
+      BlurAuthChallenge,
+      {address: string}
+    >(
+      this.url + '/auth/challenge',
       {
         address,
       },
@@ -64,7 +71,7 @@ export class BlurMarketAuthenticator implements BlurAuthServiceImpl {
     const res = await this.httpClient.post<
       {accessToken: string},
       BlurAuthLoginParams
-    >(this.url + '/nft-aggregate/blur_login', params, this.headers);
+    >(this.url + '/auth/login', params, this.headers);
     return res?.accessToken;
   }
   async authorize(address: string, force = false) {

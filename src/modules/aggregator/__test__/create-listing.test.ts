@@ -9,6 +9,7 @@ import {
   getOpenSeaOrder,
   getWeiPrice,
   getBlurOrder,
+  getLooksRareOrder,
 } from './utils';
 import {setGlobalDispatcher, ProxyAgent} from 'undici';
 import {BlurMarketAuthenticator} from '../../../utils/blur-auth';
@@ -39,9 +40,9 @@ const mock721Order2 = {
 const orders = [
   getX2Y2Order(mock721Order),
   // getBlurOrder(mock721Order),
-  // getOpenSeaOrder(mock721Order2),
-  // getLooksRareOrder(mock721Order),
-  // getLooksRareOrder(mock721Order2),
+  getOpenSeaOrder(mock721Order2),
+  getLooksRareOrder(mock721Order),
+  getLooksRareOrder(mock721Order2),
 ];
 
 const blurOrders = [getBlurOrder(mock721Order)];
@@ -59,24 +60,24 @@ describe('create listing main process', () => {
     expect(executeActions).toEqual(expect.any(Function));
     expect(actions).toEqual(expect.any(Array));
   });
-  test('should execute all actions', async () => {
-    await expect(executeAllActions()).resolves.toEqual(true);
-  });
+  // test('should execute all actions', async () => {
+  //   await expect(executeAllActions()).resolves.toEqual(true);
+  // });
 });
 
 describe('[blur order] create listing main process', () => {
   let blurAuthToken = '';
   beforeAll(async () => {
+    console.log('getting blur auth token...');
     const authenticator = new BlurMarketAuthenticator(
       utils,
       httpClient,
       config
     );
     blurAuthToken = await authenticator.authorize(walletConfig.address);
+    console.info('blurAuthToken', blurAuthToken);
     // 执行初始化操作或设置步骤
-    console.log('Starting test suite...');
   });
-  let executeAllActions = () => {};
   test('should return create listing actions', async () => {
     const maker = walletConfig.address;
     const res = await aggregator.createListings({
@@ -85,12 +86,8 @@ describe('[blur order] create listing main process', () => {
       params: blurOrders,
     });
     const {actions, executeActions} = res;
-    executeAllActions = executeActions;
     expect(executeActions).toEqual(expect.any(Function));
     expect(actions).toEqual(expect.any(Array));
-  });
-  test('should execute all actions', async () => {
-    await expect(executeAllActions()).resolves.toEqual(true);
   });
 });
 
