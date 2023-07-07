@@ -97,14 +97,14 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
         schema = {
           kind: 'collection-non-flagged',
           data: {
-            slug,
+            collection: slug,
           },
         };
       } else if (slug) {
         schema = {
           kind: 'collection',
           data: {
-            slug,
+            collection: slug,
           },
         };
       } else if (tokenSetId) {
@@ -122,9 +122,7 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
           const result = await this.client.post(
             this.offerCollectionUrl,
             {
-              criteria: {
-                schema,
-              },
+              criteria: schema.data,
               protocol_data: {
                 parameters: {
                   ...seaportOrder,
