@@ -6,13 +6,6 @@ import { BaseException } from '@/exceptions';
 import { PostOrderReq, PostOrderResponse } from '@/types';
 import { OrderKind } from 'src/types/order';
 
-export interface IPostOrderHandler {
-  protocol: OrderKind;
-  url: string;
-  rateLimiter: ExternalServiceRateLimiter;
-  handle: (payload: any) => Promise<any>;
-}
-
 export class PostOrderHandler {
   // constructor(private client: any, private apiKeyConfig: any) {
 

@@ -1,4 +1,4 @@
-import { RateLimiter } from 'limiter';
+import {RateLimiter} from 'limiter';
 export class ExternalServiceRateLimiter {
   limiter: RateLimiter;
   apiKey: string;
