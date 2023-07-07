@@ -41,3 +41,11 @@ export async function acceptListingTransaction(
 // "name": "accept-listing",
 // "description": "Buy by Reservoir sdk",
 // "kind": "transaction",
+
+// "name": "pass-through",
+// "description": "Post order to marketplace",
+// "kind": "pass-through",
+// "data": {
+//   "endpoint": "/aggregator/v1/ETH/nft/post-order/v1",
+
+export async function passThroughPostOrder() {}
