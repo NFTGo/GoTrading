@@ -32,9 +32,8 @@
     "release-patch": "standard-version --release-as patch",
     "clean": "gts clean",
     "compile": "tsc",
-    "fix": "gts fix",
-    "prepare": "npm run compile",
-    "pretest": "npm run compile"
+    "fix": "gts fix"
+
   },
   "standard-version": {
     "skip": {

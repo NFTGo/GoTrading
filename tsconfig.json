@@ -22,9 +22,15 @@
     "incremental": true,
     "declaration": true,
     "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "@/types": ["src-v2/types/index.ts"],
+    }
   },
   "include": [
     "src",
+    "src-v2",
+    "__test__",
     "./node_modules/types-bn/index.d.ts",
     "./node_modules/types-ethereumjs-util/index.d.ts",
     "./node_modules/https-proxy-agent/index.d.ts"
