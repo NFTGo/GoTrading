@@ -13,6 +13,8 @@
     - [1. Install the SDK.](#1-install-the-sdk)
     - [2. Import and init the GoTrading SDK.](#2-import-and-init-the-gotrading-sdk)
     - [3. Fulfill Listings](#3-fulfill-listings)
+  - [Questions \& Feedback](#questions--feedback)
+  - [License](#license)
 
 ## Introduction
 
@@ -148,3 +150,19 @@ async function demo() {
   console.log('success');
 }
 ```
+
+## Questions & Feedback
+
+> If you have any questions, issues, or feedback, please file an issue on GitHub, or drop us a message on our [Discord][discord-url] channel for the SDK.
+
+##  License
+
+This project is licensed under the [BSD-3-Clause license](LICENSE).
+
+
+
+
+[discord-image]: https://img.shields.io/discord/1040195071401787413?color=brightgreen&label=Discord&logo=discord&logoColor=blue
+[discord-url]:  https://discord.gg/nftgo
+[twitter-image]: https://img.shields.io/twitter/follow/NFTGo?label=NFTGo&style=social
+[twitter-url]:  https://twitter.com/NFTGoDevs
