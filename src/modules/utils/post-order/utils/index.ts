@@ -9,7 +9,6 @@ import { ExternalServiceRateLimiter } from '@/common';
 
 export interface IPostOrderHandler {
   protocol: OrderKind;
-  url: string;
   rateLimiter: ExternalServiceRateLimiter;
   handle: (payload: any) => Promise<any>;
 }

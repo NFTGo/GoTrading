@@ -1,4 +1,4 @@
-import { OrderKind, Orderbook } from './order';
+import {OrderKind, Orderbook, OrderType} from './order';
 import { SafeAny } from './safe-any';
 
 /**
@@ -22,6 +22,8 @@ export interface PostOrderReq {
     data: SafeAny;
     kind: OrderKind;
   };
+  orderType: OrderType;
+  slug?: string;
   orderbook: Orderbook;
   orderbookApiKey?: string;
   source?: string;

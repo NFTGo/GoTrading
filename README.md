@@ -47,6 +47,7 @@ GoTrading currently aggregates the following marketplaces, and we will continue 
 ## Supported Chains
 GoTrading currently supports the following chains: 
 - Ethereum Mainnet
+- Sepolia Testnet ( Comming Soon )
 - Polygon Mainnet ( Comming Soon )
 
 
@@ -74,8 +75,8 @@ npm install @nftgo/gotrading
 yarn add @nftgo/gotrading
 ```
 
-### 2. Import and init the SDK.
-- For server-side initialization:
+### 2. Import and init the GoTrading SDK.
+Instantiate the instance of GoTrading using your etheres provider with API key.
 ```ts
 import { init } from '@nftgo/gotrading';
 import Web3 from 'web3';

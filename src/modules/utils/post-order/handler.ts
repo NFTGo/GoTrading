@@ -1,4 +1,4 @@
-import { ApiKeyConfig, HTTPClient, OrderKind } from '@/types';
+import {ApiKeyConfig, HTTPClient, OrderKind, OrderType} from '@/types';
 import * as Models from './utils';
 
 import { ExternalServiceRateLimiter } from '@/common';
@@ -6,10 +6,13 @@ import { RateLimiter } from 'limiter';
 import { BaseException } from '@/exceptions';
 import { defaultAbiCoder } from 'ethers/lib/utils';
 import { IPostOrderHandler } from './utils';
+import {OrderComponents} from "./utils/seaport-v1.5/types";
 
 export class SeaportV1D5Handler implements IPostOrderHandler {
   protocol = OrderKind.SeaportV15;
-  url = 'https://api.opensea.io/v2/orders/ethereum/seaport/listings';
+  listingUrl = 'https://api.opensea.io/v2/orders/ethereum/seaport/listings';
+  offerCollectionUrl = 'https://api.opensea.io/v2/offers';
+  offerTokenUrl = 'https://api.opensea.io/v2/orders/ethereum/seaport/offers';
   rateLimiter: ExternalServiceRateLimiter;
   constructor(private client: HTTPClient, apiKeyConfig: ApiKeyConfig) {
     this.rateLimiter = new ExternalServiceRateLimiter(
@@ -23,10 +26,12 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
   async handle(payload: any): Promise<any> {
     const order = payload.order;
     const orderbook = payload.orderbook;
+    const orderType = payload.orderType;
     if (!['opensea'].includes(orderbook)) {
       throw BaseException.invalidParamError('orderbook', `${this.protocol} only supports opensea`);
     }
-    const seaportOrder: Models.SeaportV1D5.Types.ListingOrderParams = {
+
+    const seaportOrder: Models.SeaportV1D5.Types.OrderComponents = {
       offerer: order.data.offerer,
       zone: order.data.zone,
       offer: order.data.offer,
@@ -40,26 +45,120 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
       counter: order.data.counter,
       signature: order.data.signature,
     };
-
     const apiKey = await this.rateLimiter.getAPIKeyWithRateLimiter();
-    try {
-      const result = await this.client.post(
-        this.url,
-        {
-          parameters: {
-            ...seaportOrder,
-            totalOriginalConsiderationItems: order.data.consideration.length,
+    if (orderType === OrderType.Listing) {
+      try {
+        const result = await this.client.post(
+          this.listingUrl,
+          {
+            parameters: {
+              ...seaportOrder,
+              totalOriginalConsiderationItems: order.data.consideration.length,
+            },
+            signature: order.data.signature,
+            protocol_address: Models.SeaportV1D5.Addresses.Exchange[Models.Utils.Network.Ethereum],
           },
-          signature: order.data.signature,
-          protocol_address: Models.SeaportV1D5.Addresses.Exchange[Models.Utils.Network.Ethereum],
-        },
-        { 'X-Api-Key': apiKey },
-        true
-      );
-      return result;
-    } catch (error) {
-      console.error('error', error);
-      throw error;
+          { 'X-Api-Key': apiKey },
+          true
+        );
+        return result;
+      } catch (error) {
+        console.error('error', error);
+        throw error;
+      }
+    } else {
+      // OrderType.Offer
+      // We'll always have only one of the below cases:
+      // Only relevant/present for attribute bids
+      const attribute = payload.attribute;
+      // Only relevant for collection bids
+      const collection = payload.collection;
+      const slug = payload.slug;
+      // Only relevant for token set bids
+      const tokenSetId = payload.tokenSetId;
+      const isNonFlagged = payload.isNonFlagged;
+
+      let schema: any;
+      if (attribute) {
+        schema = {
+          kind: 'attribute',
+          data: {
+            collection: attribute.slug,
+            isNonFlagged: isNonFlagged || undefined,
+            attributes: [
+              {
+                key: attribute.key,
+                value: attribute.value,
+              },
+            ],
+          },
+        };
+      } else if (slug && isNonFlagged) {
+        schema = {
+          kind: 'collection-non-flagged',
+          data: {
+            slug,
+          },
+        };
+      } else if (slug) {
+        schema = {
+          kind: 'collection',
+          data: {
+            slug,
+          },
+        };
+      } else if (tokenSetId) {
+        schema = {
+          kind: 'token-set',
+          data: {
+            tokenSetId,
+          },
+        };
+      }
+
+      if (schema && ['collection', 'collection-non-flagged', 'attribute'].includes(schema.kind)) {
+        // post collection/trait offer
+        try {
+          const result = await this.client.post(
+            this.offerCollectionUrl,
+            {
+              criteria: {
+                schema,
+              },
+              protocol_data: {
+                parameters: {
+                  ...seaportOrder,
+                  totalOriginalConsiderationItems: order.data.consideration.length,
+                },
+                signature: order.data.signature,
+              },
+              protocol_address: Models.SeaportV1D5.Addresses.Exchange[Models.Utils.Network.Ethereum],
+            },
+            { 'X-Api-Key': apiKey },
+            true
+          );
+          return result;
+        } catch (error) {
+          console.error('error', error);
+          throw error;
+        }
+      } else {
+        // post token offer
+        try {
+          const result = await this.client.post(this.offerTokenUrl, {
+            parameters: {
+              ...seaportOrder,
+              totalOriginalConsiderationItems: order.data.consideration.length,
+            },
+            signature: order.data.signature,
+            protocol_address: Models.SeaportV1D5.Addresses.Exchange[Models.Utils.Network.Ethereum],
+          });
+          return result;
+        } catch (error) {
+          console.error('error', error);
+          throw error;
+        }
+      }
     }
   }
 }

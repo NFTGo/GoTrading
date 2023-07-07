@@ -46,3 +46,19 @@ export type ListingOrderParams = {
   counter: string;
   signature: string;
 };
+
+export type OrderComponents = {
+  offerer: string;
+  zone: string;
+  offer: OfferItem[];
+  consideration: ConsiderationItem[];
+  orderType: OrderType;
+  startTime: number;
+  endTime: number;
+  zoneHash: string;
+  salt: string;
+  conduitKey: string;
+  counter: string;
+  signature?: string;
+  totalOriginalConsiderationItems?: number;
+};
