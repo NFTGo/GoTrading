@@ -7,7 +7,7 @@ import {
   InternalUtils,
   ProcessPassThroughActionParams,
 } from '@/types';
-import { signApproveInfo, signListingData } from './signature';
+import { signInfo, signOrderData } from './common';
 import { PostOrderHandler } from '../../post-order';
 
 export class AggregateActionProcessor implements ActionProcessor {
@@ -23,29 +23,30 @@ export class AggregateActionProcessor implements ActionProcessor {
       if (!sign) {
         throw new Error('sign is required');
       }
-      const signature = await signListingData(sign, this.utils.getSigner());
+      const signature = await signOrderData(sign, this.utils.getSigner());
       return signature;
     }
     return Promise.reject(new Error('no match action name'));
   }
   async processTransactionAction(action: AggregatorAction<ActionKind.Transaction>) {
     const { name, data } = action;
+    const { txData, safeMode } = data;
+    if (!txData) {
+      throw new Error('txData is required');
+    }
     if (name === 'nft-approval') {
-      const { txData, orderIndexes } = data;
-      if (!txData) {
-        throw new Error('txData is required');
-      }
-      await signApproveInfo(txData, this.utils);
-
-      return Promise.resolve({
-        status: 'success',
-        orderIndexes,
-      });
+      await signInfo(txData, this.utils.sendTransaction);
+      return Promise.resolve(true);
     } else if (name === 'accept-listing') {
-      const { txData } = data;
-      if (!txData) {
-        throw new Error('txData is required');
+      if (safeMode) {
+        await signInfo(txData, this.utils.sendSafeModeTransaction);
+      } else {
+        await signInfo(txData, this.utils.sendTransaction);
       }
+      // other name case: currency-wrapping currency-approval
+    } else {
+      await signInfo(txData, this.utils.sendTransaction);
+      return Promise.resolve(true);
     }
   }
   async processPassThroughAction(
@@ -68,13 +69,3 @@ export class AggregateActionProcessor implements ActionProcessor {
     });
   }
 }
-
-// "name": "accept-listing",
-// "description": "Buy by Reservoir sdk",
-// "kind": "transaction",
-// "data": {
-//   "txData": {
-//     "from": "0xdc97a0c27c25e867e7e7b15e83f3297ea8c48c0a",
-//     "to": "0x00000000000000adc04c56bf30ac9d3c0aaf14dc",
-//     "value": "0xaa87bee5380000",
-//     "data":

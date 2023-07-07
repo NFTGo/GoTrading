@@ -3,8 +3,8 @@ require('dotenv').config();
 import { EVMChain, Config } from '@/types';
 import Web3 from 'web3';
 
+const DefaultProviderUrl = 'https://rpc.tenderly.co/fork/e0049868-1628-4b51-839b-a68100e262de';
 // const DefaultProviderUrl = 'https://cloudflare-eth.com/';
-const DefaultProviderUrl = 'https://cloudflare-eth.com/';
 const HTTP_PROXY = 'http://127.0.0.1:9999';
 // const HTTP_PROXY = 'http://127.0.0.1:7890';
 const openseaApi = {

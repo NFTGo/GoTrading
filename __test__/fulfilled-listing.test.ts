@@ -18,16 +18,16 @@ const aggregator = new Aggregator(httpClient, config, utils);
 
 const orders = [
   {
-    contractAddress: '0xaaf03a65cbd8f01b512cd8d530a675b3963de255',
-    maker: '0xa4201337ff45e434dc9f567da1ec566474dc4793',
-    orderId: '64a6b1c41bd6088508703ea2',
-    tokenId: '22703',
+    contractAddress: '0xe2e73bc9952142886424631709e382f6bc169e18',
+    maker: '0xec9e512fe7e90134d8ca7295329ccb0a57c91ecb',
+    orderId: '64a79a9f1bd6088508d7b331',
+    tokenId: '2963',
   },
   {
-    contractAddress: '0xaaf03a65cbd8f01b512cd8d530a675b3963de255',
-    maker: '0xe8bb5796e841e2814266e1bd04f02edd8fb5ea29',
-    orderId: '64a66dc01bd6088508640e59',
-    tokenId: '176',
+    contractAddress: '0xe2e73bc9952142886424631709e382f6bc169e18',
+    maker: '0xd33843650b6e71503f306c177d283c92c002741d',
+    orderId: '64a717c11bd6088508a6ffe4',
+    tokenId: '3363',
   },
 ];
 describe('fulfill listing main process', () => {
@@ -38,7 +38,27 @@ describe('fulfill listing main process', () => {
       orderIds: orders.map(order => order.orderId),
       safeMode: false,
     });
-    const { actions } = res;
-    expect(actions).toEqual(expect.any(Array));
+    const { executeActions } = res;
+    await executeActions({
+      onTaskExecuted: task => {
+        console.info(task);
+      },
+    });
+    expect(executeActions).toEqual(expect.any(Function));
   });
+  // test('should return safe mode buy actions', async () => {
+  //   const buyer = config.walletConfig?.address || '';
+  //   const res = await aggregator.fulfillListings({
+  //     buyer: buyer,
+  //     orderIds: orders.map(order => order.orderId),
+  //     safeMode: true,
+  //   });
+  //   const { executeActions } = res;
+  //   await executeActions({
+  //     onTaskExecuted: task => {
+  //       console.info(task);
+  //     },
+  //   });
+  //   expect(executeActions).toEqual(expect.any(Function));
+  // });
 });

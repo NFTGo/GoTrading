@@ -3,7 +3,7 @@ import { arrayify } from 'ethers/lib/utils';
 import { Signer } from 'ethers';
 import { TypedDataSigner } from '@ethersproject/abstract-signer';
 
-export async function signListingData(data: SignData, signer: Signer & TypedDataSigner): Promise<string> {
+export async function signOrderData(data: SignData, signer: Signer & TypedDataSigner): Promise<string> {
   const { domain, types, value } = data;
 
   let signature = '0x0000000000000000000000000000000000000000000000000000000000000000';

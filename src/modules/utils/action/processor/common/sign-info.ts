@@ -1,14 +1,10 @@
-import { TransactionConfig } from 'web3-core';
 import { Transaction } from '@/types';
 
-interface TransactionExecutor {
-  sendTransaction: (params: TransactionConfig) => Transaction;
-}
+type SendTransactionFn = (params: any) => Transaction;
 
-export async function signApproveInfo(params: TransactionConfig, executor: TransactionExecutor): Promise<boolean> {
+export async function signInfo(params: any, sendTransaction: SendTransactionFn): Promise<boolean> {
   return new Promise((resolve, reject) => {
-    executor
-      .sendTransaction(params)
+    sendTransaction(params)
       .on('error', err => {
         reject(new Error(err.message));
       })
@@ -20,6 +16,5 @@ export async function signApproveInfo(params: TransactionConfig, executor: Trans
           resolve(true);
         }
       });
-    return Promise.resolve(true);
   });
 }

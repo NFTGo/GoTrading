@@ -32,6 +32,7 @@ const orders = [
   // getX2Y2Order(mock721Order),
   // getBlurOrder(mock721Order),
   getOpenSeaOrder(mock721Order),
+  // getOpenSeaOrder(mock721Order2),
   // getLooksRareOrder(mock721Order),
   // getLooksRareOrder(mock721Order2),
 ];
@@ -92,7 +93,7 @@ describe('[create listing] execute actions test', () => {
     const { executeActions } = res;
     await executeActions({
       onTaskExecuted: task => {
-        console.info('task', task);
+        console.info(task);
       },
     });
     expect(executeActions).toEqual(expect.any(Function));
