@@ -1,4 +1,4 @@
-import {TradeAggregatorAction, ActionKind} from './action';
+import {AggregatorAction, ActionKind} from './action';
 
 export interface ActionTaskResultMap {
   [ActionKind.PassThrough]: unknown;
@@ -11,7 +11,7 @@ export type ActionTaskStatus = 'success' | 'fail' | 'ready' | 'pending';
 export interface ActionTask {
   status: ActionTaskStatus;
   index: number;
-  action: TradeAggregatorAction<ActionKind>;
+  action: AggregatorAction<ActionKind>;
   pre: ActionTask | null;
   result: unknown;
   execute(): Promise<void>;

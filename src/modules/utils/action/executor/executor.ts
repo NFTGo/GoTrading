@@ -1,7 +1,12 @@
-import {ActionTaskExecutor, ActionTask, ExecuteOptions} from '@/types';
+import {
+  ActionTaskExecutor,
+  ActionTask,
+  ExecuteOptions,
+  ActionProcessor,
+} from '@/types';
 
 export class BrowserActionTaskExecutor implements ActionTaskExecutor {
-  constructor(private tasks: ActionTask[]) {
+  constructor(private tasks: ActionTask[], private processor: ActionProcessor) {
     this.execute.bind(this);
   }
 

@@ -1,9 +1,7 @@
-import {ApiKeyConfig, HTTPClient} from '../../../../interface';
-
-import {OrderKind} from '../../../interface';
-import {ExternalServiceRateLimiter} from '../../../../utils/rate-limiter';
+import {OrderKind, ApiKeyConfig, HTTPClient} from '@/types';
+import {ExternalServiceRateLimiter} from '../../../../../common/rate-limiter';
 import {RateLimiter} from 'limiter';
-import {BaseException} from '../../../../exceptions/base';
+import {BaseException} from '@/exceptions';
 import {defaultAbiCoder} from 'ethers/lib/utils';
 import {IPostOrderHandler} from '../..';
 

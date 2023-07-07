@@ -3,7 +3,7 @@ import {JSON} from '../json';
 /**
  * actions witch trade aggregate response for frontend developer to process user interaction
  */
-export type TradeAggregatorAction<T = unknown> = T extends ActionKind
+export type AggregatorAction<T = unknown> = T extends ActionKind
   ? {
       name: ActionName;
       description: string;

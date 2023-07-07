@@ -25,6 +25,10 @@
     "baseUrl": ".",
     "paths": {
       "@/types": ["src/types/index.ts"],
+      "@/abi": ["src/abi/index.ts"],
+      "@/exceptions": ["src/exceptions/index.ts"],
+      "@/http": ["src/http/index.ts"],
+      "@/common": ["src/common/index.ts"],
     }
   },
   "include": [

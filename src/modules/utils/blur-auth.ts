@@ -1,6 +1,6 @@
-import {BASE_URL} from '../config';
-import {BaseException} from '../exceptions/base';
-import {EVMChain, HTTPClient, Config} from '../interface';
+import {BASE_URL} from 'src/common';
+import {BaseException} from '@/exceptions';
+import {EVMChain, HTTPClient, Config} from '@/types';
 
 interface BlurAuthChallenge {
   expiresOn: string;

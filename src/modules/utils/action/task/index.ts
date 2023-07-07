@@ -1,10 +1,10 @@
-import {ActionTask, TradeAggregatorAction, ActionKind} from '@/types';
+import {ActionTask, AggregatorAction, ActionKind} from '@/types';
 import {PassThroughActionTask} from './pass-through';
 import {SignatureActionTask} from './signature';
 import {TransactionActionTask} from './transaction';
 
 function createTask(
-  action: TradeAggregatorAction<ActionKind>,
+  action: AggregatorAction<ActionKind>,
   index: number
 ): ActionTask {
   switch (action.kind) {
@@ -20,7 +20,7 @@ function createTask(
 }
 
 export function createTasks(
-  actions: TradeAggregatorAction<ActionKind>[]
+  actions: AggregatorAction<ActionKind>[]
 ): ActionTask[] {
   const tasks: ActionTask[] = [];
   for (let index = 0; index < actions.length; index++) {

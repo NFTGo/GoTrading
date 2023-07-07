@@ -1,5 +1,5 @@
-import {BASE_URL} from '../../config';
-import {AggregatorApiException} from '../../exceptions';
+import {BASE_URL} from 'src/common';
+import {AggregatorApiException} from '@/exceptions';
 import {nftApprovalTransaction, orderSignature} from './action-processor';
 import {
   ApiKeyConfig,
@@ -7,8 +7,6 @@ import {
   EVMChain,
   HTTPClient,
   Utils,
-} from '../../interface';
-import {
   AggregatorApiResponse,
   AggregatorApiStatusResponse,
   AggregatorInterface,
@@ -20,10 +18,12 @@ import {
   FulfillOffersReq,
   PostOrderReq,
   PostOrderResponse,
-} from './interface';
+  OrderKind,
+} from '@/types';
+
 import {executeAllActions} from './use-cases';
-import {OrderKind} from '../interface';
-import {ExternalServiceRateLimiter} from '../../utils/rate-limiter';
+
+import {ExternalServiceRateLimiter} from '@/common';
 import {RateLimiter} from 'limiter';
 import {BaseException} from '../../exceptions/base';
 import {defaultAbiCoder, joinSignature, splitSignature} from 'ethers/lib/utils';

@@ -1,8 +1,11 @@
-import {TradeAggregatorAction, ActionKind} from '@/types';
+import {AggregatorAction, ActionKind, ActionProcessor} from '@/types';
 import {BrowserActionTaskExecutor} from './executor';
 import {createTasks} from '../task';
 
-export function createExecutor(actions: TradeAggregatorAction<ActionKind>[]) {
+export function createExecutor(
+  actions: AggregatorAction<ActionKind>[],
+  processor: ActionProcessor
+) {
   const tasks = createTasks(actions);
-  return new BrowserActionTaskExecutor(tasks);
+  return new BrowserActionTaskExecutor(tasks, processor);
 }

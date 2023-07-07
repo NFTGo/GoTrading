@@ -1,4 +1,4 @@
-import {Order, OrderKind, OrderType} from '../interface';
+import {Order, OrderKind, OrderType} from './order';
 
 /**
  * TokenPrice

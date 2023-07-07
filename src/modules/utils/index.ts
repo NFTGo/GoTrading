@@ -3,8 +3,8 @@ import Web3 from 'web3';
 
 import {Log, provider, TransactionConfig, TransactionReceipt} from 'web3-core';
 import {PUNK_CONTRACT_ADDRESS} from './consts';
-import {ERC1155Abi} from '../abi/ERC1155';
-import {ERC721Abi, CryptoPunkAbi} from '../abi/ERC721';
+
+import {ERC721ABI, CryptoPunkABI, ERC1155ABI} from '@/abi';
 import {
   WalletConfig,
   InspectTransactionParams,
@@ -14,8 +14,8 @@ import {
   FinallyHandler,
   Utils,
   Transaction,
-} from '../interface';
-import {UtilsException} from '../exceptions';
+} from '@/types';
+import {UtilsException} from '@/exceptions';
 
 export class AggregatorUtils implements Utils {
   constructor(
@@ -49,20 +49,20 @@ export class AggregatorUtils implements Utils {
       );
     }
     this.TRANSFER_TOPIC = this._web3Instance?.eth.abi.encodeEventSignature(
-      ERC721Abi.transfer
+      ERC721ABI.transfer
     );
     this.TRANSFER_BATCH_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(
-      ERC1155Abi.batchTransfer
+      ERC1155ABI.batchTransfer
     );
     this.TRANSFER_SINGLE_TOPIC =
       this._web3Instance.eth.abi.encodeEventSignature(
-        ERC1155Abi.singleTransfer
+        ERC1155ABI.singleTransfer
       );
     this.PUNK_TRANSFER_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(
-      CryptoPunkAbi.transfer
+      CryptoPunkABI.transfer
     );
     this.PUNK_BOUGHT_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(
-      CryptoPunkAbi.bought
+      CryptoPunkABI.bought
     );
   }
   public _ethersProvider: ethers.providers.Web3Provider;
@@ -113,7 +113,7 @@ export class AggregatorUtils implements Utils {
           } else {
             // 721
             decodedEventLog = this._web3Instance.eth.abi.decodeLog(
-              ERC721Abi.transfer.inputs ?? [],
+              ERC721ABI.transfer.inputs ?? [],
               log.data,
               log.topics.slice(1) // without the topic[0] if its a non-anonymous event, otherwise with topic[0].
             );
@@ -126,7 +126,7 @@ export class AggregatorUtils implements Utils {
         case this.TRANSFER_BATCH_TOPIC:
           // batch 1155
           decodedEventLog = this._web3Instance.eth.abi.decodeLog(
-            ERC1155Abi.batchTransfer.inputs ?? [],
+            ERC1155ABI.batchTransfer.inputs ?? [],
             log.data,
             log.topics.slice(1)
           );
@@ -139,7 +139,7 @@ export class AggregatorUtils implements Utils {
         case this.TRANSFER_SINGLE_TOPIC:
           // single 1155
           decodedEventLog = this._web3Instance.eth.abi.decodeLog(
-            ERC1155Abi.singleTransfer.inputs ?? [],
+            ERC1155ABI.singleTransfer.inputs ?? [],
             log.data,
             log.topics.slice(1)
           );
@@ -152,7 +152,7 @@ export class AggregatorUtils implements Utils {
         case this.PUNK_TRANSFER_TOPIC:
           // punk
           decodedEventLog = this._web3Instance.eth.abi.decodeLog(
-            CryptoPunkAbi.transfer.inputs ?? [],
+            CryptoPunkABI.transfer.inputs ?? [],
             log.data,
             log.topics.slice(1)
           );
@@ -163,7 +163,7 @@ export class AggregatorUtils implements Utils {
           break;
         case this.PUNK_BOUGHT_TOPIC:
           decodedEventLog = this._web3Instance.eth.abi.decodeLog(
-            CryptoPunkAbi.bought.inputs ?? [],
+            CryptoPunkABI.bought.inputs ?? [],
             log.data,
             log.topics.slice(1)
           );

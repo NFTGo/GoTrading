@@ -1,85 +1,5 @@
-import {Order, OrderKind, Orderbook} from '../interface';
-
-/**
- * ActionKind
- */
-export enum ActionKind {
-  PassThrough = 'pass-through',
-  Signature = 'signature',
-  Transaction = 'transaction',
-}
-
-/**
- * ActionName
- */
-export enum ActionName {
-  AcceptOffer = 'accept-offer',
-  CurrencyApproval = 'currency-approval',
-  CurrencyWrapping = 'currency-wrapping',
-  NftApproval = 'nft-approval',
-  OrderSignature = 'order-signature',
-  PassThrough = 'pass-through',
-}
-
-/**
- * AggregateTransactionInfo
- *
- * AggregatePassThroughInfo
- *
- * AggregateSignatureInfo
- */
-export interface ActionData {
-  gasLimit?: string;
-  txAssociatedOrderIds?: string[];
-  txData?: TxData;
-  usdGas?: string;
-  endpoint?: string;
-  method?: string;
-  payload?:
-    | any[]
-    | boolean
-    | number
-    | number
-    | Record<string, any>
-    | null
-    | string;
-  body?: Record<string, any>;
-  orderIndexes?: number[];
-  sign?: SignData;
-}
-
-export interface SignData {
-  domain: {
-    name: string;
-    version: string;
-    chainId: number;
-    verifyingContract: string;
-  };
-  signatureKind: 'eip191' | 'eip712';
-  types: Record<string, any[]>;
-  value: Record<string, any>;
-  message?: string;
-}
-
-/**
- * AggregateAction
- */
-export interface AggregateAction {
-  data: ActionData;
-  description: string;
-  kind: ActionKind;
-  name: ActionName;
-}
-
-/**
- * TxData
- */
-export interface TxData {
-  data: string;
-  from: string;
-  to: string;
-  value?: string;
-}
+import {AggregatorAction} from './action';
+import {Order, OrderKind, Orderbook} from './order';
 
 /**
  * cancel orders
@@ -333,11 +253,11 @@ export interface AggregatorApiStatusResponse<T> {
   data: T;
 }
 export interface AggregatorApiResponse {
-  actions: AggregateAction[];
+  actions: AggregatorAction[];
 }
 
 export interface AggregatorResponse<T> {
-  actions: AggregateAction[];
+  actions: AggregatorAction[];
   executeActions: () => Promise<T>;
 }
 

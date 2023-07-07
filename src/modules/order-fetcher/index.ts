@@ -1,5 +1,5 @@
-import {BASE_URL} from '../../config';
-import {HTTPClient, EVMChain, Config} from '../../interface';
+import {BASE_URL} from 'src/common';
+
 import {
   GetOrdersByContractReq,
   GetOrdersByIdsReq,
@@ -7,7 +7,10 @@ import {
   GetOrdersByNftsReq,
   OrderFetcherInterface,
   OrdersFetcherResp,
-} from './interface';
+  HTTPClient,
+  EVMChain,
+  Config,
+} from '@/types';
 
 export class OrderFetcher implements OrderFetcherInterface {
   constructor(private client: HTTPClient, private config: Config) {}

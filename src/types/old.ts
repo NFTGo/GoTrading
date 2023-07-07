@@ -2,7 +2,7 @@ import {ethers} from 'ethers';
 import {Log, TransactionConfig, TransactionReceipt} from 'web3-core';
 import {OrderFetcherInterface} from './modules/order-fetcher/interface';
 import {AggregatorInterface} from './modules/aggregator/interface';
-import {AggregatorUtils} from './utils';
+import {AggregatorUtils} from '../modules/utils/utils';
 
 // # user-land interface , core  should implement this
 export enum EVMChain {
