@@ -176,7 +176,7 @@ export interface SeaportV14 {
 export interface FulfillListingsReq {
   authToken?: string;
   buyer: string;
-  noDirect: boolean;
+  noDirect?: boolean;
   orderIds: string[];
   safeMode: boolean;
 }

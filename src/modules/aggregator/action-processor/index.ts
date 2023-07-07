@@ -30,3 +30,14 @@ export async function nftApprovalTransaction(
     orderIndexes,
   };
 }
+
+export async function acceptListingTransaction(
+  action: AggregateAction,
+  utils: Utils
+) {
+  const {data} = action;
+}
+// fulfill-listing
+// "name": "accept-listing",
+// "description": "Buy by Reservoir sdk",
+// "kind": "transaction",

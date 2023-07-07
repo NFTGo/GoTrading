@@ -43,6 +43,7 @@ export class BlurMarketAuthenticator implements BlurAuthServiceImpl {
       '/v1' +
       '/' +
       (this.config?.chain ?? EVMChain.ETH) +
+      '/nft' +
       '/blur'
     );
   }

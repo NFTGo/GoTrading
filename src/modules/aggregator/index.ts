@@ -1,7 +1,13 @@
-import { BASE_URL } from '../../config';
-import { AggregatorApiException } from '../../exceptions';
-import { nftApprovalTransaction, orderSignature } from './action-processor';
-import { ApiKeyConfig, Config, EVMChain, HTTPClient, Utils } from '../../interface';
+import {BASE_URL} from '../../config';
+import {AggregatorApiException} from '../../exceptions';
+import {nftApprovalTransaction, orderSignature} from './action-processor';
+import {
+  ApiKeyConfig,
+  Config,
+  EVMChain,
+  HTTPClient,
+  Utils,
+} from '../../interface';
 import {
   AggregatorApiResponse,
   AggregatorApiStatusResponse,
@@ -15,17 +21,21 @@ import {
   PostOrderReq,
   PostOrderResponse,
 } from './interface';
-import { executeAllActions } from './use-cases';
-import { OrderKind } from '../interface';
-import { ExternalServiceRateLimiter } from '../../utils/rate-limiter';
-import { RateLimiter } from 'limiter';
-import { BaseException } from '../../exceptions/base';
-import { defaultAbiCoder, joinSignature, splitSignature } from 'ethers/lib/utils';
+import {executeAllActions} from './use-cases';
+import {OrderKind} from '../interface';
+import {ExternalServiceRateLimiter} from '../../utils/rate-limiter';
+import {RateLimiter} from 'limiter';
+import {BaseException} from '../../exceptions/base';
+import {defaultAbiCoder, joinSignature, splitSignature} from 'ethers/lib/utils';
 import * as Models from '../../utils/interface';
 
 export class Aggregator implements AggregatorInterface {
   private postOrderHandlers = new Map<OrderKind, IPostOrderHandler>();
-  constructor(private client: HTTPClient, private config: Config, private utils: Utils) {
+  constructor(
+    private client: HTTPClient,
+    private config: Config,
+    private utils: Utils
+  ) {
     // TODO: init the postOrderHandlers here, opensea, looksrare, x2y2
   }
 
@@ -37,7 +47,10 @@ export class Aggregator implements AggregatorInterface {
    */
   createOffers(params: CreateOffersReq): Promise<AggregatorResponse<any>> {
     return new Promise<AggregatorResponse<any>>((resolve, reject) => {
-      this.post<AggregatorApiResponse, CreateOffersReq>('/create-offers/v1', params).then((res) => {
+      this.post<AggregatorApiResponse, CreateOffersReq>(
+        '/create-offers/v1',
+        params
+      ).then(res => {
         resolve({
           actions: res.actions,
           executeActions: () => {
@@ -56,7 +69,10 @@ export class Aggregator implements AggregatorInterface {
    */
   fulfillOffers(params: FulfillOffersReq): Promise<AggregatorResponse<any>> {
     return new Promise<AggregatorResponse<any>>((resolve, reject) => {
-      this.post<AggregatorApiResponse, FulfillOffersReq>('/aggregate-accept-offers', params).then((res) => {
+      this.post<AggregatorApiResponse, FulfillOffersReq>(
+        '/aggregate-accept-offers',
+        params
+      ).then(res => {
         resolve({
           actions: res.actions,
           executeActions: () => {
@@ -75,7 +91,10 @@ export class Aggregator implements AggregatorInterface {
    */
   cancelOrders(params: CancelOrdersReq): Promise<AggregatorResponse<any>> {
     return new Promise<AggregatorResponse<any>>((resolve, reject) => {
-      this.post<AggregatorApiResponse, CancelOrdersReq>('/cancel-orders', params).then((res) => {
+      this.post<AggregatorApiResponse, CancelOrdersReq>(
+        '/cancel-orders',
+        params
+      ).then(res => {
         resolve({
           actions: res.actions,
           executeActions: () => {
@@ -92,9 +111,14 @@ export class Aggregator implements AggregatorInterface {
    * @param params {@link any}
    * @returns Promise<{@link any}>
    */
-  async createListings(params: CreateListingsReq): Promise<AggregatorResponse<any>> {
-    const data = await this.post<AggregatorApiResponse, CreateListingsReq>('/create-listings/v1', params);
-    const { actions } = data;
+  async createListings(
+    params: CreateListingsReq
+  ): Promise<AggregatorResponse<any>> {
+    const data = await this.post<AggregatorApiResponse, CreateListingsReq>(
+      '/create-listings/v1',
+      params
+    );
+    const {actions} = data;
 
     return {
       actions: actions,
@@ -124,17 +148,21 @@ export class Aggregator implements AggregatorInterface {
    * @param params {@link FulfillListingsReq}
    * @returns Promise<{@link }>
    */
-  fulfillListings(params: FulfillListingsReq): Promise<AggregatorResponse<any>> {
-    return new Promise<AggregatorResponse<any>>((resolve, reject) => {
-      this.post<AggregatorApiResponse, FulfillListingsReq>('/aggregate-accept-listings', params).then((res) => {
-        resolve({
-          actions: res.actions,
-          executeActions: () => {
-            return executeAllActions(res.actions, this.utils);
-          },
-        });
-      });
-    });
+  async fulfillListings(
+    params: FulfillListingsReq
+  ): Promise<AggregatorResponse<any>> {
+    const data = await this.post<AggregatorApiResponse, FulfillListingsReq>(
+      '/aggregate-accept-listings',
+      params
+    );
+    const {actions} = data;
+
+    return {
+      actions,
+      executeActions: () => {
+        return Promise.resolve(true);
+      },
+    };
   }
 
   /**
@@ -147,7 +175,10 @@ export class Aggregator implements AggregatorInterface {
     // given the orderKind, invoke NFTGo developer API or directly post order to marketplace
     if (params.order.kind === OrderKind.Blur) {
       return new Promise<PostOrderResponse>((resolve, reject) => {
-        this.post<AggregatorApiResponse, PostOrderReq>('/post-order/v1', params).then((res) => {
+        this.post<AggregatorApiResponse, PostOrderReq>(
+          '/post-order/v1',
+          params
+        ).then(res => {
           resolve(res);
         });
       });
@@ -155,14 +186,17 @@ export class Aggregator implements AggregatorInterface {
       const signature = params.signature;
       const handler = this.postOrderHandlers.get(params.order.kind);
       if (!handler) {
-        throw BaseException.invalidParamError('order.kind', 'unsupported orderKind ' + params.order.kind);
+        throw BaseException.invalidParamError(
+          'order.kind',
+          'unsupported orderKind ' + params.order.kind
+        );
       }
 
       switch (params.extraArgs.version) {
         case 'v3':
           if (signature) {
             try {
-              const { v, r, s } = splitSignature(signature);
+              const {v, r, s} = splitSignature(signature);
               params.order.data = {
                 ...params.order.data,
                 signature,
@@ -172,7 +206,10 @@ export class Aggregator implements AggregatorInterface {
               };
               // TODO: need to await?
             } catch (e) {
-              throw BaseException.invalidParamError('signature', 'invalid signature ' + signature);
+              throw BaseException.invalidParamError(
+                'signature',
+                'invalid signature ' + signature
+              );
             }
           }
           handler.handle(params.order);
@@ -180,15 +217,16 @@ export class Aggregator implements AggregatorInterface {
         case 'v4':
           if (signature) {
             try {
-              const { v, r, s } = splitSignature(signature);
+              const {v, r, s} = splitSignature(signature);
 
               if (params.bulkData?.kind === 'seaport-v1.5') {
                 // Encode the merkle proof of inclusion together with the signature
-                params.order.data.signature = Models.SeaportV1D5.Utils.encodeBulkOrderProofAndSignature(
-                  params.bulkData.data.orderIndex,
-                  params.bulkData.data.merkleProof,
-                  signature
-                );
+                params.order.data.signature =
+                  Models.SeaportV1D5.Utils.encodeBulkOrderProofAndSignature(
+                    params.bulkData.data.orderIndex,
+                    params.bulkData.data.merkleProof,
+                    signature
+                  );
               } else {
                 // If the signature is provided via query parameters, use it
                 params.order.data = {
@@ -203,34 +241,44 @@ export class Aggregator implements AggregatorInterface {
                 };
               }
             } catch (e: any) {
-              throw BaseException.invalidParamError('signature', 'invalid signature ' + signature);
+              throw BaseException.invalidParamError(
+                'signature',
+                'invalid signature ' + signature
+              );
             }
           }
           handler.handle(params.order);
           break;
         default:
-          throw BaseException.invalidParamError('extraArgs.version', 'unsupported version ' + params.extraArgs.version);
+          throw BaseException.invalidParamError(
+            'extraArgs.version',
+            'unsupported version ' + params.extraArgs.version
+          );
       }
     }
   }
 
   private get headers() {
-    return { 'X-API-KEY': this.config.apiKey, 'X-FROM': 'js_sdk' };
+    return {'X-API-KEY': this.config.apiKey, 'X-FROM': 'js_sdk'};
   }
 
   private get url() {
     return (
-      (this.config?.baseUrl ?? BASE_URL) + '/aggregator' + '/v1' + '/' + (this.config?.chain ?? EVMChain.ETH) + '/nft'
+      (this.config?.baseUrl ?? BASE_URL) +
+      '/aggregator' +
+      '/v1' +
+      '/' +
+      (this.config?.chain ?? EVMChain.ETH) +
+      '/nft'
     );
   }
 
   private async post<ResData, Req = undefined>(path: string, params: Req) {
-    const response = await this.client.post<AggregatorApiStatusResponse<ResData>, Req>(
-      this.url + path,
-      params,
-      this.headers
-    );
-    const { code, msg, data } = response;
+    const response = await this.client.post<
+      AggregatorApiStatusResponse<ResData>,
+      Req
+    >(this.url + path, params, this.headers);
+    const {code, msg, data} = response;
     if (code === 'SUCCESS') {
       return data;
     } else {
@@ -253,7 +301,10 @@ class SeaportV1D5Handler implements IPostOrderHandler {
   constructor(private client: HTTPClient, apiKeyConfig: ApiKeyConfig) {
     this.rateLimiter = new ExternalServiceRateLimiter(
       apiKeyConfig.apiKey,
-      new RateLimiter({ tokensPerInterval: apiKeyConfig.requestsPerInterval, interval: apiKeyConfig.interval })
+      new RateLimiter({
+        tokensPerInterval: apiKeyConfig.requestsPerInterval,
+        interval: apiKeyConfig.interval,
+      })
     );
   }
   async handle(payload: any): Promise<any> {
@@ -261,7 +312,10 @@ class SeaportV1D5Handler implements IPostOrderHandler {
     const orderbook = payload.orderbook;
 
     if (!['opensea'].includes(payload.orderbook)) {
-      throw BaseException.invalidParamError('orderbook', `${this.protocol} only supports opensea`);
+      throw BaseException.invalidParamError(
+        'orderbook',
+        `${this.protocol} only supports opensea`
+      );
     }
     const seaportOrder: Models.SeaportV1D5.Types.ListingOrderParams = {
       offerer: order.data.offerer,
@@ -288,9 +342,12 @@ class SeaportV1D5Handler implements IPostOrderHandler {
             totalOriginalConsiderationItems: order.data.consideration.length,
           },
           signature: order.data.signature,
-          protocol_address: Models.SeaportV1D5.Addresses.Exchange[Models.Utils.Network.Ethereum],
+          protocol_address:
+            Models.SeaportV1D5.Addresses.Exchange[
+              Models.Utils.Network.Ethereum
+            ],
         },
-        { 'X-Api-Key': apiKey },
+        {'X-Api-Key': apiKey},
         true
       );
       return result;
@@ -308,7 +365,10 @@ class LooksRareV2Handler implements IPostOrderHandler {
   constructor(private client: HTTPClient, apiKeyConfig: ApiKeyConfig) {
     this.rateLimiter = new ExternalServiceRateLimiter(
       apiKeyConfig.apiKey,
-      new RateLimiter({ tokensPerInterval: apiKeyConfig.requestsPerInterval, interval: apiKeyConfig.interval })
+      new RateLimiter({
+        tokensPerInterval: apiKeyConfig.requestsPerInterval,
+        interval: apiKeyConfig.interval,
+      })
     );
   }
   async handle(payload: any): Promise<any> {
@@ -316,10 +376,14 @@ class LooksRareV2Handler implements IPostOrderHandler {
     const orderbook = payload.orderbook;
 
     if (!['looks-rare'].includes(orderbook)) {
-      throw BaseException.invalidParamError('orderbook', `${this.protocol} only supports looks-rare`);
+      throw BaseException.invalidParamError(
+        'orderbook',
+        `${this.protocol} only supports looks-rare`
+      );
     }
 
-    const looksrareOrder: Models.LooksRareV2.Types.MakerOrderParams = order.data;
+    const looksrareOrder: Models.LooksRareV2.Types.MakerOrderParams =
+      order.data;
     const apiKey = await this.rateLimiter.getAPIKeyWithRateLimiter();
 
     return this.client.post(
@@ -327,7 +391,7 @@ class LooksRareV2Handler implements IPostOrderHandler {
       {
         ...looksrareOrder,
       },
-      { 'X-Api-Key': apiKey },
+      {'X-Api-Key': apiKey},
       true
     );
   }
@@ -353,7 +417,10 @@ class X2Y2Handler implements IPostOrderHandler {
     const orderbook = payload.orderbook;
 
     if (!['x2y2'].includes(orderbook)) {
-      throw BaseException.invalidParamError('orderbook', `${this.protocol} only supports x2y2`);
+      throw BaseException.invalidParamError(
+        'orderbook',
+        `${this.protocol} only supports x2y2`
+      );
     }
 
     const x2y2Order: Models.X2Y2.Types.X2Y2ListingOrderParams = order.data;
@@ -388,6 +455,6 @@ class X2Y2Handler implements IPostOrderHandler {
       isCollection: order.data.dataMask !== '0x',
     };
 
-    return this.client.post(this.url, orderParams, { 'X-Api-Key': apiKey }, true);
+    return this.client.post(this.url, orderParams, {'X-Api-Key': apiKey}, true);
   }
 }
