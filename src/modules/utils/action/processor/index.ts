@@ -1,4 +1,12 @@
-import { ActionKind, ActionProcessor, AggregatorAction, Config, InternalUtils } from '@/types';
+import {
+  ActionKind,
+  ActionName,
+  ActionProcessor,
+  AggregatorAction,
+  Config,
+  InternalUtils,
+  ProcessPassThroughActionParams,
+} from '@/types';
 import { signApproveInfo, signListingData } from './signature';
 import { PostOrderHandler } from '../../post-order';
 
@@ -40,14 +48,18 @@ export class AggregateActionProcessor implements ActionProcessor {
       }
     }
   }
-  async processPassThroughAction(action: AggregatorAction<ActionKind.PassThrough>, params?: any) {
+  async processPassThroughAction(
+    action: AggregatorAction<ActionKind.PassThrough>,
+    params: ProcessPassThroughActionParams
+  ) {
     const { name, data } = action;
-    if (name === 'post-order-to-marketplace') {
+
+    if (name === ActionName.PostOrderToMarketplace) {
       if (!params.signature) {
         throw new Error('action signature is required');
       }
       const { payload, endpoint } = data;
-      const postOrderResult = this.postOrderHandler.handle(payload, params.signature, endpoint);
+      const postOrderResult = this.postOrderHandler.handle(payload as any, params.signature, endpoint);
       return postOrderResult;
     }
     return Promise.resolve({

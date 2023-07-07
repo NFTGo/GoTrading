@@ -4,8 +4,8 @@ import { OrderFetcherInterface } from './order-fetcher';
 import { Utils } from './utils';
 
 export interface GoTrading {
-  orderFetcher?: OrderFetcherInterface;
-  utils?: Utils | null;
-  aggregator?: AggregatorInterface;
+  orderFetcher: OrderFetcherInterface;
+  utils: Utils;
+  aggregator: AggregatorInterface;
   config: Config;
 }

@@ -1,6 +1,14 @@
 {
   "name": "@nftgo/gotrading",
   "version": "0.2.2",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/index.js",
+    "dist/index.esm.js",
+    "dist/index.d.ts"
+  ],
   "engines": {
     "node": ">=16.14.0"
   },
@@ -15,14 +23,10 @@
   "bugs": {
     "url": "https://github.com/NFTGo/GoTrading-js/issues"
   },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "dev": "rimraf dist types && cross-env NODE_ENV=development webpack --config ./config/webpack/webpack.dev.js",
     "build": "tsc -p tsconfig.build.json",
+    "build:rollup": "rollup -c rollup.config.mjs",
     "publish:dev": "npm run build && npm publish --registry=https://npm.nftgo.dev/",
     "typedoc": "rimraf docs && typedoc",
     "test": "jest",
@@ -67,8 +71,17 @@
     "web3-utils": "^1.8.2"
   },
   "dependencies": {
+    "@rollup/plugin-alias": "^5.0.0",
+    "@rollup/plugin-commonjs": "^25.0.2",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.1.0",
     "ethers": "^5.6.9",
+    "install": "^0.13.0",
     "limiter": "^2.1.0",
+    "rollup": "^3.26.2",
+    "rollup-plugin-dts": "^5.3.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-typescript2": "^0.35.0",
     "web3": "^1.8.2"
   }
 }

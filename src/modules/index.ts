@@ -4,8 +4,6 @@ import { Aggregator } from './aggregator';
 import { HTTPClientStable } from 'src/http/client';
 import { createUtils } from './utils';
 
-export declare function initIndexer(config: unknown): GoTrading;
-
 export function init(config: Config): GoTrading {
   const httpClient = new HTTPClientStable();
 

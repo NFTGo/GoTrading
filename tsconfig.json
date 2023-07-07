@@ -13,7 +13,7 @@
     "forceConsistentCasingInFileNames": true,
     "noEmit": false,
     "esModuleInterop": true,
-    "module": "commonjs",
+    "module": "ESNext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": false,
@@ -21,6 +21,7 @@
     "jsx": "preserve",
     "incremental": true,
     "declaration": true,
+    "declarationDir": "dist/src",
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
