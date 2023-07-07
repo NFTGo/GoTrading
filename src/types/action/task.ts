@@ -1,9 +1,9 @@
-import {TradeAggregatorAction, TradeAggregatorActionKind} from './action';
+import {TradeAggregatorAction, ActionKind} from './action';
 
 export interface ActionTaskResultMap {
-  [TradeAggregatorActionKind.PassThrough]: unknown;
-  [TradeAggregatorActionKind.Signature]: string;
-  [TradeAggregatorActionKind.Transaction]: unknown;
+  [ActionKind.PassThrough]: unknown;
+  [ActionKind.Signature]: string;
+  [ActionKind.Transaction]: unknown;
 }
 
 export type ActionTaskStatus = 'success' | 'fail' | 'ready' | 'pending';
@@ -11,7 +11,7 @@ export type ActionTaskStatus = 'success' | 'fail' | 'ready' | 'pending';
 export interface ActionTask {
   status: ActionTaskStatus;
   index: number;
-  action: TradeAggregatorAction<TradeAggregatorActionKind>;
+  action: TradeAggregatorAction<ActionKind>;
   pre: ActionTask | null;
   result: unknown;
   execute(): Promise<void>;

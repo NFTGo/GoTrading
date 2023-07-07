@@ -1,4 +1,4 @@
-import {TradeAggregatorActionKind} from '@/types';
+import {ActionKind} from '@/types';
 import {ActionTaskTemplate} from './template';
 
 type TransactionActionTaskResult = {
@@ -7,7 +7,7 @@ type TransactionActionTaskResult = {
   };
 };
 
-export class TransactionActionTask extends ActionTaskTemplate<TradeAggregatorActionKind.Transaction> {
+export class TransactionActionTask extends ActionTaskTemplate<ActionKind.Transaction> {
   result: TransactionActionTaskResult | null = null;
 
   async execute() {

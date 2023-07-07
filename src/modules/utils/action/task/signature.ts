@@ -1,11 +1,11 @@
-import {TradeAggregatorActionKind} from '@/types';
+import {ActionKind} from '@/types';
 import {ActionTaskTemplate} from './template';
 
 type SignatureActionTaskResult = {
   signature: string;
 };
 
-export class SignatureActionTask extends ActionTaskTemplate<TradeAggregatorActionKind.Signature> {
+export class SignatureActionTask extends ActionTaskTemplate<ActionKind.Signature> {
   result: SignatureActionTaskResult | null = null;
 
   async execute() {

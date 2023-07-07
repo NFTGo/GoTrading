@@ -1,7 +1,7 @@
-import {TradeAggregatorActionKind} from '@/types';
+import {ActionKind} from '@/types';
 import {ActionTaskTemplate} from './template';
 
-export class PassThroughActionTask extends ActionTaskTemplate<TradeAggregatorActionKind.PassThrough> {
+export class PassThroughActionTask extends ActionTaskTemplate<ActionKind.PassThrough> {
   result: null = null;
 
   async execute() {
@@ -9,7 +9,11 @@ export class PassThroughActionTask extends ActionTaskTemplate<TradeAggregatorAct
     let pre = this.pre;
     let data: Record<string, any> = {};
     while (pre) {
-      const result = typeof pre?.result === 'object' && pre.action.kind !== TradeAggregatorActionKind.PassThrough ? pre?.result : {};
+      const result =
+        typeof pre?.result === 'object' &&
+        pre.action.kind !== ActionKind.PassThrough
+          ? pre?.result
+          : {};
       Object.assign(data, pre.result ?? result);
       pre = pre.pre;
     }

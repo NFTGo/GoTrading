@@ -234,7 +234,7 @@ export interface CreateOfferInput {
    * Optional. Set a custom nonce
    */
   nonce?: string;
-  options?: { [key: string]: any };
+  options?: {[key: string]: any};
   /**
    * Orderbook where order is placed. Example: `Reservoir`
    */

@@ -1,6 +1,13 @@
-import {ActionTask, ActionTaskStatus, TradeAggregatorAction, TradeAggregatorActionKind} from '@/types';
+import {
+  ActionTask,
+  ActionTaskStatus,
+  TradeAggregatorAction,
+  ActionKind,
+} from '@/types';
 
-export abstract class ActionTaskTemplate<T extends TradeAggregatorActionKind> implements ActionTask {
+export abstract class ActionTaskTemplate<T extends ActionKind>
+  implements ActionTask
+{
   status: ActionTaskStatus = 'ready';
   pre: ActionTask | null = null;
   abstract result: unknown;

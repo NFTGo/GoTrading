@@ -1,22 +1,27 @@
-import {ActionTask, TradeAggregatorAction, TradeAggregatorActionKind} from '@/types';
+import {ActionTask, TradeAggregatorAction, ActionKind} from '@/types';
 import {PassThroughActionTask} from './pass-through';
 import {SignatureActionTask} from './signature';
 import {TransactionActionTask} from './transaction';
 
-function createTask(action: TradeAggregatorAction<TradeAggregatorActionKind>, index: number): ActionTask {
+function createTask(
+  action: TradeAggregatorAction<ActionKind>,
+  index: number
+): ActionTask {
   switch (action.kind) {
-    case TradeAggregatorActionKind.PassThrough:
+    case ActionKind.PassThrough:
       return new PassThroughActionTask(action, index);
-    case TradeAggregatorActionKind.Transaction:
+    case ActionKind.Transaction:
       return new TransactionActionTask(action, index);
-    case TradeAggregatorActionKind.Signature:
+    case ActionKind.Signature:
       return new SignatureActionTask(action, index);
     default:
       throw Error('Unknown action kind');
   }
 }
 
-export function createTasks(actions: TradeAggregatorAction<TradeAggregatorActionKind>[]): ActionTask[] {
+export function createTasks(
+  actions: TradeAggregatorAction<ActionKind>[]
+): ActionTask[] {
   const tasks: ActionTask[] = [];
   for (let index = 0; index < actions.length; index++) {
     const action = actions[index];
