@@ -1,4 +1,4 @@
-import {AggregatorAction, ActionKind} from './action';
+import { AggregatorAction, ActionKind } from './action';
 
 export interface ActionTaskResultMap {
   [ActionKind.PassThrough]: unknown;

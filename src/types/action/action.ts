@@ -1,4 +1,4 @@
-import {JSON} from '../json';
+import { JSON } from '../json';
 
 /**
  * actions witch trade aggregate response for frontend developer to process user interaction

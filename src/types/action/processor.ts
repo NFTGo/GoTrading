@@ -1,8 +1,4 @@
-import {
-  PassThroughActionInfo,
-  SignatureActionInfo,
-  TransactionActionInfo,
-} from './action';
+import { PassThroughActionInfo, SignatureActionInfo, TransactionActionInfo } from './action';
 
 export interface ActionProcessor {
   processSignatureAction: (data: SignatureActionInfo) => Promise<string>;

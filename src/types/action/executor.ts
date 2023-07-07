@@ -1,4 +1,4 @@
-import {ActionTask} from './task';
+import { ActionTask } from './task';
 
 export interface ActionTaskExecutor {
   execute(options?: ExecuteOptions): Promise<void>;
