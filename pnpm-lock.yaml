@@ -38,6 +38,9 @@ dependencies:
   rollup-plugin-typescript2:
     specifier: ^0.35.0
     version: registry.npmmirror.com/rollup-plugin-typescript2@0.35.0(rollup@3.26.2)(typescript@5.1.6)
+  tslib:
+    specifier: ^2.6.0
+    version: registry.npmmirror.com/tslib@2.6.0
   web3:
     specifier: ^1.8.2
     version: registry.npmmirror.com/web3@1.10.0
