@@ -7,7 +7,7 @@ export class PassThroughActionTask extends ActionTaskTemplate<ActionKind.PassThr
   async execute() {
     // do real execute
     let pre = this.pre;
-    let data: Record<string, any> = {};
+    const data: Record<string, any> = {};
     while (pre) {
       const result = typeof pre?.result === 'object' && pre.action.kind !== ActionKind.PassThrough ? pre?.result : {};
       Object.assign(data, pre.result ?? result);

@@ -38,9 +38,22 @@ export type TxData = {
   value: string;
 };
 
+export interface SignData {
+  domain: {
+    name: string;
+    version: string;
+    chainId: number;
+    verifyingContract: string;
+  };
+  signatureKind: 'eip191' | 'eip712';
+  types: Record<string, any[]>;
+  value: Record<string, any>;
+  message?: string;
+}
+
 export type SignatureActionInfo = {
   orderIndexes: number[];
-  sign: object;
+  sign: SignData;
   body: object;
 };
 

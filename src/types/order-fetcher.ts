@@ -1,4 +1,4 @@
-import {Order, OrderKind, OrderType} from './order';
+import { Order, OrderKind, OrderType } from './order';
 
 /**
  * TokenPrice
@@ -134,9 +134,7 @@ export interface OrderFetcherInterface {
    * @param params {@link GetOrdersByContractReq}
    * @returns Promise<{@link OrdersFetcherResp}>
    */
-  getOrdersByContract(
-    params: GetOrdersByContractReq
-  ): Promise<OrdersFetcherResp>;
+  getOrdersByContract(params: GetOrdersByContractReq): Promise<OrdersFetcherResp>;
 
   /**
    * Return listings and offers of a NFT

@@ -1,10 +1,10 @@
 import { Utils } from '../../../interface';
-import { AggregateAction } from '../interface';
+import { ActionKind, AggregateAction, OrderKind, SignatureActionInfo } from '@/types';
 import { signApproveInfo } from './sign-listing-approve';
 import { signListingData } from './sign-listing-data';
 
 // order-signature
-export async function orderSignature(action: AggregateAction, utils: Utils) {
+export async function orderSignature(action: AggregateAction<ActionKind.Signature>, utils: Utils) {
   const { data } = action;
   const { sign } = data;
   if (!sign) {
