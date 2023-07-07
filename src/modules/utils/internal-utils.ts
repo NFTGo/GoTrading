@@ -320,6 +320,8 @@ export class InternalAggregatorUtils implements InternalUtils {
       return signature;
     } else {
       // server side
+      console.info('acc', this._web3Instance.eth.accounts);
+      console.info('this.walletConfig', this.walletConfig);
       const signResult = this._web3Instance.eth.accounts.sign(message, this.walletConfig?.privateKey as string);
       return signResult.signature;
     }

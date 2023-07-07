@@ -49,6 +49,9 @@ export class BlurMarketAuthenticator implements BlurAuthServiceImpl {
   }
 
   private async getAuthSignature(message: string) {
+    console.info('this.signer', this.signer);
+    console.info('this.signer.signMessage', this.signer.signMessage);
+
     const signature = this.signer.signMessage(message);
     return signature;
   }

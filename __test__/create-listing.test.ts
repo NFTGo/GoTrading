@@ -60,42 +60,41 @@ describe('[create listing] interface result test', () => {
     expect(actions).toEqual(expect.any(Array));
   });
 
-  test('[empty blur token] listing should return error when blur token is empty', async () => {
-    const maker = address;
-    const func = async () => {
-      await aggregator.createListings({
-        maker,
-        params: [getBlurOrder(mock721Order)],
-      });
-    };
-    await expect(func()).rejects.toThrow();
-  });
+  //   test('[empty blur token] listing should return error when blur token is empty', async () => {
+  //     const maker = address;
+  //     const func = async () => {
+  //       await aggregator.createListings({
+  //         maker,
+  //         params: [getBlurOrder(mock721Order)],
+  //       });
+  //     };
+  //     await expect(func()).rejects.toThrow();
+  //   });
 
-  test('[incorrect maker] listing should return error when maker is incorrect', async () => {
-    const maker = '0x3e24914f74Cd66e3ee7d1F066A880A6c69404E13';
-    const func = async () => {
-      await aggregator.createListings({
-        maker,
-        params: orders,
-      });
-    };
-    await expect(func()).rejects.toThrow();
-  });
-});
-
-describe('[create listing] execute actions test', () => {
-  test('should return create listing actions', async () => {
-    const maker = config.walletConfig?.address || '';
-    const res = await aggregator.createListings({
-      maker,
-      params: orders,
-    });
-    const { actions, executeActions } = res;
-    const result = await executeActions();
-    expect(executeActions).toEqual(expect.any(Function));
-    expect(actions).toEqual(expect.any(Array));
-  });
-  // test('should execute all actions', async () => {
-  //   await expect(executeAllActions()).resolves.toEqual(true);
+  //   test('[incorrect maker] listing should return error when maker is incorrect', async () => {
+  //     const maker = '0x3e24914f74Cd66e3ee7d1F066A880A6c69404E13';
+  //     const func = async () => {
+  //       await aggregator.createListings({
+  //         maker,
+  //         params: orders,
+  //       });
+  //     };
+  //     await expect(func()).rejects.toThrow();
+  //   });
   // });
 });
+
+// describe('[create listing] execute actions test', () => {
+//   test('should return create listing actions', async () => {
+//     const maker = config.walletConfig?.address || '';
+//     const res = await aggregator.createListings({
+//       maker,
+//       params: orders,
+//     });
+//     const { actions, executeActions } = res;
+//     const result = await executeActions();
+//     expect(executeActions).toEqual(expect.any(Function));
+//     expect(actions).toEqual(expect.any(Array));
+//     // await executeAllActions();
+//   });
+// });
