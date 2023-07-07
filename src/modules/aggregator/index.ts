@@ -30,7 +30,7 @@ export class Aggregator implements AggregatorInterface {
    * @param params {@link }
    * @returns Promise<{@link }>
    */
-  async createOffers(params: CreateOffersReq): Promise<AggregatorResponse<any>> {
+  async createOffers(params: CreateOffersReq): Promise<AggregatorResponse> {
     const res = await this.post<AggregatorApiResponse, CreateOffersReq>('/create-offers/v1', params);
     const { actions } = res;
 
@@ -48,7 +48,7 @@ export class Aggregator implements AggregatorInterface {
    * @param params {@link any}
    * @returns Promise<{@link any}>
    */
-  async fulfillOffers(params: FulfillOffersReq): Promise<AggregatorResponse<any>> {
+  async fulfillOffers(params: FulfillOffersReq): Promise<AggregatorResponse> {
     const res = await this.post<AggregatorApiResponse, FulfillOffersReq>('/aggregate-accept-offers', params);
     const { actions } = res;
     return {
@@ -65,7 +65,7 @@ export class Aggregator implements AggregatorInterface {
    * @param params {@link any}
    * @returns Promise<{@link any}>
    */
-  async cancelOrders(params: CancelOrdersReq): Promise<AggregatorResponse<any>> {
+  async cancelOrders(params: CancelOrdersReq): Promise<AggregatorResponse> {
     const res = await this.post<AggregatorApiResponse, CancelOrdersReq>('/cancel-orders', params);
     const { actions } = res;
     return {
@@ -82,7 +82,7 @@ export class Aggregator implements AggregatorInterface {
    * @param params {@link any}
    * @returns Promise<{@link any}>
    */
-  async createListings(params: CreateListingsReq): Promise<AggregatorResponse<any>> {
+  async createListings(params: CreateListingsReq): Promise<AggregatorResponse> {
     const data = await this.post<AggregatorApiResponse, CreateListingsReq>('/create-listings/v1', params);
     const { actions } = data;
 
@@ -100,7 +100,7 @@ export class Aggregator implements AggregatorInterface {
    * @param params {@link FulfillListingsReq}
    * @returns Promise<{@link }>
    */
-  async fulfillListings(params: FulfillListingsReq): Promise<AggregatorResponse<any>> {
+  async fulfillListings(params: FulfillListingsReq): Promise<AggregatorResponse> {
     const data = await this.post<AggregatorApiResponse, FulfillListingsReq>('/aggregate-accept-listings', params);
     const { actions } = data;
 
@@ -112,8 +112,8 @@ export class Aggregator implements AggregatorInterface {
     };
   }
 
-  private get headers() {
-    return { 'X-API-KEY': this.config.apiKey, 'X-FROM': 'js_sdk' };
+  private get headers(): Record<string, string> {
+    return { 'X-API-KEY': this.config.apiKey!, 'X-FROM': 'js_sdk' };
   }
 
   private get url() {

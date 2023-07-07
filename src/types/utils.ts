@@ -1,4 +1,4 @@
-import { ActionTaskExecutor, AggregatorAction } from './action';
+import { ActionKind, ActionTaskExecutor, AggregatorAction } from './action';
 import { ethers } from 'ethers';
 import { Log, TransactionConfig, TransactionReceipt } from 'web3-core';
 
@@ -42,7 +42,7 @@ export interface InternalUtils {
 }
 
 export interface Utils extends InternalUtils {
-  createActionExecutor(actions: AggregatorAction[]): ActionTaskExecutor;
+  createActionExecutor(actions: AggregatorAction<ActionKind>[]): ActionTaskExecutor;
 }
 
 export interface DecodeLogRes {

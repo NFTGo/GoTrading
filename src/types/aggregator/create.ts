@@ -1,19 +1,5 @@
-import { AggregatorAction } from './action';
-import { Order, OrderKind, Orderbook } from './order';
-
-/**
- * cancel orders
- */
-export interface CancelOrdersReq {
-  callerAddress: string;
-  extraArgs?: ExtraArgs;
-  orders: Order[];
-}
-
-export interface ExtraArgs {
-  sign?: string;
-  signMessage?: string;
-}
+import { OrderKind, Orderbook } from '../order';
+import { SafeAny } from '../safe-any';
 
 /**
  * create listings
@@ -78,27 +64,13 @@ export interface CreateListingInput {
   weiPrice: string;
 }
 
-export interface Options {
+interface Options {
   'seaport-v1.5'?: SeaportV14;
 }
 
-export interface SeaportV14 {
+interface SeaportV14 {
   replaceOrderId?: string;
   useOffChainCancellation: boolean;
-}
-
-/**
- * fulfill listings
- */
-/**
- * AggregateAcceptListingRequest
- */
-export interface FulfillListingsReq {
-  authToken?: string;
-  buyer: string;
-  noDirect?: boolean;
-  orderIds: string[];
-  safeMode: boolean;
 }
 
 /**
@@ -106,7 +78,6 @@ export interface FulfillListingsReq {
  */
 
 //CreateOffersV1Request
-
 export interface CreateOffersReq {
   blurAuth?: string;
   maker: string;
@@ -154,7 +125,7 @@ export interface CreateOfferInput {
    * Optional. Set a custom nonce
    */
   nonce?: string;
-  options?: { [key: string]: any };
+  options?: { [key: string]: SafeAny };
   /**
    * Orderbook where order is placed. Example: `Reservoir`
    */
@@ -191,118 +162,4 @@ export interface CreateOfferInput {
    * Amount bidder is willing to offer in wei. Example: `1000000000000000000`
    */
   weiPrice: string;
-}
-
-/**
- * fulfill offers
- */
-export interface FulfillOffersReq {
-  extraArgs?: ExtraArgs;
-  offerFulfillmentIntentions: OfferFulfillmentIntention[];
-  sellerAddress: string;
-}
-
-/**
- * post order (listings & offers)
- */
-export interface PostOrderReq {
-  attribute?: Attribute;
-  bulkData?: {
-    kind: OrderKind;
-    data: {
-      orderIndex: number;
-      merkleProof: string[];
-    };
-  };
-  collection?: string;
-  extraArgs: {
-    version: string;
-  };
-  isNonFlagged?: boolean;
-  order: {
-    data: any;
-    kind: OrderKind;
-  };
-  orderbook: Orderbook;
-  orderbookApiKey?: string;
-  signature: string;
-  source?: string;
-  tokenSetId?: string;
-}
-
-export interface Attribute {
-  collection: string;
-  key: string;
-  value: string;
-}
-
-export interface ExtraArgs {
-  blurAuthToken?: string;
-}
-
-export interface OfferFulfillmentIntention {
-  contractAddress: string;
-  orderId: string;
-  quantity: number;
-  tokenId: string;
-}
-
-export interface AggregatorApiStatusResponse<T> {
-  code: 'SUCCESS' | 'SYSTEM_ERROR';
-  msg: string;
-  data: T;
-}
-export interface AggregatorApiResponse {
-  actions: AggregatorAction[];
-}
-
-export interface AggregatorResponse<T> {
-  actions: AggregatorAction[];
-  executeActions: () => Promise<T>;
-}
-
-export interface PostOrderResponse {
-  message: string;
-}
-
-export interface AggregatorInterface {
-  /**
-   *
-   * - details: {@link }
-   * @param params {@link }
-   * @returns Promise<{@link }>
-   */
-  createOffers(params: CreateOffersReq): Promise<AggregatorResponse<any>>;
-
-  /**
-   *
-   * - details: {@link }
-   * @param params {@link any}
-   * @returns Promise<{@link any}>
-   */
-  fulfillOffers(params: FulfillOffersReq): Promise<AggregatorResponse<any>>;
-
-  /**
-   *
-   * - details: {@link }
-   * @param params {@link any}
-   * @returns Promise<{@link any}>
-   */
-  cancelOrders(params: CancelOrdersReq): Promise<AggregatorResponse<any>>;
-
-  /**
-   *
-   * - details: {@link }
-   * @param params {@link any}
-   * @returns Promise<{@link any}>
-   */
-  createListings(params: CreateListingsReq): Promise<AggregatorResponse<any>>;
-
-  /**
-   * buy nfts
-   * - details: {@link }
-   * @param params {@link FulfillListingsReq}
-   * @returns Promise<{@link }>
-   */
-  fulfillListings(params: FulfillListingsReq): Promise<AggregatorResponse<any>>;
 }
