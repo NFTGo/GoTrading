@@ -4,8 +4,6 @@ export abstract class ActionTaskTemplate<T extends ActionKind> implements Action
   status: ActionTaskStatus = 'ready';
   pre: ActionTask | null = null;
   abstract result: unknown;
-  constructor(public action: AggregatorAction<T>, public index: number, protected processor: ActionProcessor) {
-    this.execute.bind(this);
-  }
+  constructor(public action: AggregatorAction<T>, public index: number, protected processor: ActionProcessor) {}
   abstract execute(): Promise<void>;
 }

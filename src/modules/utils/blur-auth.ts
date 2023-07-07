@@ -1,6 +1,6 @@
 import { BASE_URL } from '@/common';
 import { BaseException } from '@/exceptions';
-import { EVMChain, HTTPClient, Config } from '@/types';
+import { EVMChain, HTTPClient, Config, AggregatorApiStatusResponse } from '@/types';
 
 interface BlurAuthChallenge {
   expiresOn: string;
@@ -49,30 +49,35 @@ export class BlurMarketAuthenticator implements BlurAuthServiceImpl {
   }
 
   private async getAuthSignature(message: string) {
-    console.info('this.signer', this.signer);
-    console.info('this.signer.signMessage', this.signer.signMessage);
-
     const signature = this.signer.signMessage(message);
     return signature;
   }
 
   private async getAuthChallenge(address: string) {
-    const res = await this.httpClient.post<BlurAuthChallenge, { address: string }>(
+    const { code, msg, data } = await this.httpClient.post<
+      AggregatorApiStatusResponse<BlurAuthChallenge>,
+      { address: string }
+    >(
       this.url + '/auth/challenge',
       {
         address,
       },
       this.headers
     );
-    return res;
+    if (code !== 'SUCCESS') {
+      throw new BaseException('get challenge failed:', msg);
+    }
+    return data;
   }
   private async signBlurAuthChallenge(params: BlurAuthLoginParams): Promise<string> {
-    const res = await this.httpClient.post<{ accessToken: string }, BlurAuthLoginParams>(
-      this.url + '/auth/login',
-      params,
-      this.headers
-    );
-    return res?.accessToken;
+    const { code, msg, data } = await this.httpClient.post<
+      AggregatorApiStatusResponse<{ accessToken: string }>,
+      BlurAuthLoginParams
+    >(this.url + '/auth/login', params, this.headers);
+    if (code !== 'SUCCESS') {
+      throw new BaseException('get blur auth failed:', msg);
+    }
+    return data?.accessToken;
   }
   async authorize(address: string, force = false) {
     if (!address) {

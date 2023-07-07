@@ -10,8 +10,10 @@ export class SignatureActionTask extends ActionTaskTemplate<ActionKind.Signature
 
   execute = async () => {
     // do real execute
+
+    const signatureResult = await this.processor.processSignatureAction(this.action);
     this.result = {
-      signature: 'user signature',
+      signature: signatureResult,
     };
     this.status = 'success';
   };

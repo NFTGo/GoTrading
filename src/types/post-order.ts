@@ -24,7 +24,6 @@ export interface PostOrderReq {
   };
   orderbook: Orderbook;
   orderbookApiKey?: string;
-  signature: string;
   source?: string;
   tokenSetId?: string;
 }
