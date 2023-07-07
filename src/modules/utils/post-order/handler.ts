@@ -98,7 +98,7 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
           kind: 'collection-non-flagged',
           data: {
             collection: {
-              slug
+              slug,
             },
           },
         };
@@ -107,7 +107,7 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
           kind: 'collection',
           data: {
             collection: {
-              slug
+              slug,
             },
           },
         };
