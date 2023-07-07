@@ -23,8 +23,7 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
   async handle(payload: any): Promise<any> {
     const order = payload.order;
     const orderbook = payload.orderbook;
-
-    if (!['opensea'].includes(payload.orderbook)) {
+    if (!['opensea'].includes(orderbook)) {
       throw BaseException.invalidParamError('orderbook', `${this.protocol} only supports opensea`);
     }
     const seaportOrder: Models.SeaportV1D5.Types.ListingOrderParams = {

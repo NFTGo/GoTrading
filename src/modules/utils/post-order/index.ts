@@ -26,7 +26,6 @@ export class PostOrderHandler {
     if (config.openSeaApiKeyConfig) {
       this.handlers.set(OrderKind.SeaportV15, new SeaportV1D5Handler(this.client, config.openSeaApiKeyConfig));
     }
-
     if (config.looksRareApiKeyConfig) {
       this.handlers.set(OrderKind.LooksRareV2, new LooksRareV2Handler(this.client, config.looksRareApiKeyConfig));
     }
@@ -67,7 +66,7 @@ export class PostOrderHandler {
             throw BaseException.invalidParamError('signature', 'invalid signature ' + signature);
           }
 
-          handler.handle(params.order);
+          handler.handle(params);
           break;
         case 'v4':
           try {
@@ -96,7 +95,7 @@ export class PostOrderHandler {
           } catch (e: any) {
             throw BaseException.invalidParamError('signature', 'invalid signature ' + signature);
           }
-          handler.handle(params.order);
+          handler.handle(params);
           break;
         default:
           throw BaseException.invalidParamError('extraArgs.version', 'unsupported version ' + params.extraArgs.version);

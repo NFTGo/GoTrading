@@ -34,6 +34,9 @@ export function initConfig() {
       address: process.env.ADDRESS || '',
       privateKey: process.env.PRIVATE_KEY || '',
     },
+    openSeaApiKeyConfig: openseaApi,
+    looksRareApiKeyConfig: looksrareApi,
+    x2y2ApiKeyConfig: x2y2Api,
   };
   return config;
 }

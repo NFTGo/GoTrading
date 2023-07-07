@@ -1,4 +1,4 @@
-import { JSON } from '../json';
+import { SafeAny } from '../safe-any';
 
 /**
  * actions witch trade aggregate response for frontend developer to process user interaction
@@ -64,7 +64,7 @@ export type SignatureActionInfo = {
 export type PassThroughActionInfo = {
   endpoint: string;
   method: string;
-  payload: Record<string, any>;
+  payload: SafeAny;
 };
 
 export enum ActionName {
