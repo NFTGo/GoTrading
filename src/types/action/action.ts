@@ -16,15 +16,19 @@ export enum ActionKind {
   Transaction = 'transaction',
   Signature = 'signature',
   PassThrough = 'pass-through',
+  Controller = 'controller',
 }
 
 export interface ActionDataMap {
   [ActionKind.Transaction]: TransactionActionInfo;
   [ActionKind.Signature]: SignatureActionInfo;
   [ActionKind.PassThrough]: PassThroughActionInfo;
+  [ActionKind.Controller]: PassThroughActionInfo;
 }
 
 export type TransactionActionInfo = {
+  orderIndexes?: number[];
+  safeMode?: boolean;
   txAssociatedOrderIds: string[];
   usdGas?: string;
   gasLimit?: string;
@@ -60,14 +64,19 @@ export type SignatureActionInfo = {
 export type PassThroughActionInfo = {
   endpoint: string;
   method: string;
-  payload: JSON;
+  payload: Record<string, any>;
 };
 
 export enum ActionName {
   AcceptOffer = 'accept-offer',
-  CurrencyApproval = 'currency-approval',
-  CurrencyWrapping = 'currency-wrapping',
+  AcceptListing = 'accept-listing',
   NftApproval = 'nft-approval',
-  OrderSignature = 'order-signature',
+  CurrencyApproval = 'currency-approval',
   PassThrough = 'pass-through',
+  Contoller = 'controller',
+  PostOrderToMarketplace = 'post-order-to-marketplace',
+  CurrencyWrapping = 'currency-wrapping',
+  OrderSignature = 'order-signature',
+  CancelOrders = 'cancel-orders',
+  Failed = 'failed',
 }

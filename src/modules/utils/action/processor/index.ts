@@ -20,7 +20,7 @@ export class AggregateActionProcessor implements ActionProcessor {
     }
     return Promise.reject(new Error('no match action name'));
   }
-  async processTransactionAction(action: AggregatorAction) {
+  async processTransactionAction(action: AggregatorAction<ActionKind.Transaction>) {
     const { name, data } = action;
     if (name === 'nft-approval') {
       const { txData, orderIndexes } = data;
@@ -33,9 +33,14 @@ export class AggregateActionProcessor implements ActionProcessor {
         status: 'success',
         orderIndexes,
       });
+    } else if (name === 'accept-listing') {
+      const { txData } = data;
+      if (!txData) {
+        throw new Error('txData is required');
+      }
     }
   }
-  async processPassThroughAction(action: AggregatorAction, params?: any) {
+  async processPassThroughAction(action: AggregatorAction<ActionKind.PassThrough>, params?: any) {
     const { name, data } = action;
     if (name === 'post-order-to-marketplace') {
       if (!params.signature) {
@@ -49,19 +54,15 @@ export class AggregateActionProcessor implements ActionProcessor {
       status: 'success',
       name,
     });
-    // return acceptListingTransaction(data, this.utils);
   }
 }
 
-// fulfill-listing
 // "name": "accept-listing",
 // "description": "Buy by Reservoir sdk",
 // "kind": "transaction",
-
-// "name": "pass-through",
-// "description": "Post order to marketplace",
-// "kind": "pass-through",
 // "data": {
-//   "endpoint": "/aggregator/v1/ETH/nft/post-order/v1",
-
-export async function passThroughPostOrder() {}
+//   "txData": {
+//     "from": "0xdc97a0c27c25e867e7e7b15e83f3297ea8c48c0a",
+//     "to": "0x00000000000000adc04c56bf30ac9d3c0aaf14dc",
+//     "value": "0xaa87bee5380000",
+//     "data":
