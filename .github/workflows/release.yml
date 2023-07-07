@@ -20,10 +20,10 @@ jobs:
           node-version: 'v16.14.0'
 
       - name: Install
-        run: npm install --force
+        run: npm install -g pnpm && pnpm install --force
 
       - name: Build
-        run: npm run build
+        run: npm run build:rollup
 
       - name: Publish to NPM
         run: |

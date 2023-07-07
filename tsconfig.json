@@ -13,7 +13,7 @@
     "forceConsistentCasingInFileNames": true,
     "noEmit": false,
     "esModuleInterop": true,
-    "module": "commonjs",
+    "module": "ESNext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": false,
@@ -21,10 +21,20 @@
     "jsx": "preserve",
     "incremental": true,
     "declaration": true,
+    "declarationDir": "dist/src",
     "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "@/types": ["src/types/index.ts"],
+      "@/abi": ["src/abi/index.ts"],
+      "@/exceptions": ["src/exceptions/index.ts"],
+      "@/http": ["src/http/index.ts"],
+      "@/common": ["src/common/index.ts"],
+    }
   },
   "include": [
     "src",
+    "__test__",
     "./node_modules/types-bn/index.d.ts",
     "./node_modules/types-ethereumjs-util/index.d.ts",
     "./node_modules/https-proxy-agent/index.d.ts"
