@@ -1,5 +1,5 @@
-import {AggregatorAction} from './action';
-import {Order, OrderKind, Orderbook} from './order';
+import { AggregatorAction } from './action';
+import { Order, OrderKind, Orderbook } from './order';
 
 /**
  * cancel orders
@@ -154,7 +154,7 @@ export interface CreateOfferInput {
    * Optional. Set a custom nonce
    */
   nonce?: string;
-  options?: {[key: string]: any};
+  options?: { [key: string]: any };
   /**
    * Orderbook where order is placed. Example: `Reservoir`
    */
@@ -305,12 +305,4 @@ export interface AggregatorInterface {
    * @returns Promise<{@link }>
    */
   fulfillListings(params: FulfillListingsReq): Promise<AggregatorResponse<any>>;
-
-  /**
-   *
-   * - details: {@link }
-   * @param params {@link }
-   * @returns Promise<{@link }>
-   */
-  postOrders(params: PostOrderReq): Promise<PostOrderResponse>;
 }

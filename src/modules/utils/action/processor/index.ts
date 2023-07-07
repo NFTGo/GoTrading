@@ -1,12 +1,12 @@
-import {Utils} from '../../../interface';
-import {AggregateAction} from '../interface';
-import {signApproveInfo} from './sign-listing-approve';
-import {signListingData} from './sign-listing-data';
+import { Utils } from '../../../interface';
+import { AggregateAction } from '../interface';
+import { signApproveInfo } from './sign-listing-approve';
+import { signListingData } from './sign-listing-data';
 
 // order-signature
 export async function orderSignature(action: AggregateAction, utils: Utils) {
-  const {data} = action;
-  const {sign} = data;
+  const { data } = action;
+  const { sign } = data;
   if (!sign) {
     throw new Error('sign is required');
   }
@@ -15,12 +15,9 @@ export async function orderSignature(action: AggregateAction, utils: Utils) {
 }
 
 // nft-approval transaction
-export async function nftApprovalTransaction(
-  action: AggregateAction,
-  utils: Utils
-) {
-  const {data} = action;
-  const {txData, orderIndexes} = data;
+export async function nftApprovalTransaction(action: AggregateAction, utils: Utils) {
+  const { data } = action;
+  const { txData, orderIndexes } = data;
   if (!txData) {
     throw new Error('txData is required');
   }
@@ -31,11 +28,8 @@ export async function nftApprovalTransaction(
   };
 }
 
-export async function acceptListingTransaction(
-  action: AggregateAction,
-  utils: Utils
-) {
-  const {data} = action;
+export async function acceptListingTransaction(action: AggregateAction, utils: Utils) {
+  const { data } = action;
 }
 // fulfill-listing
 // "name": "accept-listing",

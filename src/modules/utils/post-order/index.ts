@@ -1,25 +1,45 @@
-import { defaultAbiCoder, joinSignature, splitSignature } from 'ethers/lib/utils';
+import { splitSignature } from 'ethers/lib/utils';
+import { BASE_URL } from '@/common';
 
-import { ExternalServiceRateLimiter } from '@/common';
-import { RateLimiter } from 'limiter';
-import { BaseException } from '@/exceptions';
-import { PostOrderReq, PostOrderResponse } from '@/types';
-import { OrderKind } from 'src/types/order';
+import { AggregatorApiException, BaseException } from '@/exceptions';
 
+import { IPostOrderHandler } from './utils';
+import * as Models from './utils';
+
+import {
+  EVMChain,
+  HTTPClient,
+  ListingIndexerConfig,
+  AggregatorApiResponse,
+  AggregatorApiStatusResponse,
+  PostOrderReq,
+  // PostOrderResponse,
+  OrderKind,
+} from '@/types';
+import { SeaportV1D5Handler, LooksRareV2Handler, X2Y2Handler } from './handler';
 export class PostOrderHandler {
-  // constructor(private client: any, private apiKeyConfig: any) {
-
-  // }
   private handlers = new Map<OrderKind, IPostOrderHandler>();
 
-  async handle(params: PostOrderReq): Promise<PostOrderResponse> {
+  constructor(private client: HTTPClient, private config: ListingIndexerConfig) {
+    if (config.openSeaApiKeyConfig) {
+      this.handlers.set(OrderKind.SeaportV15, new SeaportV1D5Handler(client, config.openSeaApiKeyConfig));
+    }
+
+    if (config.looksRareApiKeyConfig) {
+      this.handlers.set(OrderKind.LooksRareV2, new LooksRareV2Handler(client, config.looksRareApiKeyConfig));
+    }
+
+    if (config.x2y2ApiKeyConfig) {
+      this.handlers.set(OrderKind.X2Y2, new X2Y2Handler(client, config.x2y2ApiKeyConfig));
+    }
+  }
+
+  async handle(params: PostOrderReq): Promise<any> {
     // given the orderKind, invoke NFTGo developer API or directly post order to marketplace
     if (params.order.kind === OrderKind.Blur) {
-      return new Promise<PostOrderResponse>((resolve, reject) => {
-        this.post<AggregatorApiResponse, PostOrderReq>('/post-order/v1', params).then(res => {
-          resolve(res);
-        });
-      });
+      const res = await this.post<AggregatorApiResponse, PostOrderReq>('/post-order/v1', params);
+      console.info('res', res);
+      return { message: 'blur' };
     } else {
       const signature = params.signature;
       const handler = this.handlers.get(params.order.kind);
@@ -80,6 +100,30 @@ export class PostOrderHandler {
         default:
           throw BaseException.invalidParamError('extraArgs.version', 'unsupported version ' + params.extraArgs.version);
       }
+    }
+  }
+
+  private get headers() {
+    return { 'X-API-KEY': this.config.apiKey, 'X-FROM': 'js_sdk' };
+  }
+
+  private get url() {
+    return (
+      (this.config?.baseUrl ?? BASE_URL) + '/aggregator' + '/v1' + '/' + (this.config?.chain ?? EVMChain.ETH) + '/nft'
+    );
+  }
+
+  private async post<ResData, Req = undefined>(path: string, params: Req) {
+    const response = await this.client.post<AggregatorApiStatusResponse<ResData>, Req>(
+      this.url + path,
+      params,
+      this.headers
+    );
+    const { code, msg, data } = response;
+    if (code === 'SUCCESS') {
+      return data;
+    } else {
+      throw new AggregatorApiException(msg, code, path);
     }
   }
 }

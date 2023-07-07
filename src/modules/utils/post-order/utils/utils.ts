@@ -21,4 +21,4 @@ export enum Network {
   MantleTestnet = 5001,
 }
 
-export type ChainIdToAddress = {[chainId: number]: string};
+export type ChainIdToAddress = { [chainId: number]: string };

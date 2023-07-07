@@ -1,11 +1,11 @@
-import {ApiKeyConfig, HTTPClient, OrderKind} from '@/types';
+import { ApiKeyConfig, HTTPClient, OrderKind } from '@/types';
 import * as Models from './utils';
 
-import {ExternalServiceRateLimiter} from '@/common';
-import {RateLimiter} from 'limiter';
-import {BaseException} from '@/exceptions';
-import {defaultAbiCoder} from 'ethers/lib/utils';
-import {IPostOrderHandler} from './utils';
+import { ExternalServiceRateLimiter } from '@/common';
+import { RateLimiter } from 'limiter';
+import { BaseException } from '@/exceptions';
+import { defaultAbiCoder } from 'ethers/lib/utils';
+import { IPostOrderHandler } from './utils';
 
 export class SeaportV1D5Handler implements IPostOrderHandler {
   protocol = OrderKind.SeaportV15;
@@ -25,10 +25,7 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
     const orderbook = payload.orderbook;
 
     if (!['opensea'].includes(payload.orderbook)) {
-      throw BaseException.invalidParamError(
-        'orderbook',
-        `${this.protocol} only supports opensea`
-      );
+      throw BaseException.invalidParamError('orderbook', `${this.protocol} only supports opensea`);
     }
     const seaportOrder: Models.SeaportV1D5.Types.ListingOrderParams = {
       offerer: order.data.offerer,
@@ -55,12 +52,9 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
             totalOriginalConsiderationItems: order.data.consideration.length,
           },
           signature: order.data.signature,
-          protocol_address:
-            Models.SeaportV1D5.Addresses.Exchange[
-              Models.Utils.Network.Ethereum
-            ],
+          protocol_address: Models.SeaportV1D5.Addresses.Exchange[Models.Utils.Network.Ethereum],
         },
-        {'X-Api-Key': apiKey},
+        { 'X-Api-Key': apiKey },
         true
       );
       return result;
@@ -89,14 +83,10 @@ export class LooksRareV2Handler implements IPostOrderHandler {
     const orderbook = payload.orderbook;
 
     if (!['looks-rare'].includes(orderbook)) {
-      throw BaseException.invalidParamError(
-        'orderbook',
-        `${this.protocol} only supports looks-rare`
-      );
+      throw BaseException.invalidParamError('orderbook', `${this.protocol} only supports looks-rare`);
     }
 
-    const looksrareOrder: Models.LooksRareV2.Types.MakerOrderParams =
-      order.data;
+    const looksrareOrder: Models.LooksRareV2.Types.MakerOrderParams = order.data;
     const apiKey = await this.rateLimiter.getAPIKeyWithRateLimiter();
 
     return this.client.post(
@@ -104,7 +94,7 @@ export class LooksRareV2Handler implements IPostOrderHandler {
       {
         ...looksrareOrder,
       },
-      {'X-Api-Key': apiKey},
+      { 'X-Api-Key': apiKey },
       true
     );
   }
@@ -130,10 +120,7 @@ export class X2Y2Handler implements IPostOrderHandler {
     const orderbook = payload.orderbook;
 
     if (!['x2y2'].includes(orderbook)) {
-      throw BaseException.invalidParamError(
-        'orderbook',
-        `${this.protocol} only supports x2y2`
-      );
+      throw BaseException.invalidParamError('orderbook', `${this.protocol} only supports x2y2`);
     }
 
     const x2y2Order: Models.X2Y2.Types.X2Y2ListingOrderParams = order.data;
@@ -168,6 +155,6 @@ export class X2Y2Handler implements IPostOrderHandler {
       isCollection: order.data.dataMask !== '0x',
     };
 
-    return this.client.post(this.url, orderParams, {'X-Api-Key': apiKey}, true);
+    return this.client.post(this.url, orderParams, { 'X-Api-Key': apiKey }, true);
   }
 }

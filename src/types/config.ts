@@ -21,7 +21,7 @@ export interface ListingIndexerConfig extends Config {
   x2y2ApiKeyConfig: ApiKeyConfig;
 }
 
-type ApiKeyConfig = {
+export type ApiKeyConfig = {
   apiKey: string;
   requestsPerInterval: number;
   interval: number;
