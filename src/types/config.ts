@@ -1,3 +1,5 @@
+import { provider } from 'web3-core';
+
 // # user-land interface , core  should implement this
 export enum EVMChain {
   ETH = 'ETH',
@@ -9,16 +11,14 @@ export interface WalletConfig {
 }
 
 export interface Config {
-  apiKey: string;
+  apiKey?: string;
   chain?: EVMChain;
   baseUrl?: string;
   walletConfig?: WalletConfig;
-}
-
-export interface ListingIndexerConfig extends Config {
-  openSeaApiKeyConfig: ApiKeyConfig;
-  looksRareApiKeyConfig: ApiKeyConfig;
-  x2y2ApiKeyConfig: ApiKeyConfig;
+  web3Provider?: provider;
+  openSeaApiKeyConfig?: ApiKeyConfig;
+  looksRareApiKeyConfig?: ApiKeyConfig;
+  x2y2ApiKeyConfig?: ApiKeyConfig;
 }
 
 export type ApiKeyConfig = {

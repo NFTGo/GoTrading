@@ -11,7 +11,7 @@ export class TransactionActionTask extends ActionTaskTemplate<ActionKind.Transac
   result: TransactionActionTaskResult | null = null;
 
   async execute() {
-    // do real execute
+    // this.processor.processTransactionAction();
     this.result = {
       txData: {
         value: '',
