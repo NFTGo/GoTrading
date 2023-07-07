@@ -7,7 +7,7 @@ export class HTTPClientStable implements HTTPClient {
   fetch<R>(input: RequestInfo | URL, init?: RequestInit | undefined) {
     return new Promise<R>((resolve, reject) => {
       fetch(input, init)
-        .then(async res => {
+        .then(async (res) => {
           if (!isHttpResponseSuccess(res.status)) {
             reject(
               new AggregatorApiException(
@@ -19,10 +19,10 @@ export class HTTPClientStable implements HTTPClient {
           }
           return res.json();
         })
-        .catch(e => {
+        .catch((e) => {
           reject(AggregatorApiException.requestError(input?.toString(), e));
         })
-        .then(res => {
+        .then((res) => {
           if (!res) {
             reject(AggregatorApiException.apiEmptyResponseError(input?.toString()));
           } else {
@@ -37,7 +37,7 @@ export class HTTPClientStable implements HTTPClient {
     let actualUrl = url;
     for (const key in query) {
       if (query[key] instanceof Array) {
-        for (const value of query[key] as Array<any>) {
+        for (const value of query[key] as unknown as Array<any>) {
           value !== null && value !== undefined && params.push(`${key}=${value}`);
         }
       } else {
