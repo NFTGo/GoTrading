@@ -85,12 +85,10 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
           data: {
             collection: attribute.slug,
             isNonFlagged: isNonFlagged || undefined,
-            attributes: [
-              {
-                key: attribute.key,
-                value: attribute.value,
-              },
-            ],
+            trait: {
+              key: attribute.key,
+              value: attribute.value,
+            },
           },
         };
       } else if (slug && isNonFlagged) {
