@@ -4,7 +4,7 @@ import { ActionTaskTemplate } from './template';
 export class PassThroughActionTask extends ActionTaskTemplate<ActionKind.PassThrough> {
   result: null = null;
 
-  async execute() {
+  execute = async () => {
     // do real execute
     let pre = this.pre;
     const data: Record<string, any> = {};
@@ -14,5 +14,5 @@ export class PassThroughActionTask extends ActionTaskTemplate<ActionKind.PassThr
       pre = pre.pre;
     }
     this.status = 'success';
-  }
+  };
 }

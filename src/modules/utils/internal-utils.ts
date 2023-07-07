@@ -66,7 +66,7 @@ export class InternalAggregatorUtils implements InternalUtils {
   private PUNK_BOUGHT_TOPIC: string;
 
   createActionExecutor?: (actions: AggregatorAction[]) => ActionTaskExecutor;
-  inspectTransaction({ hash, interval = 1000 }: InspectTransactionParams) {
+  inspectTransaction = ({ hash, interval = 1000 }: InspectTransactionParams) => {
     const transactionInstance = new SendTransaction();
     const intervalId = setInterval(async () => {
       try {
@@ -83,9 +83,9 @@ export class InternalAggregatorUtils implements InternalUtils {
       }
     }, interval);
     return transactionInstance;
-  }
+  };
 
-  decodeLog(log: Log) {
+  decodeLog = (log: Log) => {
     if (!log) {
       throw UtilsException.decodeLogError('log is empty');
     }
@@ -176,9 +176,9 @@ export class InternalAggregatorUtils implements InternalUtils {
     } catch (error) {
       throw UtilsException.decodeLogError(error?.toString());
     }
-  }
+  };
 
-  sendSafeModeTransaction(transactionConfig: Partial<ethers.Transaction>) {
+  sendSafeModeTransaction = (transactionConfig: Partial<ethers.Transaction>) => {
     const transactionInstance = new SendTransaction();
     // safe mode need more transaction detail than normal, including nonce, gasLimit, type and etc.
     // https://docs.ethers.io/v5/api/providers/types/#providers-TransactionRequest
@@ -243,9 +243,9 @@ export class InternalAggregatorUtils implements InternalUtils {
       });
     });
     return transactionInstance;
-  }
+  };
 
-  sendTransaction(transactionConfig: TransactionConfig) {
+  sendTransaction = (transactionConfig: TransactionConfig) => {
     if (
       this.walletConfig?.address &&
       transactionConfig?.from?.toString?.()?.toLowerCase?.() !== this.walletConfig?.address?.toLowerCase?.()
@@ -309,9 +309,9 @@ export class InternalAggregatorUtils implements InternalUtils {
         }
       });
     return transactionInstance;
-  }
+  };
 
-  async signMessage(message: string): Promise<string> {
+  signMessage = async (message: string): Promise<string> => {
     if ((globalThis as any).ethereum) {
       const provider = (globalThis as any).ethereum;
       const accounts = await provider.request({ method: 'eth_requestAccounts' });
@@ -320,16 +320,14 @@ export class InternalAggregatorUtils implements InternalUtils {
       return signature;
     } else {
       // server side
-      console.info('acc', this._web3Instance.eth.accounts);
-      console.info('this.walletConfig', this.walletConfig);
       const signResult = this._web3Instance.eth.accounts.sign(message, this.walletConfig?.privateKey as string);
       return signResult.signature;
     }
-  }
+  };
 
-  getSigner() {
+  getSigner = () => {
     return this._ethersSigner;
-  }
+  };
 }
 
 class SendTransaction implements Transaction {

@@ -10,7 +10,7 @@ type TransactionActionTaskResult = {
 export class TransactionActionTask extends ActionTaskTemplate<ActionKind.Transaction> {
   result: TransactionActionTaskResult | null = null;
 
-  async execute() {
+  execute = async () => {
     // this.processor.processTransactionAction();
     this.result = {
       txData: {
@@ -19,5 +19,5 @@ export class TransactionActionTask extends ActionTaskTemplate<ActionKind.Transac
     };
 
     this.status = 'success';
-  }
+  };
 }

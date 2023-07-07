@@ -19,12 +19,7 @@ import {
 } from '@/types';
 
 export class Aggregator implements AggregatorInterface {
-  constructor(private client: HTTPClient, private config: Config, private utils: Utils) {
-    this.cancelOrders.bind(this);
-    this.createListings.bind(this);
-    this.createOffers.bind(this);
-    this.fulfillOffers.bind(this);
-  }
+  constructor(private client: HTTPClient, private config: Config, private utils: Utils) {}
 
   /**
    *
@@ -32,12 +27,12 @@ export class Aggregator implements AggregatorInterface {
    * @param params {@link }
    * @returns Promise<{@link }>
    */
-  async createOffers(params: CreateOffersReq): Promise<AggregatorResponse> {
+  createOffers = async (params: CreateOffersReq): Promise<AggregatorResponse> => {
     const res = await this.post<AggregatorApiResponse, CreateOffersReq>('/create-offers/v1', params);
     const { actions } = res;
 
     return this.response(actions);
-  }
+  };
 
   /**
    *
@@ -45,11 +40,11 @@ export class Aggregator implements AggregatorInterface {
    * @param params {@link any}
    * @returns Promise<{@link any}>
    */
-  async fulfillOffers(params: FulfillOffersReq): Promise<AggregatorResponse> {
+  fulfillOffers = async (params: FulfillOffersReq): Promise<AggregatorResponse> => {
     const res = await this.post<AggregatorApiResponse, FulfillOffersReq>('/aggregate-accept-offers', params);
     const { actions } = res;
     return this.response(actions);
-  }
+  };
 
   /**
    *
@@ -57,12 +52,12 @@ export class Aggregator implements AggregatorInterface {
    * @param params {@link any}
    * @returns Promise<{@link any}>
    */
-  async cancelOrders(params: CancelOrdersReq): Promise<AggregatorResponse> {
+  cancelOrders = async (params: CancelOrdersReq): Promise<AggregatorResponse> => {
     const res = await this.post<AggregatorApiResponse, CancelOrdersReq>('/cancel-orders', params);
     const { actions } = res;
 
     return this.response(actions);
-  }
+  };
 
   /**
    *
@@ -70,12 +65,12 @@ export class Aggregator implements AggregatorInterface {
    * @param params {@link any}
    * @returns Promise<{@link any}>
    */
-  async createListings(params: CreateListingsReq): Promise<AggregatorResponse> {
+  createListings = async (params: CreateListingsReq): Promise<AggregatorResponse> => {
     const data = await this.post<AggregatorApiResponse, CreateListingsReq>('/create-listings/v1', params);
     const { actions } = data;
 
     return this.response(actions);
-  }
+  };
 
   /**
    * buy nfts
@@ -83,12 +78,12 @@ export class Aggregator implements AggregatorInterface {
    * @param params {@link FulfillListingsReq}
    * @returns Promise<{@link }>
    */
-  async fulfillListings(params: FulfillListingsReq): Promise<AggregatorResponse> {
+  fulfillListings = async (params: FulfillListingsReq): Promise<AggregatorResponse> => {
     const data = await this.post<AggregatorApiResponse, FulfillListingsReq>('/aggregate-accept-listings', params);
     const { actions } = data;
 
     return this.response(actions);
-  }
+  };
 
   private get headers(): Record<string, string> {
     return { 'X-API-KEY': this.config.apiKey!, 'X-FROM': 'js_sdk' };
@@ -115,7 +110,8 @@ export class Aggregator implements AggregatorInterface {
   }
 
   private response(actions: AggregatorAction<ActionKind>[]): AggregatorResponse {
-    const executeActions = this.utils.createActionExecutor(actions).execute;
+    const executor = this.utils.createActionExecutor(actions);
+    const executeActions = executor.execute;
     const response: AggregatorResponse = {
       actions,
       executeActions,
