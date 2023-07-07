@@ -36,7 +36,6 @@ export class AggregateActionProcessor implements ActionProcessor {
     }
     if (name === 'nft-approval') {
       await signInfo(txData, this.utils.sendTransaction);
-      return Promise.resolve(true);
     } else if (name === 'accept-listing') {
       if (safeMode) {
         await signInfo(txData, this.utils.sendSafeModeTransaction);
@@ -46,7 +45,6 @@ export class AggregateActionProcessor implements ActionProcessor {
       // other name case: currency-wrapping currency-approval
     } else {
       await signInfo(txData, this.utils.sendTransaction);
-      return Promise.resolve(true);
     }
   }
   async processPassThroughAction(

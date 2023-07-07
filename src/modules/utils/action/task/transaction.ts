@@ -3,7 +3,7 @@ import { ActionTaskTemplate } from './template';
 
 export class TransactionActionTask extends ActionTaskTemplate<ActionKind.Transaction> {
   protected run = async () => {
-    this.processor.processTransactionAction(this.action);
+    await this.processor.processTransactionAction(this.action);
 
     return null;
   };
