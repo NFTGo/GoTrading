@@ -97,14 +97,18 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
         schema = {
           kind: 'collection-non-flagged',
           data: {
-            collection: slug,
+            collection: {
+              slug
+            },
           },
         };
       } else if (slug) {
         schema = {
           kind: 'collection',
           data: {
-            collection: slug,
+            collection: {
+              slug
+            },
           },
         };
       } else if (tokenSetId) {
