@@ -1,6 +1,6 @@
-import {BASE_URL} from 'src/common';
-import {BaseException} from '@/exceptions';
-import {EVMChain, HTTPClient, Config} from '@/types';
+import { BASE_URL } from '@/common';
+import { BaseException } from '@/exceptions';
+import { EVMChain, HTTPClient, Config } from '@/types';
 
 interface BlurAuthChallenge {
   expiresOn: string;
@@ -33,7 +33,7 @@ export class BlurMarketAuthenticator implements BlurAuthServiceImpl {
     this.config = config;
   }
   private get headers() {
-    return {'X-API-KEY': this.config.apiKey, 'X-FROM': 'js_sdk'};
+    return { 'X-API-KEY': this.config.apiKey, 'X-FROM': 'js_sdk' } as Record<string, string>;
   }
 
   private get url() {
@@ -54,10 +54,7 @@ export class BlurMarketAuthenticator implements BlurAuthServiceImpl {
   }
 
   private async getAuthChallenge(address: string) {
-    const res = await this.httpClient.post<
-      BlurAuthChallenge,
-      {address: string}
-    >(
+    const res = await this.httpClient.post<BlurAuthChallenge, { address: string }>(
       this.url + '/auth/challenge',
       {
         address,
@@ -66,13 +63,12 @@ export class BlurMarketAuthenticator implements BlurAuthServiceImpl {
     );
     return res;
   }
-  private async signBlurAuthChallenge(
-    params: BlurAuthLoginParams
-  ): Promise<string> {
-    const res = await this.httpClient.post<
-      {accessToken: string},
-      BlurAuthLoginParams
-    >(this.url + '/auth/login', params, this.headers);
+  private async signBlurAuthChallenge(params: BlurAuthLoginParams): Promise<string> {
+    const res = await this.httpClient.post<{ accessToken: string }, BlurAuthLoginParams>(
+      this.url + '/auth/login',
+      params,
+      this.headers
+    );
     return res?.accessToken;
   }
   async authorize(address: string, force = false) {
@@ -83,7 +79,7 @@ export class BlurMarketAuthenticator implements BlurAuthServiceImpl {
       return this.accessToken;
     }
     const challenge = await this.getAuthChallenge(address);
-    const {message} = challenge;
+    const { message } = challenge;
     const signature = await this.getAuthSignature(message);
     const token = await this.signBlurAuthChallenge({
       ...challenge,

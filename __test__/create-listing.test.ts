@@ -1,18 +1,10 @@
-import {initWeb3Provider, initConfig, walletConfig} from './config';
-import {Aggregator} from '..';
-import {AggregatorUtils} from '../../../utils';
-import {HTTPClientStable} from '../../../http-client';
-import {OrderKind, Orderbook} from '../../interface';
-import {
-  getCurrentTimeStamp,
-  getX2Y2Order,
-  getOpenSeaOrder,
-  getWeiPrice,
-  getBlurOrder,
-  getLooksRareOrder,
-} from './utils';
-import {setGlobalDispatcher, ProxyAgent} from 'undici';
-import {BlurMarketAuthenticator} from '../../../utils/blur-auth';
+import { initConfig } from './common/config';
+import { Aggregator } from '../src/modules/aggregator';
+import { createUtils } from '../src/modules/utils';
+import { HTTPClientStable } from '../src/http';
+import { getX2Y2Order, getOpenSeaOrder, getBlurOrder, getLooksRareOrder } from './common/utils';
+import { setGlobalDispatcher, ProxyAgent } from 'undici';
+import { BlurMarketAuthenticator } from '../src/modules/utils/blur-auth';
 
 const HTTP_PROXY = 'http://127.0.0.1:9999';
 
@@ -20,8 +12,7 @@ const proxyAgent = new ProxyAgent(HTTP_PROXY);
 setGlobalDispatcher(proxyAgent);
 
 const config = initConfig();
-const provider = initWeb3Provider();
-const utils = new AggregatorUtils(provider, walletConfig);
+const utils = createUtils(config);
 const httpClient = new HTTPClientStable();
 
 const aggregator = new Aggregator(httpClient, config, utils);
@@ -47,53 +38,30 @@ const orders = [
 
 const blurOrders = [getBlurOrder(mock721Order)];
 
-describe('create listing main process', () => {
-  let executeAllActions = () => {};
-  test('should return create listing actions', async () => {
-    const maker = walletConfig.address;
-    const res = await aggregator.createListings({
-      maker,
-      params: orders,
-    });
-    const {actions, executeActions} = res;
-    executeAllActions = executeActions;
-    expect(executeActions).toEqual(expect.any(Function));
-    expect(actions).toEqual(expect.any(Array));
-  });
-  // test('should execute all actions', async () => {
-  //   await expect(executeAllActions()).resolves.toEqual(true);
-  // });
-});
-
-describe('[blur order] create listing main process', () => {
+describe('[create listing] interface result test', () => {
   let blurAuthToken = '';
+  const address = config.walletConfig?.address || '';
   beforeAll(async () => {
     console.log('getting blur auth token...');
-    const authenticator = new BlurMarketAuthenticator(
-      utils,
-      httpClient,
-      config
-    );
-    blurAuthToken = await authenticator.authorize(walletConfig.address);
+    const authenticator = new BlurMarketAuthenticator(utils, httpClient, config);
+    blurAuthToken = await authenticator.authorize(address);
     console.info('blurAuthToken', blurAuthToken);
     // 执行初始化操作或设置步骤
   });
-  test('should return create listing actions', async () => {
-    const maker = walletConfig.address;
+  test('[blur order] blur order response', async () => {
+    const maker = address;
     const res = await aggregator.createListings({
       maker,
       blurAuth: blurAuthToken,
       params: blurOrders,
     });
-    const {actions, executeActions} = res;
+    const { actions, executeActions } = res;
     expect(executeActions).toEqual(expect.any(Function));
     expect(actions).toEqual(expect.any(Array));
   });
-});
 
-describe('[error test] interface create listing', () => {
   test('[empty blur token] listing should return error when blur token is empty', async () => {
-    const maker = walletConfig.address;
+    const maker = address;
     const func = async () => {
       await aggregator.createListings({
         maker,
@@ -102,6 +70,7 @@ describe('[error test] interface create listing', () => {
     };
     await expect(func()).rejects.toThrow();
   });
+
   test('[incorrect maker] listing should return error when maker is incorrect', async () => {
     const maker = '0x3e24914f74Cd66e3ee7d1F066A880A6c69404E13';
     const func = async () => {
@@ -112,4 +81,21 @@ describe('[error test] interface create listing', () => {
     };
     await expect(func()).rejects.toThrow();
   });
+});
+
+describe('[create listing] execute actions test', () => {
+  test('should return create listing actions', async () => {
+    const maker = config.walletConfig?.address || '';
+    const res = await aggregator.createListings({
+      maker,
+      params: orders,
+    });
+    const { actions, executeActions } = res;
+    const result = await executeActions();
+    expect(executeActions).toEqual(expect.any(Function));
+    expect(actions).toEqual(expect.any(Array));
+  });
+  // test('should execute all actions', async () => {
+  //   await expect(executeAllActions()).resolves.toEqual(true);
+  // });
 });

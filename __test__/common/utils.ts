@@ -1,4 +1,4 @@
-import {OrderKind, Orderbook} from '../../interface';
+import { OrderKind, Orderbook } from '@/types';
 
 const BigNumber = require('bignumber.js');
 

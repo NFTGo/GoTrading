@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-import {EVMChain, Config, WalletConfig} from '../../../interface';
+import { EVMChain, Config } from '@/types';
 import Web3 from 'web3';
 
 // const DefaultProviderUrl = 'https://cloudflare-eth.com/';
@@ -24,19 +24,19 @@ const x2y2Api = {
 };
 
 export function initConfig() {
+  const provider = initWeb3Provider();
   const config: Config = {
     apiKey: process.env.API_KEY || '', // Replace with your own API Key.
     baseUrl: 'https://data-api.nftgo.dev',
-    // chain: EVMChain.ETH,
     chain: EVMChain.ETH,
+    web3Provider: provider,
+    walletConfig: {
+      address: process.env.ADDRESS || '',
+      privateKey: process.env.PRIVATE_KEY || '',
+    },
   };
   return config;
 }
-
-export const walletConfig: WalletConfig = {
-  address: process.env.ADDRESS || '',
-  privateKey: process.env.PRIVATE_KEY || '',
-};
 
 export function initWeb3Provider(providerUrl = DefaultProviderUrl) {
   const web3Provider = new Web3.providers.HttpProvider(providerUrl);

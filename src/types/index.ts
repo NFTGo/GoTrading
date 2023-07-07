@@ -6,3 +6,4 @@ export * from './order';
 export * from './go-trading';
 export * from './http';
 export * from './config';
+export * from './post-order';

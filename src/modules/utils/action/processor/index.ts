@@ -1,4 +1,4 @@
-import { ActionKind, ActionProcessor, AggregatorAction, Config, InternalUtils, SignatureActionInfo } from '@/types';
+import { ActionProcessor, AggregatorAction, Config, InternalUtils, SignatureActionInfo } from '@/types';
 import { signApproveInfo, signListingData } from './signature';
 import { PostOrderHandler } from '../../post-order';
 
@@ -38,6 +38,8 @@ export class AggregateActionProcessor implements ActionProcessor {
   async processPassThroughAction(action: AggregatorAction) {
     const { name, data } = action;
     if (name === 'pass-through') {
+      const postOrderResult = this.postOrderHandler.handle(data);
+      return postOrderResult;
     }
     return Promise.resolve({
       status: 'success',
