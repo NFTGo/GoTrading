@@ -1,9 +1,9 @@
-import { PassThroughActionInfo, SignatureActionInfo, TransactionActionInfo } from './action';
+import { AggregatorAction, PassThroughActionInfo, SignatureActionInfo, TransactionActionInfo } from './action';
 
 export interface ActionProcessor {
-  processSignatureAction: (data: SignatureActionInfo) => Promise<string>;
+  processSignatureAction: (action: AggregatorAction, params?: any) => Promise<any>;
 
-  processTransactionAction: (data: TransactionActionInfo) => Promise<string>;
+  processTransactionAction: (action: AggregatorAction, params?: any) => Promise<any>;
 
-  processPassThroughAction: (data: PassThroughActionInfo) => Promise<string>;
+  processPassThroughAction: (action: AggregatorAction, params?: any) => Promise<any>;
 }

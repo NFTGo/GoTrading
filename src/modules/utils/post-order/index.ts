@@ -9,28 +9,30 @@ import * as Models from './utils';
 import {
   EVMChain,
   HTTPClient,
-  ListingIndexerConfig,
+  Config,
   AggregatorApiResponse,
   AggregatorApiStatusResponse,
   PostOrderReq,
-  // PostOrderResponse,
+  PostOrderResponse,
   OrderKind,
 } from '@/types';
 import { SeaportV1D5Handler, LooksRareV2Handler, X2Y2Handler } from './handler';
+import { HTTPClientStable } from '@/http';
 export class PostOrderHandler {
   private handlers = new Map<OrderKind, IPostOrderHandler>();
+  private client: HTTPClient = new HTTPClientStable();
 
-  constructor(private client: HTTPClient, private config: ListingIndexerConfig) {
+  constructor(private config: Config) {
     if (config.openSeaApiKeyConfig) {
-      this.handlers.set(OrderKind.SeaportV15, new SeaportV1D5Handler(client, config.openSeaApiKeyConfig));
+      this.handlers.set(OrderKind.SeaportV15, new SeaportV1D5Handler(this.client, config.openSeaApiKeyConfig));
     }
 
     if (config.looksRareApiKeyConfig) {
-      this.handlers.set(OrderKind.LooksRareV2, new LooksRareV2Handler(client, config.looksRareApiKeyConfig));
+      this.handlers.set(OrderKind.LooksRareV2, new LooksRareV2Handler(this.client, config.looksRareApiKeyConfig));
     }
 
     if (config.x2y2ApiKeyConfig) {
-      this.handlers.set(OrderKind.X2Y2, new X2Y2Handler(client, config.x2y2ApiKeyConfig));
+      this.handlers.set(OrderKind.X2Y2, new X2Y2Handler(this.client, config.x2y2ApiKeyConfig));
     }
   }
 
@@ -104,7 +106,7 @@ export class PostOrderHandler {
   }
 
   private get headers() {
-    return { 'X-API-KEY': this.config.apiKey, 'X-FROM': 'js_sdk' };
+    return { 'X-API-KEY': this.config.apiKey, 'X-FROM': 'js_sdk' } as Record<string, string>;
   }
 
   private get url() {

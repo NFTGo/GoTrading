@@ -1,16 +1,12 @@
-import {SignData} from '../interface';
-import {arrayify} from 'ethers/lib/utils';
-import {Signer} from 'ethers';
-import {TypedDataSigner} from '@ethersproject/abstract-signer';
+import { SignData } from '@/types';
+import { arrayify } from 'ethers/lib/utils';
+import { Signer } from 'ethers';
+import { TypedDataSigner } from '@ethersproject/abstract-signer';
 
-export async function signListingData(
-  data: SignData,
-  signer: Signer & TypedDataSigner
-): Promise<string> {
-  const {domain, types, value} = data;
+export async function signListingData(data: SignData, signer: Signer & TypedDataSigner): Promise<string> {
+  const { domain, types, value } = data;
 
-  let signature =
-    '0x0000000000000000000000000000000000000000000000000000000000000000';
+  let signature = '0x0000000000000000000000000000000000000000000000000000000000000000';
   if (signer) {
     if (data.signatureKind === 'eip191') {
       if (data.message?.match(/0x[0-9a-fA-F]{64}/)) {

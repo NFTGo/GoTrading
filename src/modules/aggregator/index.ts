@@ -89,7 +89,7 @@ export class Aggregator implements AggregatorInterface {
     return {
       actions: actions,
       executeActions: () => {
-        return Promise.resolve(true);
+        return this.utils.createActionExecutor(actions).execute();
       },
     };
   }

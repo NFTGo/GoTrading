@@ -1,14 +1,11 @@
-import {TransactionConfig} from 'web3-core';
-import {Transaction} from '../../../interface';
+import { TransactionConfig } from 'web3-core';
+import { Transaction } from '@/types';
 
 interface TransactionExecutor {
   sendTransaction: (params: TransactionConfig) => Transaction;
 }
 
-export async function signApproveInfo(
-  params: TransactionConfig,
-  executor: TransactionExecutor
-): Promise<boolean> {
+export async function signApproveInfo(params: TransactionConfig, executor: TransactionExecutor): Promise<boolean> {
   return new Promise((resolve, reject) => {
     executor
       .sendTransaction(params)
