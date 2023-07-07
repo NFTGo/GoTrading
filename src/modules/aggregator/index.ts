@@ -14,6 +14,8 @@ import {
   CreateOffersReq,
   FulfillListingsReq,
   FulfillOffersReq,
+  AggregatorAction,
+  ActionKind,
 } from '@/types';
 
 export class Aggregator implements AggregatorInterface {
@@ -34,12 +36,7 @@ export class Aggregator implements AggregatorInterface {
     const res = await this.post<AggregatorApiResponse, CreateOffersReq>('/create-offers/v1', params);
     const { actions } = res;
 
-    return {
-      actions,
-      executeActions: () => {
-        return Promise.resolve(true);
-      },
-    };
+    return this.response(actions);
   }
 
   /**
@@ -51,12 +48,7 @@ export class Aggregator implements AggregatorInterface {
   async fulfillOffers(params: FulfillOffersReq): Promise<AggregatorResponse> {
     const res = await this.post<AggregatorApiResponse, FulfillOffersReq>('/aggregate-accept-offers', params);
     const { actions } = res;
-    return {
-      actions,
-      executeActions: () => {
-        return Promise.resolve(true);
-      },
-    };
+    return this.response(actions);
   }
 
   /**
@@ -68,12 +60,8 @@ export class Aggregator implements AggregatorInterface {
   async cancelOrders(params: CancelOrdersReq): Promise<AggregatorResponse> {
     const res = await this.post<AggregatorApiResponse, CancelOrdersReq>('/cancel-orders', params);
     const { actions } = res;
-    return {
-      actions,
-      executeActions: () => {
-        return Promise.resolve(true);
-      },
-    };
+
+    return this.response(actions);
   }
 
   /**
@@ -86,12 +74,7 @@ export class Aggregator implements AggregatorInterface {
     const data = await this.post<AggregatorApiResponse, CreateListingsReq>('/create-listings/v1', params);
     const { actions } = data;
 
-    return {
-      actions: actions,
-      executeActions: () => {
-        return this.utils.createActionExecutor(actions).execute();
-      },
-    };
+    return this.response(actions);
   }
 
   /**
@@ -104,12 +87,7 @@ export class Aggregator implements AggregatorInterface {
     const data = await this.post<AggregatorApiResponse, FulfillListingsReq>('/aggregate-accept-listings', params);
     const { actions } = data;
 
-    return {
-      actions,
-      executeActions: () => {
-        return Promise.resolve(true);
-      },
-    };
+    return this.response(actions);
   }
 
   private get headers(): Record<string, string> {
@@ -134,5 +112,15 @@ export class Aggregator implements AggregatorInterface {
     } else {
       throw new AggregatorApiException(msg, code, path);
     }
+  }
+
+  private response(actions: AggregatorAction<ActionKind>[]): AggregatorResponse {
+    const executeActions = this.utils.createActionExecutor(actions).execute;
+    const response: AggregatorResponse = {
+      actions,
+      executeActions,
+    };
+
+    return response;
   }
 }

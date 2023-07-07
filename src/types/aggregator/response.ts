@@ -1,5 +1,4 @@
-import { ActionKind, AggregatorAction } from '../action';
-import { Utils } from '../utils';
+import { ActionKind, ActionTaskExecutor, AggregatorAction } from '../action';
 
 export interface AggregatorApiResponse {
   actions: AggregatorAction<ActionKind>[];
@@ -7,7 +6,7 @@ export interface AggregatorApiResponse {
 
 export interface AggregatorResponse {
   actions: AggregatorAction<ActionKind>[];
-  executeActions: Utils['createActionExecutor'];
+  executeActions: ActionTaskExecutor['execute'];
 }
 
 export interface AggregatorApiStatusResponse<T> {

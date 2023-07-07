@@ -1,4 +1,5 @@
 import { OrderKind, Orderbook } from './order';
+import { SafeAny } from './safe-any';
 
 /**
  * post order (listings & offers)
@@ -18,7 +19,7 @@ export interface PostOrderReq {
   };
   isNonFlagged?: boolean;
   order: {
-    data: any;
+    data: SafeAny;
     kind: OrderKind;
   };
   orderbook: Orderbook;
