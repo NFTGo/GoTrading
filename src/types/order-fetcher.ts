@@ -100,9 +100,9 @@ export interface OfferDTO {
 
 export interface GetOrdersByContractReq {
   contractAddress: string;
-  includePrivate: boolean;
-  limit: number;
-  offset: number;
+  includePrivate?: boolean;
+  limit?: number;
+  offset?: number;
   orderType: OrderType;
 }
 
