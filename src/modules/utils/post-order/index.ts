@@ -1,10 +1,10 @@
-import {defaultAbiCoder, joinSignature, splitSignature} from 'ethers/lib/utils';
+import { defaultAbiCoder, joinSignature, splitSignature } from 'ethers/lib/utils';
 
-import {ExternalServiceRateLimiter} from '@/common';
-import {RateLimiter} from 'limiter';
-import {BaseException} from '@/exceptions';
-import {PostOrderReq, PostOrderResponse} from '@/types';
-import {OrderKind} from 'src/types/order';
+import { ExternalServiceRateLimiter } from '@/common';
+import { RateLimiter } from 'limiter';
+import { BaseException } from '@/exceptions';
+import { PostOrderReq, PostOrderResponse } from '@/types';
+import { OrderKind } from 'src/types/order';
 
 export interface IPostOrderHandler {
   protocol: OrderKind;
@@ -23,10 +23,7 @@ export class PostOrderHandler {
     // given the orderKind, invoke NFTGo developer API or directly post order to marketplace
     if (params.order.kind === OrderKind.Blur) {
       return new Promise<PostOrderResponse>((resolve, reject) => {
-        this.post<AggregatorApiResponse, PostOrderReq>(
-          '/post-order/v1',
-          params
-        ).then(res => {
+        this.post<AggregatorApiResponse, PostOrderReq>('/post-order/v1', params).then(res => {
           resolve(res);
         });
       });
@@ -34,17 +31,14 @@ export class PostOrderHandler {
       const signature = params.signature;
       const handler = this.handlers.get(params.order.kind);
       if (!handler) {
-        throw BaseException.invalidParamError(
-          'order.kind',
-          'unsupported orderKind ' + params.order.kind
-        );
+        throw BaseException.invalidParamError('order.kind', 'unsupported orderKind ' + params.order.kind);
       }
 
       switch (params.extraArgs.version) {
         case 'v3':
           if (signature) {
             try {
-              const {v, r, s} = splitSignature(signature);
+              const { v, r, s } = splitSignature(signature);
               params.order.data = {
                 ...params.order.data,
                 signature,
@@ -54,10 +48,7 @@ export class PostOrderHandler {
               };
               // TODO: need to await?
             } catch (e) {
-              throw BaseException.invalidParamError(
-                'signature',
-                'invalid signature ' + signature
-              );
+              throw BaseException.invalidParamError('signature', 'invalid signature ' + signature);
             }
           }
           handler.handle(params.order);
@@ -65,16 +56,15 @@ export class PostOrderHandler {
         case 'v4':
           if (signature) {
             try {
-              const {v, r, s} = splitSignature(signature);
+              const { v, r, s } = splitSignature(signature);
 
               if (params.bulkData?.kind === 'seaport-v1.5') {
                 // Encode the merkle proof of inclusion together with the signature
-                params.order.data.signature =
-                  Models.SeaportV1D5.Utils.encodeBulkOrderProofAndSignature(
-                    params.bulkData.data.orderIndex,
-                    params.bulkData.data.merkleProof,
-                    signature
-                  );
+                params.order.data.signature = Models.SeaportV1D5.Utils.encodeBulkOrderProofAndSignature(
+                  params.bulkData.data.orderIndex,
+                  params.bulkData.data.merkleProof,
+                  signature
+                );
               } else {
                 // If the signature is provided via query parameters, use it
                 params.order.data = {
@@ -89,19 +79,13 @@ export class PostOrderHandler {
                 };
               }
             } catch (e: any) {
-              throw BaseException.invalidParamError(
-                'signature',
-                'invalid signature ' + signature
-              );
+              throw BaseException.invalidParamError('signature', 'invalid signature ' + signature);
             }
           }
           handler.handle(params.order);
           break;
         default:
-          throw BaseException.invalidParamError(
-            'extraArgs.version',
-            'unsupported version ' + params.extraArgs.version
-          );
+          throw BaseException.invalidParamError('extraArgs.version', 'unsupported version ' + params.extraArgs.version);
       }
     }
   }

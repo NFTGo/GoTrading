@@ -1,5 +1,5 @@
-import {ActionKind} from '@/types';
-import {ActionTaskTemplate} from './template';
+import { ActionKind } from '@/types';
+import { ActionTaskTemplate } from './template';
 
 type TransactionActionTaskResult = {
   txData: {

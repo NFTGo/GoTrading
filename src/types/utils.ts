@@ -1,10 +1,9 @@
-import {ActionTaskExecutor, AggregatorAction} from './action';
-import {ethers} from 'ethers';
-import {Log, TransactionConfig, TransactionReceipt} from 'web3-core';
+import { ActionTaskExecutor, AggregatorAction } from './action';
+import { ethers } from 'ethers';
+import { Log, TransactionConfig, TransactionReceipt } from 'web3-core';
 
-export interface Utils {
-  createActionExecutor(actions: AggregatorAction[]): ActionTaskExecutor;
-
+export interface InternalUtils {
+  createActionExecutor?: (actions: AggregatorAction[]) => ActionTaskExecutor;
   /**
    * Decode transaction log, return contract, token id, trading amount, buyer
    * - details: {@link }
@@ -19,9 +18,7 @@ export interface Utils {
    * @param transactionConfig {@link https://docs.ethers.io/v5/api/providers/types/#providers-TransactionRequest} transaction config
    * @returns transaction {@link Transaction}
    */
-  sendSafeModeTransaction(
-    transactionConfig: Partial<ethers.Transaction>
-  ): Transaction;
+  sendSafeModeTransaction(transactionConfig: Partial<ethers.Transaction>): Transaction;
   /**
    * Send transaction
    * - details: {@link }
@@ -44,7 +41,11 @@ export interface Utils {
   getSigner(): any;
 }
 
-interface DecodeLogRes {
+export interface Utils extends InternalUtils {
+  createActionExecutor(actions: AggregatorAction[]): ActionTaskExecutor;
+}
+
+export interface DecodeLogRes {
   contract?: string;
   tokenId?: string;
   amount?: number;
@@ -52,7 +53,7 @@ interface DecodeLogRes {
   to?: string;
 }
 
-interface Transaction {
+export interface Transaction {
   on(type: 'transactionHash', handler: TransactionHashHandler): Transaction;
 
   on(type: 'receipt', handler: ReceiptHandler): Transaction;
@@ -66,7 +67,7 @@ interface Transaction {
   finally(handler: FinallyHandler): void;
 }
 
-interface DecodeLogRes {
+export interface DecodeLogRes {
   contract?: string;
   tokenId?: string;
   amount?: number;
@@ -74,44 +75,15 @@ interface DecodeLogRes {
   to?: string;
 }
 
-interface InspectTransactionParams {
+export interface InspectTransactionParams {
   hash: string;
   interval?: number; // ms, 1000 as default
 }
 
-type TransactionHashHandler = ((hash: string) => void) | null | undefined;
+export type TransactionHashHandler = ((hash: string) => void) | null | undefined;
 
-type ReceiptHandler =
-  | ((receipt: TransactionReceipt) => void)
-  | null
-  | undefined;
-type ErrorHandler = ((error: Error) => void) | null | undefined;
+export type ReceiptHandler = ((receipt: TransactionReceipt) => void) | null | undefined;
 
-type FinallyHandler = (() => void) | null | undefined;
+export type ErrorHandler = ((error: Error) => void) | null | undefined;
 
-interface Transaction {
-  on(type: 'transactionHash', handler: TransactionHashHandler): Transaction;
-
-  on(type: 'receipt', handler: ReceiptHandler): Transaction;
-
-  on(type: 'error', handler: ErrorHandler): Transaction;
-
-  on(
-    type: 'error' | 'receipt' | 'transactionHash',
-    handler: (receipt: Error | TransactionReceipt | string | object) => void
-  ): Transaction;
-  finally(handler: FinallyHandler): void;
-}
-
-interface DecodeLogRes {
-  contract?: string;
-  tokenId?: string;
-  amount?: number;
-  is1155?: boolean;
-  to?: string;
-}
-
-interface InspectTransactionParams {
-  hash: string;
-  interval?: number; // ms, 1000 as default
-}
+export type FinallyHandler = (() => void) | null | undefined;

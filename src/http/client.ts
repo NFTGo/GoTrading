@@ -1,6 +1,6 @@
-import {AggregatorApiException} from './exceptions';
+import { AggregatorApiException } from '@/exceptions';
 
-import {HTTPClient} from './interface';
+import { HTTPClient } from '@/types';
 
 export class HTTPClientStable implements HTTPClient {
   constructor() {}
@@ -12,9 +12,7 @@ export class HTTPClientStable implements HTTPClient {
             reject(
               new AggregatorApiException(
                 res.status,
-                res.statusText?.length > 0
-                  ? JSON.stringify(await res.json())
-                  : res.statusText,
+                res.statusText?.length > 0 ? JSON.stringify(await res.json()) : res.statusText,
                 res.url
               )
             );
@@ -26,9 +24,7 @@ export class HTTPClientStable implements HTTPClient {
         })
         .then(res => {
           if (!res) {
-            reject(
-              AggregatorApiException.apiEmptyResponseError(input?.toString())
-            );
+            reject(AggregatorApiException.apiEmptyResponseError(input?.toString()));
           } else {
             resolve(res);
           }
@@ -36,42 +32,30 @@ export class HTTPClientStable implements HTTPClient {
     });
   }
 
-  get<R, Q = Object>(
-    url: string,
-    query: Q | undefined,
-    headers: Record<string, string>
-  ): Promise<R> {
+  get<R, Q = Object>(url: string, query: Q | undefined, headers: Record<string, string>): Promise<R> {
     const params = [];
     let actualUrl = url;
     for (const key in query) {
       if (query[key] instanceof Array) {
         for (const value of query[key] as Array<any>) {
-          value !== null &&
-            value !== undefined &&
-            params.push(`${key}=${value}`);
+          value !== null && value !== undefined && params.push(`${key}=${value}`);
         }
       } else {
-        query[key] !== null &&
-          query[key] !== undefined &&
-          params.push(`${key}=${query[key]}`);
+        query[key] !== null && query[key] !== undefined && params.push(`${key}=${query[key]}`);
       }
     }
     if (params.length !== 0) {
       actualUrl = `${url}?${params.join('&')}`;
     }
-    return this.fetch<R>(actualUrl, {headers, method: 'GET'});
+    return this.fetch<R>(actualUrl, { headers, method: 'GET' });
   }
 
-  post<R, P = undefined>(
-    url: string,
-    data: P,
-    headers?: Record<string, string>
-  ): Promise<R> {
+  post<R, P = undefined>(url: string, data: P, headers?: Record<string, string>): Promise<R> {
     const body = JSON.stringify(data);
     return this.fetch<R>(url, {
       method: 'POST',
       body: body,
-      headers: {...headers, 'Content-Type': 'application/json'},
+      headers: { ...headers, 'Content-Type': 'application/json' },
     });
   }
 }

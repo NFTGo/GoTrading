@@ -1,12 +1,18 @@
-import {
-  ActionTaskExecutor,
-  ActionTask,
-  ExecuteOptions,
-  ActionProcessor,
-} from '@/types';
+import { ActionTaskExecutor, ActionTask, ExecuteOptions, Config, AggregatorAction } from '@/types';
+import { createTask } from '../task';
 
 export class BrowserActionTaskExecutor implements ActionTaskExecutor {
-  constructor(private tasks: ActionTask[], private processor: ActionProcessor) {
+  private tasks: ActionTask[] = [];
+
+  constructor(actions: AggregatorAction[]) {
+    for (let index = 0; index < actions.length; index++) {
+      const action = actions[index];
+      const task = createTask(action, index);
+      if (index !== 0) {
+        task.pre = this.tasks[index - 1];
+      }
+      this.tasks.push(task);
+    }
     this.execute.bind(this);
   }
 
