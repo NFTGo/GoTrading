@@ -1,18 +1,18 @@
-import { ActionKind } from '@/types';
+import { ActionKind, ProcessPassThroughActionParams } from '@/types';
 import { ActionTaskTemplate } from './template';
 
 export class PassThroughActionTask extends ActionTaskTemplate<ActionKind.PassThrough> {
-  result: null = null;
-
-  execute = async () => {
-    // do real execute
-    let pre = this.pre;
-    const data: Record<string, any> = {};
+  protected run = async () => {
+    const pre = this.pre;
     while (pre) {
-      const result = typeof pre?.result === 'object' && pre.action.kind !== ActionKind.PassThrough ? pre?.result : {};
-      Object.assign(data, pre.result ?? result);
-      pre = pre.pre;
+      if (pre.action.kind === ActionKind.Signature) {
+        const params = pre.result as ProcessPassThroughActionParams;
+        await this.processor.processPassThroughAction(this.action, params);
+        break;
+      } else {
+        continue;
+      }
     }
-    this.status = 'success';
+    return null;
   };
 }

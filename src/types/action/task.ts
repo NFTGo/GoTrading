@@ -11,6 +11,7 @@ export type ActionTaskStatus = 'success' | 'fail' | 'ready' | 'pending';
 export interface ActionTask {
   status: ActionTaskStatus;
   index: number;
+  error: Error | null;
   action: AggregatorAction<ActionKind>;
   pre: ActionTask | null;
   result: unknown;

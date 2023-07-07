@@ -1,15 +1,16 @@
-import {
-  ActionKind,
-  AggregatorAction,
-  PassThroughActionInfo,
-  SignatureActionInfo,
-  TransactionActionInfo,
-} from './action';
+import { ActionKind, AggregatorAction } from './action';
 
 export interface ActionProcessor {
-  processSignatureAction: (action: AggregatorAction<ActionKind.Signature>, params?: any) => Promise<string>;
+  processSignatureAction: (action: AggregatorAction<ActionKind.Signature>) => Promise<string>;
 
-  processTransactionAction: (action: AggregatorAction, params?: any) => Promise<any>;
+  processTransactionAction: (action: AggregatorAction<ActionKind.Transaction>) => Promise<void>;
 
-  processPassThroughAction: (action: AggregatorAction, params?: any) => Promise<any>;
+  processPassThroughAction: (
+    action: AggregatorAction<ActionKind.PassThrough>,
+    params: ProcessPassThroughActionParams
+  ) => Promise<void>;
 }
+
+export type ProcessPassThroughActionParams = {
+  signature?: string;
+};

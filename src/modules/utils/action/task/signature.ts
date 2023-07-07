@@ -1,20 +1,14 @@
-import { ActionKind } from '@/types';
+import { ActionKind, ProcessPassThroughActionParams } from '@/types';
 import { ActionTaskTemplate } from './template';
 
-type SignatureActionTaskResult = {
-  signature: string;
-};
-
 export class SignatureActionTask extends ActionTaskTemplate<ActionKind.Signature> {
-  result: SignatureActionTaskResult | null = null;
+  protected run = async () => {
+    const signature = await this.processor.processSignatureAction(this.action);
 
-  execute = async () => {
-    // do real execute
-
-    const signatureResult = await this.processor.processSignatureAction(this.action);
-    this.result = {
-      signature: signatureResult,
+    const result: ProcessPassThroughActionParams = {
+      signature,
     };
-    this.status = 'success';
+
+    return result;
   };
 }
