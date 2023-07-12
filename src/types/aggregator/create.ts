@@ -54,7 +54,7 @@ export interface CreateListingInput {
   /**
    * only applies to ERC1155
    */
-  quantity?: string;
+  quantity?: number;
   /**
    * only applies to seaport orders
    */
@@ -138,7 +138,7 @@ export interface CreateOfferInput {
   /**
    * Quantity of tokens user is buying. Only compatible with ERC1155 tokens. Example: `5`
    */
-  quantity?: string;
+  quantity?: number;
   /**
    * Set a maximum amount of royalties to pay, rather than the full amount. Only relevant when
    * using automated royalties. 1 BPS = 0.01% Note: OpenSea does not support values below 50
