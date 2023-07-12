@@ -42,7 +42,6 @@ export class PostOrderHandler {
         ...params,
         signature,
       });
-      console.info('res', res);
       return { message: 'blur' };
     } else {
       const handler = this.handlers.get(params.order.kind);

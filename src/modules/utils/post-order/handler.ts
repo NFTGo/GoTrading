@@ -63,7 +63,6 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
         );
         return result;
       } catch (error) {
-        console.error('error', error);
         throw error;
       }
     } else {
@@ -139,7 +138,6 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
           );
           return result;
         } catch (error) {
-          console.error('error', error);
           throw error;
         }
       } else {
@@ -155,7 +153,6 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
           });
           return result;
         } catch (error) {
-          console.error('error', error);
           throw error;
         }
       }
