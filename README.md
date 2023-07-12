@@ -13,6 +13,19 @@
     - [1. Install the SDK.](#1-install-the-sdk)
     - [2. Import and init the GoTrading SDK.](#2-import-and-init-the-gotrading-sdk)
     - [3. Fulfill Listings](#3-fulfill-listings)
+  - [SDK Core Methods](#sdk-core-methods)
+    - [Aggregator](#aggregator)
+      - [Create Listings](#create-listings)
+      - [Create Offers](#create-offers)
+      - [Fulfill Listings](#fulfill-listings)
+      - [Fulfill Offers](#fulfill-offers)
+      - [Cancel Orders](#cancel-orders)
+    - [OrderFetcher](#orderfetcher)
+      - [Get Orders By Contract](#get-orders-by-contract)
+      - [Get Orders By NFT](#get-orders-by-nft)
+      - [Get Orders By Ids](#get-orders-by-ids)
+      - [Get Orders By Maker](#get-orders-by-maker)
+    - [Utils](#utils)
   - [Questions \& Feedback](#questions--feedback)
   - [License](#license)
 
@@ -83,14 +96,14 @@ yarn add @nftgo/gotrading
 ### 2. Import and init the GoTrading SDK.
 Instantiate the instance of GoTrading using your etheres provider with API key.
 ```ts
-import { init } from '@nftgo/gotrading';
+import { init, Config } from '@nftgo/gotrading';
 import Web3 from 'web3';
 
 // Create a new Web3 Provider to interact with the Ethereum network.
 const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io') //Replace with your own provider
 
 // Configure the necessary parameters for the Trade Aggregator API client.
-const configs = {
+const configs: Config = {
   apiKey: "YOUR-API-KEY", // Replace with your own API Key.
   web3Provider: provider,
   walletConfig: {
@@ -108,8 +121,7 @@ const {aggregator, utils, orderFetcher} = init(configs);
 ###  3. Fulfill Listings
 ```ts
 
-import { init } from './modules';
-import { Config, FulfillListingsReq } from './types';
+import { init, Config, FulfillListingsReq } from '@nftgo/gotrading';
 
 async function demo() {
   const config: Config = {};
@@ -150,6 +162,290 @@ async function demo() {
   console.log('success');
 }
 ```
+
+## SDK Core Methods
+To use the GoTrading SDK, you need to initialize the SDK with your API key. After initialization, you can use the following methods to interact with the GoTrading API.
+
+```ts
+import { init, Config } from '@nftgo/gotrading';
+
+const config: Config = {
+  apiKey: 'YOUR-API-KEY',
+  openSeaApiKeyConfig: {
+    apiKey: 'YOUR-OPENSEA-API-KEY',
+    requestsPerInterval: 10, // 10 requests per interval
+    interval: 1000, // 1 second
+  },
+  looksRareApiKeyConfig: {
+    apiKey: 'YOUR-LOOKSRARE-API-KEY',
+    requestsPerInterval: 10, // 10 requests per interval
+    interval: 1000, // 1 second
+  },
+  x2y2ApiKeyConfig: {
+    apiKey: 'YOUR-X2Y2-API-KEY',
+    requestsPerInterval: 10, // 10 requests per interval
+    interval: 1000, // 1 second
+  },
+  walletConfig: {
+    address: 'Your wallet address',
+    privateKey: 'Your private key',
+  }, // Replace with your wallet info.
+};
+
+const goTrading = init(config);
+```
+
+### Aggregator
+The Aggregator methods are used to create and fulfill listings and offers across all marketplaces.
+
+#### Create Listings
+```ts
+import { CreateListingsReq, Orderbook, OrderKind } from '@nftgo/gotrading';
+
+const req: CreateListingsReq = {
+  maker: 'xxx', // your address
+  params: [
+    {
+      token: '0x97a20815a061eae224c4fdf3109731f73743db73:2',
+      quantity: 1,
+      weiPrice: '1000',
+      orderKind: OrderKind.SeaportV15,
+      orderbook: Orderbook.Opensea,
+      listingTime: '1688625367',
+      expirationTime: '1689858225',
+      currency: '0x0000000000000000000000000000000000000000',
+      automatedRoyalties: true,
+    },
+    {
+      token: '0x97a20815a061eae224c4fdf3109731f73743db73:2',
+      quantity: 1,
+      weiPrice: '1000',
+      orderKind: OrderKind.X2Y2,
+      orderbook: Orderbook.X2Y2,
+      listingTime: '1688625367',
+      expirationTime: '1689858225',
+      currency: '0x0000000000000000000000000000000000000000',
+    },
+    {
+      token: '0x97a20815a061eae224c4fdf3109731f73743db73:2',
+      quantity: 1,
+      weiPrice: '1000',
+      orderKind: OrderKind.LooksRareV2,
+      orderbook: Orderbook.LooksRare,
+      listingTime: '1688625367',
+      expirationTime: '1689858225',
+      currency: '0x0000000000000000000000000000000000000000',
+    },
+    {
+      token: '0x61628d84d0871a38f102d5f16f4e69ee91d6cdd9:7248',
+      quantity: 1,
+      weiPrice: '1000',
+      orderKind: OrderKind.SeaportV15,
+      orderbook: Orderbook.Opensea,
+      listingTime: '1688625367',
+      expirationTime: '1689858225',
+      currency: '0x0000000000000000000000000000000000000000',
+      automatedRoyalties: true,
+    },
+  ],
+};
+
+const response = await goTrading.aggregator.createListings(req);
+
+await response.executeActions({
+  onTaskExecuted(task) {
+    console.log(task.action.name, task.status);
+  },
+});
+
+
+```
+#### Create Offers
+```ts
+import { CreateOffersReq, Orderbook, OrderKind } from '@nftgo/gotrading';
+
+const req: CreateOffersReq = {
+  maker: 'xxx', // your address
+  params: [
+    {
+      collection: '0x8d04a8c79ceb0889bdd12acdf3fa9d207ed3ff63',
+      weiPrice: '10000000000',
+      orderKind: OrderKind.SeaportV15,
+      orderbook: Orderbook.Opensea,
+      listingTime: '1689017272',
+      expirationTime: '1688017272',
+      quantity: 2,
+    },
+    {
+      collection: '0x8d04a8c79ceb0889bdd12acdf3fa9d207ed3ff63',
+      weiPrice: '10000000000',
+      orderKind: OrderKind.LooksRareV2,
+      orderbook: Orderbook.Looksrare,
+      listingTime: '1689017272',
+      expirationTime: '1688017272',
+      quantity: 1,
+    }
+  ],
+};
+
+const response = await goTrading.aggregator.createOffers(req);
+
+await response.executeActions({
+  onTaskExecuted(task) {
+    console.log(task.action.name, task.status);
+  },
+});
+
+```
+
+#### Fulfill Listings
+```ts
+import { FulfillListingsReq, Orderbook, OrderKind } from '@nftgo/gotrading';
+
+const orderIds = ['xxx', 'yyy']; // pass the listing ids you want to fulfill
+
+const req: FulfillListingsReq = {
+  buyer: 'xxx', // your address
+  orderIds,
+};
+
+const response = await goTrading.aggregator.fulfillListings(req);
+
+await response.executeActions({
+  onTaskExecuted(task) {
+    console.log(task.action.name, task.status);
+  },
+});
+
+```
+
+#### Fulfill Offers
+```ts
+import { FulfillOffersReq, Orderbook, OrderKind } from '@nftgo/gotrading';
+
+const orderIds = ['xxx', 'yyy']; // pass the offer ids you want to fulfill
+
+const req: FulfillOffersReq = {
+  sellerAddress: 'xxx', // your address
+  offerFulfillmentIntentions: [
+    {
+      orderId: orderIds[0],
+      contractAddress: "0x02d66f9d220553d831b239f00b5841280ddcfaf3",
+      tokenId: "1",
+      quantity: 1,
+    },
+    {
+      orderId: orderIds[1],
+      contractAddress: "0x02d66f9d220553d831b239f00b5841280ddcfaf3",
+      tokenId: "2",
+      quantity: 1,
+    },
+  ],
+};
+
+const response = await goTrading.aggregator.fulfillOffers(req);
+
+await response.executeActions({
+  onTaskExecuted(task) {
+    console.log(task.action.name, task.status);
+  },
+});
+
+```
+
+### OrderFetcher
+
+#### Get Orders By Contract
+```ts
+import { OrderType, GetOrdersByContractReq } from '@nftgo/gotrading';
+
+// Get listings by contractAddress
+const getOrdersByContractReq: GetOrdersByContractReq = {
+  contractAddress: '0x97a20815a061eae224c4fdf3109731f73743db73',
+  orderType: OrderType.Listing,
+};
+
+const { listingDTOs } = await goTrading.orderFetcher.getOrdersByContract(getOrdersByContractReq);
+
+// Get offers by contractAddress
+const getOffersByContractReq: GetOrdersByContractReq = {
+  contractAddress: '0x97a20815a061eae224c4fdf3109731f73743db73',
+  orderType: OrderType.Offer,
+};
+
+const { offerDTOs } = await goTrading.orderFetcher.getOrdersByContract(getOrdersByContractReq);
+
+
+```
+
+#### Get Orders By NFT
+```ts
+import { OrderType, GetOrdersByNftsReq } from '@nftgo/gotrading';
+
+// Get listings by nft
+const getOrdersByNftsReq: GetOrdersByNftsReq = {
+  contractAddress: '0x8d04a8c79ceb0889bdd12acdf3fa9d207ed3ff63',
+  tokenId: '1',
+  orderType: OrderType.Listing,
+};
+
+const { listingDTOs } = await goTrading.orderFetcher.getOrdersByNFT(getOrdersByNftsReq);
+
+// Get offers by nft
+const getOffersByNftsReq: GetOrdersByNftsReq = {
+  contractAddress: '0x8d04a8c79ceb0889bdd12acdf3fa9d207ed3ff63',
+  tokenId: '1',
+  orderType: OrderType.Offer,
+};
+
+const { offerDTOs } = await goTrading.orderFetcher.getOrdersByNFT(getOffersByNftsReq);
+
+```
+
+#### Get Orders By Ids
+```ts
+import { OrderType, GetOrdersByIdsReq } from '@nftgo/gotrading';
+
+const getOrdersByIdsReq: GetOrdersByIdsReq = {
+  orders: [
+    {
+      orderId: 'xxx',
+      orderType: OrderType.Listing,
+    },
+    {
+      orderId: 'yyy',
+      orderType: OrderType.Offer,
+    },
+  ],
+};
+
+const { listingDTOs, offerDTOs } = await goTrading.orderFetcher.getOrdersByIds(getOrdersByIdsReq);
+
+```
+
+#### Get Orders By Maker
+```ts
+import { OrderType, GetOrdersByMakerReq } from '@nftgo/gotrading';
+
+// Get listings by maker
+const getOrdersByMakerReq: GetOrdersByMakerReq = {
+  maker: 'xxx', // your address
+  orderType: OrderType.Listing,
+};
+
+const { listingDTOs } = await goTrading.orderFetcher.getOrdersByMaker(getOrdersByMakerReq);
+
+// Get offers by maker
+const getOffersByMakerReq: GetOrdersByMakerReq = {
+  maker: 'xxx', // your address
+  orderType: OrderType.Offer,
+};
+
+const { offerDTOs } = await goTrading.orderFetcher.getOrdersByMaker(getOffersByMakerReq);
+
+```
+
+### Utils
 
 ## Questions & Feedback
 
