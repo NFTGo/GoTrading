@@ -353,7 +353,7 @@ await response.executeActions({
 
 ```
 
-#### Cancel Listings
+#### Cancel Orders
 ```ts
 import { CancelOrdersReq, Orderbook, OrderKind } from '@nftgo/gotrading';
 
