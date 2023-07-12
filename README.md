@@ -353,6 +353,35 @@ await response.executeActions({
 
 ```
 
+#### Cancel Listings
+```ts
+import { CancelOrdersReq, Orderbook, OrderKind } from '@nftgo/gotrading';
+
+
+const cancelOrdersReq: CancelOrdersReq = {
+  callerAddress: 'xxx', // your address
+  orders: [
+    {
+      orderId: 'aaa',
+      orderType: OrderType.Listing,
+    },
+    {
+      orderId: 'bbb',
+      orderType: OrderType.Offer,
+    },
+  ],
+};
+
+const response = await goTrading.aggregator.cancelOrders(cancelOrdersReq);
+
+await response.executeActions({
+  onTaskExecuted(task) {
+    console.log(task.action.name, task.status);
+  },
+});
+
+```
+
 ### OrderFetcher
 
 #### Get Orders By Contract
