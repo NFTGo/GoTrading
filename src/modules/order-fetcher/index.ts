@@ -40,6 +40,7 @@ export class OrderFetcher implements OrderFetcherInterface {
   }
 
   private post<R, P = undefined>(path: string, params: P) {
-    return this.client.post<R, P>(this.url + path, params, this.headers);
+    const chain = this.config.chain ?? EVMChain.ETHEREUM;
+    return this.client.post<R, P>(`${this.url}${path}?chain=${chain}`, params, this.headers);
   }
 }
