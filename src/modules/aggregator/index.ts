@@ -90,17 +90,13 @@ export class Aggregator implements AggregatorInterface {
   }
 
   private get url() {
-    return (
-      (this.config?.baseUrl ?? BASE_URL) + '/trade' + '/v1' + '/nft' + '?chain=' + (this.config?.chain ?? EVMChain.ETHEREUM)
-    );
+    return (this.config?.baseUrl ?? BASE_URL) + '/trade' + '/v1' + '/nft';
   }
 
   private async post<ResData, Req = undefined>(path: string, params: Req) {
-    const response = await this.client.post<AggregatorApiStatusResponse<ResData>, Req>(
-      this.url + path,
-      params,
-      this.headers
-    );
+    const chain = this.config?.chain ?? EVMChain.ETHEREUM;
+    const url = `${this.url}${path}?chain=${chain}`;
+    const response = await this.client.post<AggregatorApiStatusResponse<ResData>, Req>(url, params, this.headers);
     const { code, msg, data } = response;
     if (code === 'SUCCESS') {
       return data;
