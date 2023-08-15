@@ -1,1 +1,1 @@
-export const BASE_URL = 'https://aggregator.data-api.nftgo.io/';
+export const BASE_URL = 'https://data-api.nftgo.io/';

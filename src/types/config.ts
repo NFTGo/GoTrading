@@ -2,7 +2,8 @@ import { provider } from 'web3-core';
 
 // # user-land interface , core  should implement this
 export enum EVMChain {
-  ETH = 'ETH',
+  ETHEREUM = 'ethereum',
+  SEPOLIA = 'sepolia',
 }
 
 export interface WalletConfig {

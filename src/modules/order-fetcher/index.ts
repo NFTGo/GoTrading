@@ -36,7 +36,7 @@ export class OrderFetcher implements OrderFetcherInterface {
   }
 
   private get url() {
-    return (this.config?.baseUrl ?? BASE_URL) + '/orderbook' + '/v1' + (this.config?.chain ?? EVMChain.ETH) + '/orders';
+    return BASE_URL + '/orderbook' + '/v1' + '/orders';
   }
 
   private post<R, P = undefined>(path: string, params: P) {
