@@ -6,7 +6,6 @@ import { IPostOrderHandler } from './utils';
 import * as Models from './utils';
 
 import {
-  EVMChain,
   HTTPClient,
   Config,
   AggregatorApiResponse,
@@ -109,8 +108,7 @@ export class PostOrderHandler {
   }
 
   private async post<ResData, Req = undefined>(path: string, params: Req) {
-    const chain = this.config?.chain ?? EVMChain.ETHEREUM;
-    const url = `${this.url}${path}?chain=${chain}`;
+    const url = `${this.url}${path}?chain=${this.config.chain}`;
     const response = await this.client.post<AggregatorApiStatusResponse<ResData>, Req>(url, params, this.headers);
     const { code, msg, data } = response;
     if (code === 'SUCCESS') {

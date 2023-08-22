@@ -1,7 +1,6 @@
 import { AggregatorApiException } from '@/exceptions';
 import {
   Config,
-  EVMChain,
   HTTPClient,
   Utils,
   AggregatorApiResponse,
@@ -93,8 +92,7 @@ export class Aggregator implements AggregatorInterface {
   }
 
   private async post<ResData, Req = undefined>(path: string, params: Req) {
-    const chain = this.config?.chain ?? EVMChain.ETHEREUM;
-    const url = `${this.url}${path}?chain=${chain}`;
+    const url = `${this.url}${path}?chain=${this.config.chain}`;
     const response = await this.client.post<AggregatorApiStatusResponse<ResData>, Req>(url, params, this.headers);
     const { code, msg, data } = response;
     if (code === 'SUCCESS') {
