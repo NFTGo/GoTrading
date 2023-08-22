@@ -1,4 +1,4 @@
-import {AbiItem} from 'web3-utils';
+import { AbiItem } from 'web3-utils';
 
 export const ERC1155ABI: Record<'singleTransfer' | 'batchTransfer', AbiItem> = {
   singleTransfer: {

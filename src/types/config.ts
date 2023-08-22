@@ -12,9 +12,9 @@ export interface WalletConfig {
 }
 
 export interface Config {
+  baseUrl: string;
+  chain: EVMChain;
   apiKey?: string;
-  chain?: EVMChain;
-  baseUrl?: string;
   walletConfig?: WalletConfig;
   web3Provider?: provider;
   openSeaApiKeyConfig?: ApiKeyConfig;

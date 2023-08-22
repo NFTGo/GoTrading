@@ -1,6 +1,5 @@
-import { BASE_URL } from '@/common';
 import { BaseException } from '@/exceptions';
-import { EVMChain, HTTPClient, Config, AggregatorApiStatusResponse } from '@/types';
+import { HTTPClient, Config, AggregatorApiStatusResponse } from '@/types';
 
 interface BlurAuthChallenge {
   expiresOn: string;
@@ -37,7 +36,7 @@ export class BlurMarketAuthenticator implements BlurAuthServiceImpl {
   }
 
   private get url() {
-    return BASE_URL + '/utils/v1/blur';
+    return this.config.baseUrl + '/utils/v1/blur';
   }
 
   private async getAuthSignature(message: string) {

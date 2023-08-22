@@ -1,5 +1,4 @@
 import { splitSignature } from 'ethers/lib/utils';
-import { BASE_URL } from '@/common';
 
 import { AggregatorApiException, BaseException } from '@/exceptions';
 
@@ -13,7 +12,6 @@ import {
   AggregatorApiResponse,
   AggregatorApiStatusResponse,
   PostOrderReq,
-  PostOrderResponse,
   OrderKind,
 } from '@/types';
 import { SeaportV1D5Handler, LooksRareV2Handler, X2Y2Handler } from './handler';
@@ -107,7 +105,7 @@ export class PostOrderHandler {
   }
 
   private get url() {
-    return this.config?.baseUrl ?? BASE_URL;
+    return this.config.baseUrl;
   }
 
   private async post<ResData, Req = undefined>(path: string, params: Req) {

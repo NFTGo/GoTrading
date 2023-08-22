@@ -1,4 +1,3 @@
-import { BASE_URL } from '@/common';
 import { AggregatorApiException } from '@/exceptions';
 import {
   Config,
@@ -90,7 +89,7 @@ export class Aggregator implements AggregatorInterface {
   }
 
   private get url() {
-    return (this.config?.baseUrl ?? BASE_URL) + '/trade' + '/v1' + '/nft';
+    return this.config.baseUrl + '/trade' + '/v1' + '/nft';
   }
 
   private async post<ResData, Req = undefined>(path: string, params: Req) {
