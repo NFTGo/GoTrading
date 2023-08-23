@@ -1,8 +1,6 @@
-import { BASE_URL } from '@/common';
 import { AggregatorApiException } from '@/exceptions';
 import {
   Config,
-  EVMChain,
   HTTPClient,
   Utils,
   AggregatorApiResponse,
@@ -28,7 +26,7 @@ export class Aggregator implements AggregatorInterface {
    * @returns Promise<{@link }>
    */
   createOffers = async (params: CreateOffersReq): Promise<AggregatorResponse> => {
-    const res = await this.post<AggregatorApiResponse, CreateOffersReq>('/create-offers/v1', params);
+    const res = await this.post<AggregatorApiResponse, CreateOffersReq>('/create-offers', params);
     const { actions } = res;
 
     return this.response(actions);
@@ -41,7 +39,7 @@ export class Aggregator implements AggregatorInterface {
    * @returns Promise<{@link any}>
    */
   fulfillOffers = async (params: FulfillOffersReq): Promise<AggregatorResponse> => {
-    const res = await this.post<AggregatorApiResponse, FulfillOffersReq>('/aggregate-accept-offers', params);
+    const res = await this.post<AggregatorApiResponse, FulfillOffersReq>('/fulfill-offers', params);
     const { actions } = res;
     return this.response(actions);
   };
@@ -66,7 +64,7 @@ export class Aggregator implements AggregatorInterface {
    * @returns Promise<{@link any}>
    */
   createListings = async (params: CreateListingsReq): Promise<AggregatorResponse> => {
-    const data = await this.post<AggregatorApiResponse, CreateListingsReq>('/create-listings/v1', params);
+    const data = await this.post<AggregatorApiResponse, CreateListingsReq>('/create-listings', params);
     const { actions } = data;
 
     return this.response(actions);
@@ -79,7 +77,7 @@ export class Aggregator implements AggregatorInterface {
    * @returns Promise<{@link }>
    */
   fulfillListings = async (params: FulfillListingsReq): Promise<AggregatorResponse> => {
-    const data = await this.post<AggregatorApiResponse, FulfillListingsReq>('/aggregate-accept-listings', params);
+    const data = await this.post<AggregatorApiResponse, FulfillListingsReq>('/fulfill-listings', params);
     const { actions } = data;
 
     return this.response(actions);
@@ -90,17 +88,12 @@ export class Aggregator implements AggregatorInterface {
   }
 
   private get url() {
-    return (
-      (this.config?.baseUrl ?? BASE_URL) + '/aggregator' + '/v1' + '/' + (this.config?.chain ?? EVMChain.ETH) + '/nft'
-    );
+    return this.config.baseUrl + '/trade' + '/v1' + '/nft';
   }
 
   private async post<ResData, Req = undefined>(path: string, params: Req) {
-    const response = await this.client.post<AggregatorApiStatusResponse<ResData>, Req>(
-      this.url + path,
-      params,
-      this.headers
-    );
+    const url = `${this.url}${path}?chain=${this.config.chain}`;
+    const response = await this.client.post<AggregatorApiStatusResponse<ResData>, Req>(url, params, this.headers);
     const { code, msg, data } = response;
     if (code === 'SUCCESS') {
       return data;

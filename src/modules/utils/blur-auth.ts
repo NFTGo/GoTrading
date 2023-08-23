@@ -1,6 +1,5 @@
-import { BASE_URL } from '@/common';
 import { BaseException } from '@/exceptions';
-import { EVMChain, HTTPClient, Config, AggregatorApiStatusResponse } from '@/types';
+import { HTTPClient, Config, AggregatorApiStatusResponse } from '@/types';
 
 interface BlurAuthChallenge {
   expiresOn: string;
@@ -37,15 +36,7 @@ export class BlurMarketAuthenticator implements BlurAuthServiceImpl {
   }
 
   private get url() {
-    return (
-      (this.config?.baseUrl ?? BASE_URL) +
-      '/aggregator' +
-      '/v1' +
-      '/' +
-      (this.config?.chain ?? EVMChain.ETH) +
-      '/nft' +
-      '/blur'
-    );
+    return this.config.baseUrl + '/utils/v1/blur';
   }
 
   private async getAuthSignature(message: string) {
@@ -58,7 +49,7 @@ export class BlurMarketAuthenticator implements BlurAuthServiceImpl {
       AggregatorApiStatusResponse<BlurAuthChallenge>,
       { address: string }
     >(
-      this.url + '/auth/challenge',
+      this.url + '/get-auth-challenge',
       {
         address,
       },
@@ -71,13 +62,13 @@ export class BlurMarketAuthenticator implements BlurAuthServiceImpl {
   }
   private async signBlurAuthChallenge(params: BlurAuthLoginParams): Promise<string> {
     const { code, msg, data } = await this.httpClient.post<
-      AggregatorApiStatusResponse<{ accessToken: string }>,
+      AggregatorApiStatusResponse<{ blurAuth: string }>,
       BlurAuthLoginParams
-    >(this.url + '/auth/login', params, this.headers);
+    >(this.url + '/get-auth', params, this.headers);
     if (code !== 'SUCCESS') {
       throw new BaseException('get blur auth failed:', msg);
     }
-    return data?.accessToken;
+    return data?.blurAuth;
   }
   async authorize(address: string, force = false) {
     if (!address) {

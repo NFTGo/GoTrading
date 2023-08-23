@@ -1,5 +1,3 @@
-import { BASE_URL } from 'src/common';
-
 import {
   GetOrdersByContractReq,
   GetOrdersByIdsReq,
@@ -8,7 +6,6 @@ import {
   OrderFetcherInterface,
   OrdersFetcherResp,
   HTTPClient,
-  EVMChain,
   Config,
 } from '@/types';
 
@@ -36,10 +33,10 @@ export class OrderFetcher implements OrderFetcherInterface {
   }
 
   private get url() {
-    return (this.config?.baseUrl ?? BASE_URL) + '/orderbook' + '/v1' + (this.config?.chain ?? EVMChain.ETH) + '/orders';
+    return this.config.baseUrl + '/orderbook' + '/v1' + '/orders';
   }
 
   private post<R, P = undefined>(path: string, params: P) {
-    return this.client.post<R, P>(this.url + path, params, this.headers);
+    return this.client.post<R, P>(`${this.url}${path}?chain=${this.config.chain}`, params, this.headers);
   }
 }

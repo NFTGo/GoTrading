@@ -1,4 +1,4 @@
-import {OrderKind, Orderbook, OrderType} from './order';
+import { OrderKind, Orderbook, OrderType } from './order';
 import { SafeAny } from './safe-any';
 
 /**

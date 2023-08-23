@@ -1,4 +1,4 @@
-import {ApiKeyConfig, HTTPClient, OrderKind, OrderType} from '@/types';
+import { ApiKeyConfig, HTTPClient, OrderKind, OrderType } from '@/types';
 import * as Models from './utils';
 
 import { ExternalServiceRateLimiter } from '@/common';
@@ -6,7 +6,6 @@ import { RateLimiter } from 'limiter';
 import { BaseException } from '@/exceptions';
 import { defaultAbiCoder } from 'ethers/lib/utils';
 import { IPostOrderHandler } from './utils';
-import {OrderComponents} from "./utils/seaport-v1.5/types";
 
 export class SeaportV1D5Handler implements IPostOrderHandler {
   protocol = OrderKind.SeaportV15;

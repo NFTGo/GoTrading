@@ -1,5 +1,4 @@
 import { splitSignature } from 'ethers/lib/utils';
-import { BASE_URL } from '@/common';
 
 import { AggregatorApiException, BaseException } from '@/exceptions';
 
@@ -7,13 +6,11 @@ import { IPostOrderHandler } from './utils';
 import * as Models from './utils';
 
 import {
-  EVMChain,
   HTTPClient,
   Config,
   AggregatorApiResponse,
   AggregatorApiStatusResponse,
   PostOrderReq,
-  PostOrderResponse,
   OrderKind,
 } from '@/types';
 import { SeaportV1D5Handler, LooksRareV2Handler, X2Y2Handler } from './handler';
@@ -107,15 +104,12 @@ export class PostOrderHandler {
   }
 
   private get url() {
-    return this.config?.baseUrl ?? BASE_URL;
+    return this.config.baseUrl;
   }
 
   private async post<ResData, Req = undefined>(path: string, params: Req) {
-    const response = await this.client.post<AggregatorApiStatusResponse<ResData>, Req>(
-      this.url + path,
-      params,
-      this.headers
-    );
+    const url = `${this.url}${path}?chain=${this.config.chain}`;
+    const response = await this.client.post<AggregatorApiStatusResponse<ResData>, Req>(url, params, this.headers);
     const { code, msg, data } = response;
     if (code === 'SUCCESS') {
       return data;
