@@ -1,5 +1,12 @@
 import { Order, OrderKind, OrderType } from './order';
 
+export interface OrderFetcherApiResponse<T> {
+  code: string;
+  data: T;
+  msg: string;
+  statusCode: number;
+}
+
 /**
  * TokenPrice
  */

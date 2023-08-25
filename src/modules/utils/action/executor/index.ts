@@ -4,16 +4,21 @@ import { createTask } from '../task';
 export class BrowserActionTaskExecutor implements ActionTaskExecutor {
   private tasks: ActionTask[] = [];
 
-  constructor(actions: AggregatorAction<ActionKind>[], processor: ActionProcessor) {
-    for (let index = 0; index < actions.length; index++) {
-      const action = actions[index];
-      const task = createTask(action, index, processor);
+  constructor(actions: AggregatorAction<ActionKind>[], public processor: ActionProcessor) {
+    this.pushTask(actions);
+  }
+
+  private pushTask = (actions: AggregatorAction<ActionKind>[]) => {
+    let index = this.tasks.length;
+    for (const action of actions) {
+      const task = createTask({ action, index, processor: this.processor, updateTask: this.pushTask });
       if (index !== 0) {
         task.pre = this.tasks[index - 1];
       }
       this.tasks.push(task);
+      index++;
     }
-  }
+  };
 
   execute = async (option?: ExecuteOptions) => {
     const handle = option?.onTaskExecuted;
