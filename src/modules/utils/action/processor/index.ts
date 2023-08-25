@@ -3,7 +3,10 @@ import {
   ActionName,
   ActionProcessor,
   AggregatorAction,
+  AggregatorApiResponse,
+  AggregatorApiStatusResponse,
   Config,
+  HTTPClient,
   InternalUtils,
   ProcessPassThroughActionParams,
 } from '@/types';
@@ -12,7 +15,7 @@ import { PostOrderHandler } from '../../post-order';
 
 export class AggregateActionProcessor implements ActionProcessor {
   private postOrderHandler: PostOrderHandler;
-  constructor(private utils: InternalUtils, private config: Config) {
+  constructor(private utils: InternalUtils, private config: Config, private client: HTTPClient) {
     this.postOrderHandler = new PostOrderHandler(config);
   }
 
@@ -28,6 +31,7 @@ export class AggregateActionProcessor implements ActionProcessor {
     }
     return Promise.reject(new Error('no match action name'));
   }
+
   async processTransactionAction(action: AggregatorAction<ActionKind.Transaction>) {
     const { name, data } = action;
     const { txData, safeMode } = data;
@@ -47,6 +51,7 @@ export class AggregateActionProcessor implements ActionProcessor {
       await signInfo(txData, this.utils.sendTransaction);
     }
   }
+
   async processPassThroughAction(
     action: AggregatorAction<ActionKind.PassThrough>,
     params: ProcessPassThroughActionParams
@@ -65,5 +70,20 @@ export class AggregateActionProcessor implements ActionProcessor {
       status: 'success',
       name,
     });
+  }
+
+  async processControllerAction(
+    action: AggregatorAction<ActionKind.Controller>
+  ): Promise<AggregatorAction<ActionKind>[]> {
+    const { data } = action;
+    const { payload, endpoint, method } = data;
+
+    const url = `${this.config.baseUrl}${endpoint}`;
+
+    const clientMethod = method.toLowerCase() as Lowercase<typeof method>;
+
+    const response = await this.client[clientMethod]<AggregatorApiStatusResponse<AggregatorApiResponse>>(url, payload);
+
+    return response.data.actions;
   }
 }

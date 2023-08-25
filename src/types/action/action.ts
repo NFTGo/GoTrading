@@ -63,7 +63,7 @@ export type SignatureActionInfo = {
 
 export type PassThroughActionInfo = {
   endpoint: string;
-  method: string;
+  method: 'POST' | 'GET';
   payload: SafeAny;
 };
 

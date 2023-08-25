@@ -17,17 +17,37 @@ import {
   Config,
   AggregatorAction,
   InternalUtils,
+  Authenticator,
+  HTTPClient,
+  BlurAuthenticator,
+  X2Y2Authenticator,
 } from '@/types';
 import { UtilsException } from '@/exceptions';
+import { BlurMarketAuthenticator } from './blur-auth';
+import { X2Y2MarketplaceAuthenticator } from './x2y2-auth';
 
 export class InternalAggregatorUtils implements InternalUtils {
   private provider?: provider;
   private walletConfig?: WalletConfig;
-  constructor(config: Config) {
+  public _ethersProvider: ethers.providers.Web3Provider;
+  public _ethersSigner: any;
+  public _web3Instance: Web3;
+  public account: string | undefined = this.walletConfig?.address;
+  public blurAccessToken: string | undefined;
+  private TRANSFER_TOPIC: string;
+  private TRANSFER_BATCH_TOPIC: string;
+  private TRANSFER_SINGLE_TOPIC: string;
+  private PUNK_TRANSFER_TOPIC: string;
+  private PUNK_BOUGHT_TOPIC: string;
+  public blurAuthenticator: BlurAuthenticator;
+  public x2y2Authenticator: X2Y2Authenticator;
+
+  constructor(config: Config, client: HTTPClient) {
     this.provider = config.web3Provider;
     this.walletConfig = config.walletConfig;
 
     this._web3Instance = new Web3(this.provider || (globalThis as any)?.ethereum);
+    this.x2y2Authenticator = new X2Y2MarketplaceAuthenticator(this._web3Instance);
 
     this._ethersProvider = new ethers.providers.Web3Provider(this.provider || (globalThis as any)?.ethereum);
     if (this.walletConfig) {
@@ -47,6 +67,7 @@ export class InternalAggregatorUtils implements InternalUtils {
 
       this._web3Instance.eth.accounts.wallet.add(this.walletConfig as WalletConfig);
     }
+    this.blurAuthenticator = new BlurMarketAuthenticator(this._ethersSigner, client, config);
     this.TRANSFER_TOPIC = this._web3Instance?.eth.abi.encodeEventSignature(ERC721ABI.transfer);
     this.TRANSFER_BATCH_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(ERC1155ABI.batchTransfer);
     this.TRANSFER_SINGLE_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(ERC1155ABI.singleTransfer);
@@ -54,18 +75,8 @@ export class InternalAggregatorUtils implements InternalUtils {
     this.PUNK_BOUGHT_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(CryptoPunkABI.bought);
   }
 
-  public _ethersProvider: ethers.providers.Web3Provider;
-  public _ethersSigner: any;
-  public _web3Instance: Web3;
-  public account: string | undefined = this.walletConfig?.address;
-  public blurAccessToken: string | undefined;
-  private TRANSFER_TOPIC: string;
-  private TRANSFER_BATCH_TOPIC: string;
-  private TRANSFER_SINGLE_TOPIC: string;
-  private PUNK_TRANSFER_TOPIC: string;
-  private PUNK_BOUGHT_TOPIC: string;
-
   createActionExecutor?: (actions: AggregatorAction[]) => ActionTaskExecutor;
+
   inspectTransaction = ({ hash, interval = 1000 }: InspectTransactionParams) => {
     const transactionInstance = new SendTransaction();
     const intervalId = setInterval(async () => {

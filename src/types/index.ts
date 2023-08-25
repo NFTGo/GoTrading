@@ -7,3 +7,4 @@ export * from './go-trading';
 export * from './http';
 export * from './config';
 export * from './post-order';
+export * from './authenticator';

@@ -1,8 +1,12 @@
 import { ActionKind, ActionTaskExecutor, AggregatorAction } from './action';
 import { ethers } from 'ethers';
 import { Log, TransactionConfig, TransactionReceipt } from 'web3-core';
+import { BlurAuthenticator, X2Y2Authenticator } from './authenticator';
 
 export interface InternalUtils {
+  blurAuthenticator: BlurAuthenticator;
+  x2y2Authenticator: X2Y2Authenticator;
+
   createActionExecutor?: (actions: AggregatorAction[]) => ActionTaskExecutor;
   /**
    * Decode transaction log, return contract, token id, trading amount, buyer

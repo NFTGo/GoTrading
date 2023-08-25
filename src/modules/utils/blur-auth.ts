@@ -1,5 +1,5 @@
 import { BaseException } from '@/exceptions';
-import { HTTPClient, Config, AggregatorApiStatusResponse } from '@/types';
+import { HTTPClient, Config, AggregatorApiStatusResponse, BlurAuthenticator, BlurAuthenticatorParams } from '@/types';
 
 interface BlurAuthChallenge {
   expiresOn: string;
@@ -16,11 +16,7 @@ interface Signer {
   signMessage: (message: string) => Promise<string>;
 }
 
-export interface BlurAuthServiceImpl {
-  authorize: (address: string, force?: boolean) => Promise<string>;
-}
-
-export class BlurMarketAuthenticator implements BlurAuthServiceImpl {
+export class BlurMarketAuthenticator implements BlurAuthenticator {
   private accessToken: string | undefined;
   private signer: Signer;
   private httpClient: HTTPClient;
@@ -60,6 +56,7 @@ export class BlurMarketAuthenticator implements BlurAuthServiceImpl {
     }
     return data;
   }
+
   private async signBlurAuthChallenge(params: BlurAuthLoginParams): Promise<string> {
     const { code, msg, data } = await this.httpClient.post<
       AggregatorApiStatusResponse<{ blurAuth: string }>,
@@ -70,7 +67,7 @@ export class BlurMarketAuthenticator implements BlurAuthServiceImpl {
     }
     return data?.blurAuth;
   }
-  async authorize(address: string, force = false) {
+  authorize = async ({ address, force }: BlurAuthenticatorParams) => {
     if (!address) {
       throw new BaseException('address is required');
     }
@@ -86,5 +83,5 @@ export class BlurMarketAuthenticator implements BlurAuthServiceImpl {
     });
     this.accessToken = token;
     return token;
-  }
+  };
 }

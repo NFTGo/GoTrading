@@ -13,7 +13,7 @@ enum ApiExceptionType {
  */
 export class AggregatorApiException extends BaseException {
   constructor(public code: number | string, public message: string = '', public url?: string) {
-    super(message);
+    super(code, message);
   }
 
   static missApiKeyError() {

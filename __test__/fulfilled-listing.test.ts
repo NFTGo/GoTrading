@@ -11,8 +11,9 @@ const proxyAgent = new ProxyAgent(HTTP_PROXY);
 setGlobalDispatcher(proxyAgent);
 
 const config = initConfig();
-const utils = createUtils(config);
+
 const httpClient = new HTTPClientStable();
+const utils = createUtils(config, httpClient);
 
 const aggregator = new Aggregator(httpClient, config, utils);
 

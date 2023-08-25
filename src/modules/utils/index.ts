@@ -1,12 +1,12 @@
-import { ActionKind, AggregatorAction, Config, Utils } from '@/types';
+import { ActionKind, AggregatorAction, Config, HTTPClient, Utils } from '@/types';
 import { InternalAggregatorUtils } from './internal-utils';
 import { BrowserActionTaskExecutor } from './action';
 import { AggregateActionProcessor } from './action/processor';
 
-export function createUtils(config: Config): Utils {
-  const internalUtils = new InternalAggregatorUtils(config);
+export function createUtils(config: Config, http: HTTPClient): Utils {
+  const internalUtils = new InternalAggregatorUtils(config, http);
 
-  const processor = new AggregateActionProcessor(internalUtils, config);
+  const processor = new AggregateActionProcessor(internalUtils, config, http);
 
   internalUtils.createActionExecutor = (actions: AggregatorAction<ActionKind>[]) => {
     return new BrowserActionTaskExecutor(actions, processor);

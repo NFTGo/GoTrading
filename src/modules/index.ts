@@ -1,7 +1,7 @@
 import { Config, GoTrading } from '@/types';
 import { OrderFetcher } from './order-fetcher';
 import { Aggregator } from './aggregator';
-import { HTTPClientStable } from 'src/http/client';
+import { HTTPClientStable } from '@/http';
 import { createUtils } from './utils';
 import { ensureConfig } from './config';
 
@@ -12,7 +12,7 @@ export function init(option: Partial<Config>): GoTrading {
 
   const orderFetcher = new OrderFetcher(httpClient, config);
 
-  const utils = createUtils(config);
+  const utils = createUtils(config, httpClient);
 
   const aggregator = new Aggregator(httpClient, config, utils);
 

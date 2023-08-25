@@ -7,6 +7,7 @@ import {
   OrdersFetcherResp,
   HTTPClient,
   Config,
+  OrderFetcherApiResponse,
 } from '@/types';
 
 export class OrderFetcher implements OrderFetcherInterface {
@@ -36,7 +37,12 @@ export class OrderFetcher implements OrderFetcherInterface {
     return this.config.baseUrl + '/orderbook' + '/v1' + '/orders';
   }
 
-  private post<R, P = undefined>(path: string, params: P) {
-    return this.client.post<R, P>(`${this.url}${path}?chain=${this.config.chain}`, params, this.headers);
+  private async post<R, P = undefined>(path: string, params: P) {
+    const response = await this.client.post<OrderFetcherApiResponse<R>, P>(
+      `${this.url}${path}?chain=${this.config.chain}`,
+      params,
+      this.headers
+    );
+    return response.data;
   }
 }
