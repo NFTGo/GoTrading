@@ -13,11 +13,9 @@ export interface CreateListingsReq {
    */
   maker: string;
   params: CreateListingInput[];
-  blurAuth?: string;
-  /**
-   * app domain
-   */
-  source?: string;
+  extraArgs?: {
+    blurAuth?: string;
+  }
 }
 
 export interface CreateListingInput {
@@ -72,10 +70,11 @@ export interface CreateListingInput {
 
 //CreateOffersV1Request
 export interface CreateOffersReq {
-  blurAuth?: string;
   maker: string;
   params: CreateOfferInput[];
-  source?: string;
+  extraArgs?: {
+    blurAuth?: string;
+  }
 }
 
 export interface CreateOfferInput {
