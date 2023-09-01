@@ -1,7 +1,7 @@
 import { Config, EVMChain } from '@/types';
 
 export function ensureConfig(option: Partial<Config>): Config {
-  const baseUrl = 'https://data-api.nftgo.io/';
+  const baseUrl = 'https://data-api.nftgo.io';
 
   const chain = EVMChain.ETHEREUM;
 

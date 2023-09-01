@@ -14,7 +14,7 @@
     - [2. Import and init the GoTrading SDK.](#2-import-and-init-the-gotrading-sdk)
     - [3. Fulfill Listings](#3-fulfill-listings)
   - [SDK Core Methods](#sdk-core-methods)
-    - [Aggregator](#aggregator)
+    - [Marketplace](#marketplace)
       - [Create Listings](#create-listings)
       - [Create Offers](#create-offers)
       - [Fulfill Listings](#fulfill-listings)
@@ -50,7 +50,7 @@ GoTrading currently aggregates the following marketplaces, and we will continue 
 | Blur            | Yes                 | Yes                  | Yes               | Yes                | Yes                        | blur                 |
 | LooksRare       | Yes                 | Yes                  | Yes               | Yes                | Yes                        | looksrare-v2         |
 | X2Y2            | Yes                 | Yes                  | Yes               | Yes                | Yes                        | x2y2                 |
-| Sudoswap        | No                  | Yes                  | No                | Yes                | Yes                        | sudoswap/sudoswap-v2 |
+| Sudoswap        | No                  | Yes                  | No                | Yes                | No                         | sudoswap/sudoswap-v2 |
 | CryptoPunks     | No                  | Yes                  | No                | Yes                | Yes                        | cryptopunks          |
 | Artblocks       | No                  | Yes                  | No                | Yes                | Yes                        | seaport-v1.5         |
 | Reservoir       | No                  | Yes                  | No                | Yes                | Yes                        | seaport-v1.5         |
@@ -195,8 +195,8 @@ const config: Config = {
 const goTrading = init(config);
 ```
 
-### Aggregator
-The Aggregator methods are used to create and fulfill listings and offers across all marketplaces.
+### Marketplace
+The Marketplace methods are used to create and fulfill listings and offers across all marketplaces.
 
 #### Create Listings
 ```ts
