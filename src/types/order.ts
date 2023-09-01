@@ -24,10 +24,8 @@ export enum OrderKind {
  */
 export enum Orderbook {
   Blur = 'blur',
-  Flow = 'flow',
   LooksRare = 'looks-rare',
   Opensea = 'opensea',
-  Reservoir = 'reservoir',
-  Universe = 'universe',
   X2Y2 = 'x2y2',
+  SELF = 'self',
 }

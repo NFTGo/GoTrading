@@ -21,56 +21,49 @@ export interface CreateListingsReq {
 }
 
 export interface CreateListingInput {
+  token: string;
   /**
-   * only applies to seaport orders
+   * only applies to ERC1155
    */
-  automatedRoyalties?: boolean;
-  /**
-   * default to be ethereum
-   */
-  currency?: string;
-  /**
-   * Unix timestamp (seconds)
-   */
-  expirationTime: string;
-  /**
-   * only applies to seaport orders
-   */
-  fees?: string[];
-  /**
-   * Unix timestamp (seconds)
-   */
-  listingTime: string;
-  nonce?: string;
-  options: Options;
-  /**
-   * marketplace orderbook
-   */
-  orderbook: Orderbook;
+  quantity?: number;
+  weiPrice: string;
   /**
    * order protocol
    */
   orderKind: OrderKind;
   /**
-   * only applies to ERC1155
+   * marketplace orderbook
    */
-  quantity?: number;
+  orderbook: Orderbook;
   /**
-   * only applies to seaport orders
+   * Only applies to seaport orders. If true, royalty amount and recipients will be set automatically.
+   */
+  automatedRoyalties?: boolean;
+  /**
+   * Only applies to seaport orders. Set a maximum amount of royalties to pay, rather than the full amount.
+   * Only relevant when automatedRoyalties is true. 1 BPS = 0.01% Note: OpenSea does not support values below 50 bps.
    */
   royaltyBps?: number;
+  /**
+   * For self-build marketplaces, include the marketplaceFeeBps within the order to collect marketplace fee.
+   * Note that 1 Bps stands for 0.01%. For example, using 100 means your marketplace fee address will receive
+   * 1% of the order's total price.
+   */
+  marketplaceFeeBps?: number;
+  /**
+   * Unix timestamp (seconds)
+   */
+  listingTime: string;
+  /**
+   * Unix timestamp (seconds)
+   */
+  expirationTime: string;
+  nonce?: string;
   salt?: string;
-  token: string;
-  weiPrice: string;
-}
-
-interface Options {
-  'seaport-v1.5'?: SeaportV14;
-}
-
-interface SeaportV14 {
-  replaceOrderId?: string;
-  useOffChainCancellation: boolean;
+  /**
+   * default to be ethereum
+   */
+  currency?: string;
 }
 
 /**
@@ -87,6 +80,15 @@ export interface CreateOffersReq {
 
 export interface CreateOfferInput {
   /**
+   * Bid on a particular token. Example: `0x8d04a8c79ceb0889bdd12acdf3fa9d207ed3ff63:123
+   */
+  token?: string;
+  /**
+   * Bid on a particular collection with collection-id. Example:
+   * `0x8d04a8c79ceb0889bdd12acdf3fa9d207ed3ff63
+   */
+  collection?: string;
+  /**
    * Bid on a particular attribute key. This is case sensitive. Example: `Composition`
    */
   attributeKey?: string;
@@ -95,50 +97,26 @@ export interface CreateOfferInput {
    */
   attributeValue?: string;
   /**
-   * If true, royalty amounts and recipients will be set automatically.
+   * Quantity of tokens user is buying. Only compatible with ERC1155 tokens. Example: `5`
    */
-  automatedRoyalties?: boolean;
+  quantity?: number;
   /**
-   * Bid on a particular collection with collection-id. Example:
-   * `0x8d04a8c79ceb0889bdd12acdf3fa9d207ed3ff63
+   * Amount bidder is willing to offer in wei. Example: `1000000000000000000`
    */
-  collection?: string;
-  currency?: string;
+  weiPrice: string;
   /**
-   * If true flagged tokens will be excluded
+   * Exchange protocol used to create order. Example: `seaport-v1.5`
    */
-  excludeFlaggedTokens?: boolean;
-  /**
-   * Unix timestamp (seconds) indicating when listing will expire. Example: `1656080318`
-   */
-  expirationTime?: string;
-  /**
-   * List of fees (formatted as `feeRecipient:feeBps`) to be bundled within the order. 1 BPS =
-   * 0.01% Example: `0xF296178d553C8Ec21A2fBD2c5dDa8CA9ac905A00:100`
-   */
-  fees?: string[];
-  /**
-   * Unix timestamp (seconds) indicating when listing will be listed. Example: `1656080318`
-   */
-  listingTime?: string;
-  /**
-   * Optional. Set a custom nonce
-   */
-  nonce?: string;
-  options?: { [key: string]: SafeAny };
+  orderKind: OrderKind;
   /**
    * Orderbook where order is placed. Example: `Reservoir`
    */
   orderbook: Orderbook;
   orderbookApiKey?: string;
   /**
-   * Exchange protocol used to create order. Example: `seaport-v1.5`
+   * If true, royalty amounts and recipients will be set automatically.
    */
-  orderKind: OrderKind;
-  /**
-   * Quantity of tokens user is buying. Only compatible with ERC1155 tokens. Example: `5`
-   */
-  quantity?: number;
+  automatedRoyalties?: boolean;
   /**
    * Set a maximum amount of royalties to pay, rather than the full amount. Only relevant when
    * using automated royalties. 1 BPS = 0.01% Note: OpenSea does not support values below 50
@@ -146,20 +124,33 @@ export interface CreateOfferInput {
    */
   royaltyBps?: number;
   /**
+   * For self-build marketplaces, include the marketplaceFeeBps within the order to collect marketplace fee.
+   * Note that 1 Bps stands for 0.01%. For example, using 100 means your marketplace fee address will receive
+   * 1% of the order's total price.
+   */
+  marketplaceFeeBps?: number;
+  /**
+   * If true flagged tokens will be excluded
+   */
+  excludeFlaggedTokens?: boolean;
+  /**
+   * Unix timestamp (seconds) indicating when listing will be listed. Example: `1656080318`
+   */
+  listingTime?: string;
+  /**
+   * Unix timestamp (seconds) indicating when listing will expire. Example: `1656080318`
+   */
+  expirationTime?: string;
+  /**
+   * Optional. Set a custom nonce
+   */
+  nonce?: string;
+  /**
    * Optional. Random string to make the order unique
    */
   salt?: string;
   /**
-   * Bid on a particular token. Example: `0x8d04a8c79ceb0889bdd12acdf3fa9d207ed3ff63:123
+   * ERC20 token address that the offer is providing with. Default to be WETH
    */
-  token?: string;
-  /**
-   * Bid on a particular token set. Cannot be used with cross-posting to OpenSea. Example:
-   * `token:CONTRACT:TOKEN_ID
-   */
-  tokenSetId?: string;
-  /**
-   * Amount bidder is willing to offer in wei. Example: `1000000000000000000`
-   */
-  weiPrice: string;
+  currency?: string;
 }
