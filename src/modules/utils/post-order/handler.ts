@@ -149,7 +149,9 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
             },
             signature: order.data.signature,
             protocol_address: Models.SeaportV1D5.Addresses.Exchange[Models.Utils.Network.Ethereum],
-          });
+          },
+          { 'X-Api-Key': apiKey },
+            true);
           return result;
         } catch (error) {
           throw error;
