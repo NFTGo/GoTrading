@@ -4,20 +4,24 @@ import { ExtraArgs } from './extra-args';
  * AggregateAcceptListingRequest
  */
 export interface FulfillListingsReq {
-  authToken?: string;
   buyer: string;
   noDirect?: boolean;
   orderIds: string[];
   safeMode: boolean;
+  extraArgs?: {
+    blurAuth?: string;
+  }
 }
 
 /**
  * fulfill offers
  */
 export interface FulfillOffersReq {
-  extraArgs?: ExtraArgs;
   offerFulfillmentIntentions: OfferFulfillmentIntention[];
   sellerAddress: string;
+  extraArgs?: {
+    blurAuth?: string;
+  }
 }
 
 export interface OfferFulfillmentIntention {
