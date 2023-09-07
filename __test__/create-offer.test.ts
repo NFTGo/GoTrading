@@ -1,53 +1,43 @@
-import { initConfig } from './common/config';
-import { Aggregator } from '../src/modules/aggregator';
-import { createUtils } from '../src/modules/utils';
-import { HTTPClientStable } from '../src/http';
+import { OrderKind, Orderbook, init } from '../src';
+import { HttpsProxyAgent } from 'https-proxy-agent';
+import Web3 from 'web3';
 
-import { setGlobalDispatcher, ProxyAgent } from 'undici';
-import { getWeiPrice } from './common/utils';
-
-const HTTP_PROXY = 'http://127.0.0.1:9999';
-
-const proxyAgent = new ProxyAgent(HTTP_PROXY);
-setGlobalDispatcher(proxyAgent);
-
-const config = initConfig();
-const utils = createUtils(config);
-const httpClient = new HTTPClientStable();
-
-const aggregator = new Aggregator(httpClient, config, utils);
-
-const params = [
-  // {
-  //   collection: '0x8d04a8c79ceb0889bdd12acdf3fa9d207ed3ff63',
-  //   weiPrice: '10000000000',
-  //   orderKind: 'blur',
-  //   orderbook: 'blur',
-  //   listingTime: '1688017270',
-  //   expirationTime: '1699017270',
-  // },
-  {
-    collection: '0x8d04a8c79ceb0889bdd12acdf3fa9d207ed3ff63',
-    weiPrice: getWeiPrice(0.001),
-    orderKind: 'seaport-v1.5',
-    orderbook: 'opensea',
-    listingTime: '1688017270',
-    expirationTime: '1689017270',
-  },
-];
 describe('create offer main process', () => {
-  test('create offer', async () => {
-    const address = config.walletConfig?.address || '';
-    const res = await aggregator.createOffers({
-      maker: address,
-      params: params as any,
+  const endpoint = process.env.PROVIDER_URL!,
+    address = process.env.ADDRESS!,
+    privateKey = process.env.PRIVATE_KEY!,
+    apiKey = process.env.API_KEY!,
+    web3Provider = new Web3.providers.HttpProvider(endpoint);
+
+  const sdk = init({
+    apiKey,
+    web3Provider,
+    walletConfig: {
+      address,
+      privateKey,
+    },
+    agent: new HttpsProxyAgent('http://127.0.0.1:7890'),
+  });
+
+  test('should return buy actions', async () => {
+    const res = await sdk.aggregator.createOffers({
+      maker: process.env.ADDRESS as string, // your address
+      params: [
+        {
+          collection: '0xed5af388653567af2f388e6224dc7c4b3241c544',
+          quantity: 1,
+          weiPrice: '10000000000000',
+          orderKind: OrderKind.SeaportV15,
+          orderbook: Orderbook.Opensea,
+          listingTime: '1692605611',
+          expirationTime: '1692615611',
+          automatedRoyalties: true,
+        },
+      ],
     });
-    const { executeActions } = res;
-    await executeActions({
-      onTaskExecuted: task => {
-        console.info(task);
-      },
-    });
-    expect(executeActions).toEqual(expect.any(Function));
+
+    const { actions } = res;
+    console.log({ actions });
+    expect(Array.isArray(actions)).toBe(true);
   });
 });
