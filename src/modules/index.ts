@@ -4,11 +4,11 @@ import { Aggregator } from './aggregator';
 import { HTTPClientStable } from '@/http';
 import { createUtils } from './utils';
 import { ensureConfig } from './config';
-
-export function init(option: Partial<Config>): GoTrading {
+export type Option = Partial<Config>;
+export function init(option: Option): GoTrading {
   const config = ensureConfig(option);
 
-  const httpClient = new HTTPClientStable();
+  const httpClient = new HTTPClientStable(option?.agent);
 
   const orderFetcher = new OrderFetcher(httpClient, config);
 

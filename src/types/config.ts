@@ -1,3 +1,4 @@
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import { provider } from 'web3-core';
 
 // # user-land interface , core  should implement this
@@ -20,6 +21,7 @@ export interface Config {
   openSeaApiKeyConfig?: ApiKeyConfig;
   looksRareApiKeyConfig?: ApiKeyConfig;
   x2y2ApiKeyConfig?: ApiKeyConfig;
+  agent?: HttpsProxyAgent<string>;
 }
 
 export type ApiKeyConfig = {

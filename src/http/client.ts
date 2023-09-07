@@ -1,12 +1,14 @@
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import { AggregatorApiException } from '@/exceptions';
 
 import { HTTPClient } from '@/types';
 
 export class HTTPClientStable implements HTTPClient {
-  constructor() {}
+  constructor(private agent?: HttpsProxyAgent<string>) {}
   fetch<R>(input: RequestInfo | URL, init?: RequestInit | undefined) {
+    const agentOption = this.agent ? { agent: this.agent } : {};
     return new Promise<R>((resolve, reject) => {
-      fetch(input, init)
+      fetch(input, { ...init, ...agentOption })
         .then(async res => {
           if (!isHttpResponseSuccess(res.status)) {
             reject(

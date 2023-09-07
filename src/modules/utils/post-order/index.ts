@@ -20,6 +20,8 @@ export class PostOrderHandler {
   private client: HTTPClient = new HTTPClientStable();
 
   constructor(private config: Config) {
+    const _client = new HTTPClientStable(config?.agent);
+    this.client = _client;
     if (config.openSeaApiKeyConfig) {
       this.handlers.set(OrderKind.SeaportV15, new SeaportV1D5Handler(this.client, config.openSeaApiKeyConfig));
     }
