@@ -6,7 +6,9 @@ import { Order } from '../order';
 export interface CancelOrdersReq {
   callerAddress: string;
   extraArgs?: {
-    blurAuth: string;
+    blurAuth?: string;
+    sign?: string;
+    signMessage?: string;
   };
   orders: Order[];
 }
