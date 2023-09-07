@@ -1,11 +1,14 @@
 import { Order } from '../order';
-import { ExtraArgs } from './extra-args';
 
 /**
  * cancel orders
  */
 export interface CancelOrdersReq {
   callerAddress: string;
-  extraArgs?: ExtraArgs;
+  extraArgs?: {
+    blurAuth?: string;
+    sign?: string;
+    signMessage?: string;
+  };
   orders: Order[];
 }
