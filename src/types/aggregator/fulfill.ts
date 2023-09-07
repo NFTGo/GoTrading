@@ -1,5 +1,3 @@
-import { ExtraArgs } from './extra-args';
-
 /**
  * AggregateAcceptListingRequest
  */
