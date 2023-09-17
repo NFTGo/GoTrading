@@ -3,16 +3,22 @@ import { ActionTaskTemplate } from './template';
 
 export class PassThroughActionTask extends ActionTaskTemplate<ActionKind.PassThrough> {
   protected run = async () => {
-    const pre = this.pre;
+    let pre = this.pre;
     while (pre) {
+      // when can we use it for post-order
+      // condition 1: it's a signature kind action
+      // condition 2: it's orderIndexes must include passthrough order index
       if (pre.action.kind === ActionKind.Signature) {
-        const params = pre.result as ProcessPassThroughActionParams;
-        await this.processor.processPassThroughAction(this.action, params);
-        break;
-      } else {
-        continue;
+        const { orderIndexes } = pre.action.data;
+        const result = pre.result as ProcessPassThroughActionParams;
+        const needThisSignature = this.action.data.orderIndexes.every(index => orderIndexes.includes(index));
+        if (needThisSignature) {
+          await this.processor.processPassThroughAction(this.action, result);
+          return null;
+        }
       }
+      pre = pre.pre;
     }
-    return null;
+    throw new Error('Can not found signature for post order');
   };
 }
