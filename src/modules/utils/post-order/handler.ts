@@ -4,7 +4,7 @@ import * as Models from './utils';
 import { ExternalServiceRateLimiter } from '@/common';
 import { RateLimiter } from 'limiter';
 import { BaseException } from '@/exceptions';
-import { defaultAbiCoder } from 'ethers/lib/utils';
+import { _TypedDataEncoder, defaultAbiCoder } from 'ethers/lib/utils';
 import { IPostOrderHandler } from './utils';
 
 export class SeaportV1D5Handler implements IPostOrderHandler {
@@ -44,6 +44,8 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
       counter: order.data.counter,
       signature: order.data.signature,
     };
+    const orderHash = await this.hash(seaportOrder);
+    console.log(orderHash);
     const apiKey = await this.rateLimiter.getAPIKeyWithRateLimiter();
     if (orderType === OrderType.Listing) {
       try {
@@ -142,22 +144,47 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
       } else {
         // post token offer
         try {
-          const result = await this.client.post(this.offerTokenUrl, {
-            parameters: {
-              ...seaportOrder,
-              totalOriginalConsiderationItems: order.data.consideration.length,
+          const result = await this.client.post(
+            this.offerTokenUrl,
+            {
+              parameters: {
+                ...seaportOrder,
+                totalOriginalConsiderationItems: order.data.consideration.length,
+              },
+              signature: order.data.signature,
+              protocol_address: Models.SeaportV1D5.Addresses.Exchange[Models.Utils.Network.Ethereum],
             },
-            signature: order.data.signature,
-            protocol_address: Models.SeaportV1D5.Addresses.Exchange[Models.Utils.Network.Ethereum],
-          },
-          { 'X-Api-Key': apiKey },
-            true);
+            { 'X-Api-Key': apiKey },
+            true
+          );
           return result;
         } catch (error) {
           throw error;
         }
       }
     }
+  }
+
+  async hash(order: Models.SeaportV1D5.Types.OrderComponents) {
+    const EIP712_TYPES = {
+      Order: [
+        { name: 'trader', type: 'address' },
+        { name: 'collection', type: 'address' },
+        { name: 'listingsRoot', type: 'bytes32' },
+        { name: 'numberOfListings', type: 'uint256' },
+        { name: 'expirationTime', type: 'uint256' },
+        { name: 'assetType', type: 'uint8' },
+        { name: 'makerFee', type: 'FeeRate' },
+        { name: 'salt', type: 'uint256' },
+        { name: 'orderType', type: 'uint8' },
+        { name: 'nonce', type: 'uint256' },
+      ],
+      FeeRate: [
+        { name: 'rate', type: 'uint16' },
+        { name: 'recipient', type: 'address' },
+      ],
+    };
+    return _TypedDataEncoder.hashStruct('OrderComponents', EIP712_TYPES, order);
   }
 }
 
@@ -184,7 +211,8 @@ export class LooksRareV2Handler implements IPostOrderHandler {
 
     const looksrareOrder: Models.LooksRareV2.Types.MakerOrderParams = order.data;
     const apiKey = await this.rateLimiter.getAPIKeyWithRateLimiter();
-
+    const orderHash = await this.hash(looksrareOrder);
+    console.log(orderHash);
     return this.client.post(
       this.url,
       {
@@ -193,6 +221,29 @@ export class LooksRareV2Handler implements IPostOrderHandler {
       { 'X-Api-Key': apiKey },
       true
     );
+  }
+
+  async hash(order: Models.LooksRareV2.Types.MakerOrderParams) {
+    const EIP712_TYPES = {
+      Maker: [
+        { name: 'quoteType', type: 'uint8' },
+        { name: 'globalNonce', type: 'uint256' },
+        { name: 'subsetNonce', type: 'uint256' },
+        { name: 'orderNonce', type: 'uint256' },
+        { name: 'strategyId', type: 'uint256' },
+        { name: 'collectionType', type: 'uint8' },
+        { name: 'collection', type: 'address' },
+        { name: 'currency', type: 'address' },
+        { name: 'signer', type: 'address' },
+        { name: 'startTime', type: 'uint256' },
+        { name: 'endTime', type: 'uint256' },
+        { name: 'price', type: 'uint256' },
+        { name: 'itemIds', type: 'uint256[]' },
+        { name: 'amounts', type: 'uint256[]' },
+        { name: 'additionalParameters', type: 'bytes' },
+      ],
+    };
+    return _TypedDataEncoder.hashStruct('Maker', EIP712_TYPES, order);
   }
 }
 
