@@ -1,4 +1,4 @@
-import { splitSignature } from 'ethers/lib/utils';
+import {_TypedDataEncoder, solidityKeccak256, splitSignature} from 'ethers/lib/utils';
 
 import { AggregatorApiException, BaseException } from '@/exceptions';
 
@@ -15,6 +15,7 @@ import {
 } from '@/types';
 import { SeaportV1D5Handler, LooksRareV2Handler, X2Y2Handler } from './handler';
 import { HTTPClientStable } from '@/http';
+import {keccak256} from "web3-utils";
 export class PostOrderHandler {
   private handlers = new Map<OrderKind, IPostOrderHandler>();
   private client: HTTPClient = new HTTPClientStable();
@@ -41,6 +42,7 @@ export class PostOrderHandler {
         ...params,
         signature,
       });
+
       return { message: 'blur' };
     } else {
       const handler = this.handlers.get(params.order.kind);

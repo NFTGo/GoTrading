@@ -6,6 +6,7 @@ import { RateLimiter } from 'limiter';
 import { BaseException } from '@/exceptions';
 import { _TypedDataEncoder, defaultAbiCoder } from 'ethers/lib/utils';
 import { IPostOrderHandler } from './utils';
+import {keccak256} from "web3-utils";
 
 export class SeaportV1D5Handler implements IPostOrderHandler {
   protocol = OrderKind.SeaportV15;
@@ -44,8 +45,7 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
       counter: order.data.counter,
       signature: order.data.signature,
     };
-    const orderHash = await this.hash(seaportOrder);
-    console.log(orderHash);
+
     const apiKey = await this.rateLimiter.getAPIKeyWithRateLimiter();
     if (orderType === OrderType.Listing) {
       try {
@@ -62,6 +62,11 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
           { 'X-Api-Key': apiKey },
           true
         );
+        const orderHash = this.hash(seaportOrder);
+        return {
+          orderHash,
+          result,
+        };
         return result;
       } catch (error) {
         throw error;
@@ -137,6 +142,11 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
             { 'X-Api-Key': apiKey },
             true
           );
+          const orderHash = this.hash(seaportOrder);
+          return {
+            orderHash,
+            result,
+          };
           return result;
         } catch (error) {
           throw error;
@@ -157,6 +167,11 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
             { 'X-Api-Key': apiKey },
             true
           );
+          const orderHash = this.hash(seaportOrder);
+          return {
+            orderHash,
+            result,
+          };
           return result;
         } catch (error) {
           throw error;
@@ -165,26 +180,38 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
     }
   }
 
-  async hash(order: Models.SeaportV1D5.Types.OrderComponents) {
-    const EIP712_TYPES = {
-      Order: [
-        { name: 'trader', type: 'address' },
-        { name: 'collection', type: 'address' },
-        { name: 'listingsRoot', type: 'bytes32' },
-        { name: 'numberOfListings', type: 'uint256' },
-        { name: 'expirationTime', type: 'uint256' },
-        { name: 'assetType', type: 'uint8' },
-        { name: 'makerFee', type: 'FeeRate' },
-        { name: 'salt', type: 'uint256' },
+  hash(order: Models.SeaportV1D5.Types.OrderComponents) {
+    const ORDER_EIP712_TYPES = {
+      OrderComponents: [
+        { name: 'offerer', type: 'address' },
+        { name: 'zone', type: 'address' },
+        { name: 'offer', type: 'OfferItem[]' },
+        { name: 'consideration', type: 'ConsiderationItem[]' },
         { name: 'orderType', type: 'uint8' },
-        { name: 'nonce', type: 'uint256' },
+        { name: 'startTime', type: 'uint256' },
+        { name: 'endTime', type: 'uint256' },
+        { name: 'zoneHash', type: 'bytes32' },
+        { name: 'salt', type: 'uint256' },
+        { name: 'conduitKey', type: 'bytes32' },
+        { name: 'counter', type: 'uint256' },
       ],
-      FeeRate: [
-        { name: 'rate', type: 'uint16' },
+      OfferItem: [
+        { name: 'itemType', type: 'uint8' },
+        { name: 'token', type: 'address' },
+        { name: 'identifierOrCriteria', type: 'uint256' },
+        { name: 'startAmount', type: 'uint256' },
+        { name: 'endAmount', type: 'uint256' },
+      ],
+      ConsiderationItem: [
+        { name: 'itemType', type: 'uint8' },
+        { name: 'token', type: 'address' },
+        { name: 'identifierOrCriteria', type: 'uint256' },
+        { name: 'startAmount', type: 'uint256' },
+        { name: 'endAmount', type: 'uint256' },
         { name: 'recipient', type: 'address' },
       ],
     };
-    return _TypedDataEncoder.hashStruct('OrderComponents', EIP712_TYPES, order);
+    return _TypedDataEncoder.hashStruct('OrderComponents', ORDER_EIP712_TYPES, order);
   }
 }
 
@@ -211,8 +238,23 @@ export class LooksRareV2Handler implements IPostOrderHandler {
 
     const looksrareOrder: Models.LooksRareV2.Types.MakerOrderParams = order.data;
     const apiKey = await this.rateLimiter.getAPIKeyWithRateLimiter();
-    const orderHash = await this.hash(looksrareOrder);
-    console.log(orderHash);
+    try {
+      const result = this.client.post(
+        this.url,
+        {
+          ...looksrareOrder,
+        },
+        { 'X-Api-Key': apiKey },
+        true
+      );
+      const orderHash = this.hash(looksrareOrder);
+      return {
+        orderHash,
+        result,
+      };
+    } catch (error) {
+      throw error;
+    }
     return this.client.post(
       this.url,
       {
@@ -222,8 +264,7 @@ export class LooksRareV2Handler implements IPostOrderHandler {
       true
     );
   }
-
-  async hash(order: Models.LooksRareV2.Types.MakerOrderParams) {
+  hash(order: Models.LooksRareV2.Types.MakerOrderParams) {
     const EIP712_TYPES = {
       Maker: [
         { name: 'quoteType', type: 'uint8' },
@@ -301,7 +342,16 @@ export class X2Y2Handler implements IPostOrderHandler {
       changePrice: false,
       isCollection: order.data.dataMask !== '0x',
     };
-
+    try {
+      const result = this.client.post(this.url, orderParams, { 'X-Api-Key': apiKey }, true);
+      const orderHash = x2y2Order.itemHash;
+      return {
+        orderHash,
+        result,
+      };
+    } catch (error) {
+      throw error;
+    }
     return this.client.post(this.url, orderParams, { 'X-Api-Key': apiKey }, true);
   }
 }
