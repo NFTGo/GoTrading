@@ -62,6 +62,7 @@ export type SignatureActionInfo = {
 };
 
 export type PassThroughActionInfo = {
+  orderIndexes: number[];
   endpoint: string;
   method: 'POST' | 'GET';
   payload: SafeAny;

@@ -15,5 +15,5 @@ export interface ActionProcessor {
 }
 
 export type ProcessPassThroughActionParams = {
-  signature?: string;
+  signature: string;
 };
