@@ -39,16 +39,16 @@ export class AggregateActionProcessor implements ActionProcessor {
       throw new Error('txData is required');
     }
     if (name === 'nft-approval') {
-      await signInfo(txData, this.utils.sendTransaction);
+      return await signInfo(txData, this.utils.sendTransaction);
     } else if (name === 'accept-listing') {
       if (safeMode) {
-        await signInfo(txData, this.utils.sendSafeModeTransaction);
+        return await signInfo(txData, this.utils.sendSafeModeTransaction);
       } else {
-        await signInfo(txData, this.utils.sendTransaction);
+        return await signInfo(txData, this.utils.sendTransaction);
       }
       // other name case: currency-wrapping currency-approval
     } else {
-      await signInfo(txData, this.utils.sendTransaction);
+      return await signInfo(txData, this.utils.sendTransaction);
     }
   }
 
@@ -63,7 +63,7 @@ export class AggregateActionProcessor implements ActionProcessor {
         throw new Error('action signature is required');
       }
       const { payload, endpoint } = data;
-      const postOrderResult = this.postOrderHandler.handle(payload, params.signature, endpoint);
+      const postOrderResult = await this.postOrderHandler.handle(payload, params.signature, endpoint);
       return postOrderResult;
     }
     return Promise.resolve({
