@@ -1,4 +1,4 @@
-import {_TypedDataEncoder, solidityKeccak256, splitSignature} from 'ethers/lib/utils';
+import { splitSignature } from 'ethers/lib/utils';
 
 import { AggregatorApiException, BaseException } from '@/exceptions';
 
@@ -15,7 +15,7 @@ import {
 } from '@/types';
 import { SeaportV1D5Handler, LooksRareV2Handler, X2Y2Handler } from './handler';
 import { HTTPClientStable } from '@/http';
-import {keccak256} from "web3-utils";
+import { SafeAny } from 'src/types/safe-any';
 export class PostOrderHandler {
   private handlers = new Map<OrderKind, IPostOrderHandler>();
   private client: HTTPClient = new HTTPClientStable();
@@ -35,15 +35,14 @@ export class PostOrderHandler {
     }
   }
 
-  async handle(params: PostOrderReq, signature: string, endpoint: string): Promise<any> {
+  async handle(params: PostOrderReq, signature: string, endpoint: string): Promise<SafeAny> {
     // given the orderKind, invoke NFTGo developer API or directly post order to marketplace
     if (params.order.kind === OrderKind.Blur) {
       const res = await this.post<AggregatorApiResponse, PostOrderReq & { signature: string }>(endpoint, {
         ...params,
         signature,
       });
-
-      return { message: 'blur' };
+      return res;
     } else {
       const handler = this.handlers.get(params.order.kind);
       if (!handler) {
@@ -51,7 +50,7 @@ export class PostOrderHandler {
       }
 
       switch (params.extraArgs.version) {
-        case 'v3':
+        case 'v3': {
           try {
             const { v, r, s } = splitSignature(signature);
             params.order.data = {
@@ -65,13 +64,12 @@ export class PostOrderHandler {
           } catch (e) {
             throw BaseException.invalidParamError('signature', 'invalid signature ' + signature);
           }
-
-          handler.handle(params);
-          break;
-        case 'v4':
+          const res = await handler.handle(params);
+          return res;
+        }
+        case 'v4': {
           try {
             const { v, r, s } = splitSignature(signature);
-
             if (params.bulkData?.kind === 'seaport-v1.5') {
               // Encode the merkle proof of inclusion together with the signature
               params.order.data.signature = Models.SeaportV1D5.Utils.encodeBulkOrderProofAndSignature(
@@ -92,11 +90,12 @@ export class PostOrderHandler {
                 s,
               };
             }
-          } catch (e: any) {
+          } catch {
             throw BaseException.invalidParamError('signature', 'invalid signature ' + signature);
           }
-          handler.handle(params);
-          break;
+          const res = await handler.handle(params);
+          return res;
+        }
         default:
           throw BaseException.invalidParamError('extraArgs.version', 'unsupported version ' + params.extraArgs.version);
       }

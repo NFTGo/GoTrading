@@ -50,8 +50,8 @@ export interface SignData {
     verifyingContract: string;
   };
   signatureKind: 'eip191' | 'eip712';
-  types: Record<string, any[]>;
-  value: Record<string, any>;
+  types: Record<string, SafeAny[]>;
+  value: Record<string, SafeAny>;
   message?: string;
 }
 

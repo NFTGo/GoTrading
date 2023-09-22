@@ -2,10 +2,14 @@ import { ActionKind, ActionTaskExecutor, AggregatorAction } from '../action';
 
 export interface AggregatorApiResponse {
   actions: AggregatorAction<ActionKind>[];
+  invalidOrderHashes?: string[];
+  invalidOrderIds?: string[];
 }
 
 export interface AggregatorResponse {
   actions: AggregatorAction<ActionKind>[];
+  invalidOrderHashes?: string[];
+  invalidOrderIds?: string[];
   executeActions: ActionTaskExecutor['execute'];
 }
 

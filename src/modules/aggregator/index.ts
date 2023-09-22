@@ -12,8 +12,6 @@ import {
   CreateOffersReq,
   FulfillListingsReq,
   FulfillOffersReq,
-  AggregatorAction,
-  ActionKind,
 } from '@/types';
 
 export class Aggregator implements AggregatorInterface {
@@ -27,9 +25,7 @@ export class Aggregator implements AggregatorInterface {
    */
   createOffers = async (params: CreateOffersReq): Promise<AggregatorResponse> => {
     const res = await this.post<AggregatorApiResponse, CreateOffersReq>('/create-offers', params);
-    const { actions } = res;
-
-    return this.response(actions);
+    return this.response(res);
   };
 
   /**
@@ -40,8 +36,7 @@ export class Aggregator implements AggregatorInterface {
    */
   fulfillOffers = async (params: FulfillOffersReq): Promise<AggregatorResponse> => {
     const res = await this.post<AggregatorApiResponse, FulfillOffersReq>('/fulfill-offers', params);
-    const { actions } = res;
-    return this.response(actions);
+    return this.response(res);
   };
 
   /**
@@ -52,9 +47,8 @@ export class Aggregator implements AggregatorInterface {
    */
   cancelOrders = async (params: CancelOrdersReq): Promise<AggregatorResponse> => {
     const res = await this.post<AggregatorApiResponse, CancelOrdersReq>('/cancel-orders', params);
-    const { actions } = res;
 
-    return this.response(actions);
+    return this.response(res);
   };
 
   /**
@@ -65,9 +59,8 @@ export class Aggregator implements AggregatorInterface {
    */
   createListings = async (params: CreateListingsReq): Promise<AggregatorResponse> => {
     const data = await this.post<AggregatorApiResponse, CreateListingsReq>('/create-listings', params);
-    const { actions } = data;
 
-    return this.response(actions);
+    return this.response(data);
   };
 
   /**
@@ -78,9 +71,7 @@ export class Aggregator implements AggregatorInterface {
    */
   fulfillListings = async (params: FulfillListingsReq): Promise<AggregatorResponse> => {
     const data = await this.post<AggregatorApiResponse, FulfillListingsReq>('/fulfill-listings', params);
-    const { actions } = data;
-
-    return this.response(actions);
+    return this.response(data);
   };
 
   private get headers(): Record<string, string> {
@@ -102,11 +93,11 @@ export class Aggregator implements AggregatorInterface {
     }
   }
 
-  private response(actions: AggregatorAction<ActionKind>[]): AggregatorResponse {
-    const executor = this.utils.createActionExecutor(actions);
+  private response(data: AggregatorApiResponse): AggregatorResponse {
+    const executor = this.utils.createActionExecutor(data.actions);
     const executeActions = executor.execute;
     const response: AggregatorResponse = {
-      actions,
+      ...data,
       executeActions,
     };
 

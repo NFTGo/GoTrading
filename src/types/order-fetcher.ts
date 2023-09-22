@@ -74,6 +74,7 @@ export interface ListingOrderDTO {
   orderExpirationTime?: number;
   orderGeneratedTime: number;
   orderId: string;
+  orderHash: string;
   price: TokenPrice;
   quantityFilled: number;
   quantityRemaining: number;
@@ -96,6 +97,7 @@ export interface OfferDTO {
   orderCreateTime: number;
   orderExpirationTime: number;
   orderId: string;
+  orderHash: string;
   price: TokenPrice;
   quantityRemaining: number;
   rawData?: string;

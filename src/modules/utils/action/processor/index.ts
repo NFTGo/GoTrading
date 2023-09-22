@@ -63,7 +63,7 @@ export class AggregateActionProcessor implements ActionProcessor {
         throw new Error('action signature is required');
       }
       const { payload, endpoint } = data;
-      const postOrderResult = this.postOrderHandler.handle(payload as any, params.signature, endpoint);
+      const postOrderResult = this.postOrderHandler.handle(payload, params.signature, endpoint);
       return postOrderResult;
     }
     return Promise.resolve({

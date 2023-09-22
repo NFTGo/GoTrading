@@ -6,7 +6,7 @@ import { RateLimiter } from 'limiter';
 import { BaseException } from '@/exceptions';
 import { _TypedDataEncoder, defaultAbiCoder } from 'ethers/lib/utils';
 import { IPostOrderHandler } from './utils';
-import {keccak256} from "web3-utils";
+import { SafeAny } from 'src/types/safe-any';
 
 export class SeaportV1D5Handler implements IPostOrderHandler {
   protocol = OrderKind.SeaportV15;
@@ -23,7 +23,7 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
       })
     );
   }
-  async handle(payload: any): Promise<any> {
+  async handle(payload: SafeAny): Promise<SafeAny> {
     const order = payload.order;
     const orderbook = payload.orderbook;
     const orderType = payload.orderType;
@@ -48,42 +48,36 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
 
     const apiKey = await this.rateLimiter.getAPIKeyWithRateLimiter();
     if (orderType === OrderType.Listing) {
-      try {
-        const result = await this.client.post(
-          this.listingUrl,
-          {
-            parameters: {
-              ...seaportOrder,
-              totalOriginalConsiderationItems: order.data.consideration.length,
-            },
-            signature: order.data.signature,
-            protocol_address: Models.SeaportV1D5.Addresses.Exchange[Models.Utils.Network.Ethereum],
+      const result = await this.client.post(
+        this.listingUrl,
+        {
+          parameters: {
+            ...seaportOrder,
+            totalOriginalConsiderationItems: order.data.consideration.length,
           },
-          { 'X-Api-Key': apiKey },
-          true
-        );
-        const orderHash = this.hash(seaportOrder);
-        return {
-          orderHash,
-          result,
-        };
-        return result;
-      } catch (error) {
-        throw error;
-      }
+          signature: order.data.signature,
+          protocol_address: Models.SeaportV1D5.Addresses.Exchange[Models.Utils.Network.Ethereum],
+        },
+        { 'X-Api-Key': apiKey },
+        true
+      );
+      const orderHash = this.hash(seaportOrder);
+      return {
+        orderHash,
+        result,
+      };
     } else {
       // OrderType.Offer
       // We'll always have only one of the below cases:
       // Only relevant/present for attribute bids
       const attribute = payload.attribute;
       // Only relevant for collection bids
-      const collection = payload.collection;
       const slug = payload.slug;
       // Only relevant for token set bids
       const tokenSetId = payload.tokenSetId;
       const isNonFlagged = payload.isNonFlagged;
 
-      let schema: any;
+      let schema;
       if (attribute) {
         schema = {
           kind: 'attribute',
@@ -125,57 +119,47 @@ export class SeaportV1D5Handler implements IPostOrderHandler {
 
       if (schema && ['collection', 'collection-non-flagged', 'attribute'].includes(schema.kind)) {
         // post collection/trait offer
-        try {
-          const result = await this.client.post(
-            this.offerCollectionUrl,
-            {
-              criteria: schema.data,
-              protocol_data: {
-                parameters: {
-                  ...seaportOrder,
-                  totalOriginalConsiderationItems: order.data.consideration.length,
-                },
-                signature: order.data.signature,
-              },
-              protocol_address: Models.SeaportV1D5.Addresses.Exchange[Models.Utils.Network.Ethereum],
-            },
-            { 'X-Api-Key': apiKey },
-            true
-          );
-          const orderHash = this.hash(seaportOrder);
-          return {
-            orderHash,
-            result,
-          };
-          return result;
-        } catch (error) {
-          throw error;
-        }
-      } else {
-        // post token offer
-        try {
-          const result = await this.client.post(
-            this.offerTokenUrl,
-            {
+        const result = await this.client.post(
+          this.offerCollectionUrl,
+          {
+            criteria: schema.data,
+            protocol_data: {
               parameters: {
                 ...seaportOrder,
                 totalOriginalConsiderationItems: order.data.consideration.length,
               },
               signature: order.data.signature,
-              protocol_address: Models.SeaportV1D5.Addresses.Exchange[Models.Utils.Network.Ethereum],
             },
-            { 'X-Api-Key': apiKey },
-            true
-          );
-          const orderHash = this.hash(seaportOrder);
-          return {
-            orderHash,
-            result,
-          };
-          return result;
-        } catch (error) {
-          throw error;
-        }
+            protocol_address: Models.SeaportV1D5.Addresses.Exchange[Models.Utils.Network.Ethereum],
+          },
+          { 'X-Api-Key': apiKey },
+          true
+        );
+        const orderHash = this.hash(seaportOrder);
+        return {
+          orderHash,
+          result,
+        };
+      } else {
+        // post token offer
+        const result = await this.client.post(
+          this.offerTokenUrl,
+          {
+            parameters: {
+              ...seaportOrder,
+              totalOriginalConsiderationItems: order.data.consideration.length,
+            },
+            signature: order.data.signature,
+            protocol_address: Models.SeaportV1D5.Addresses.Exchange[Models.Utils.Network.Ethereum],
+          },
+          { 'X-Api-Key': apiKey },
+          true
+        );
+        const orderHash = this.hash(seaportOrder);
+        return {
+          orderHash,
+          result,
+        };
       }
     }
   }
@@ -228,7 +212,7 @@ export class LooksRareV2Handler implements IPostOrderHandler {
       })
     );
   }
-  async handle(payload: any): Promise<any> {
+  async handle(payload: SafeAny): Promise<SafeAny> {
     const order = payload.order;
     const orderbook = payload.orderbook;
 
@@ -238,24 +222,7 @@ export class LooksRareV2Handler implements IPostOrderHandler {
 
     const looksrareOrder: Models.LooksRareV2.Types.MakerOrderParams = order.data;
     const apiKey = await this.rateLimiter.getAPIKeyWithRateLimiter();
-    try {
-      const result = this.client.post(
-        this.url,
-        {
-          ...looksrareOrder,
-        },
-        { 'X-Api-Key': apiKey },
-        true
-      );
-      const orderHash = this.hash(looksrareOrder);
-      return {
-        orderHash,
-        result,
-      };
-    } catch (error) {
-      throw error;
-    }
-    return this.client.post(
+    const result = this.client.post(
       this.url,
       {
         ...looksrareOrder,
@@ -263,6 +230,11 @@ export class LooksRareV2Handler implements IPostOrderHandler {
       { 'X-Api-Key': apiKey },
       true
     );
+    const orderHash = this.hash(looksrareOrder);
+    return {
+      orderHash,
+      result,
+    };
   }
   hash(order: Models.LooksRareV2.Types.MakerOrderParams) {
     const EIP712_TYPES = {
@@ -303,7 +275,7 @@ export class X2Y2Handler implements IPostOrderHandler {
     );
   }
 
-  async handle(payload: any): Promise<any> {
+  async handle(payload: SafeAny): Promise<SafeAny> {
     const order = payload.order;
     const orderbook = payload.orderbook;
 
@@ -342,16 +314,11 @@ export class X2Y2Handler implements IPostOrderHandler {
       changePrice: false,
       isCollection: order.data.dataMask !== '0x',
     };
-    try {
-      const result = this.client.post(this.url, orderParams, { 'X-Api-Key': apiKey }, true);
-      const orderHash = x2y2Order.itemHash;
-      return {
-        orderHash,
-        result,
-      };
-    } catch (error) {
-      throw error;
-    }
-    return this.client.post(this.url, orderParams, { 'X-Api-Key': apiKey }, true);
+    const result = this.client.post(this.url, orderParams, { 'X-Api-Key': apiKey }, true);
+    const orderHash = x2y2Order.itemHash;
+    return {
+      orderHash,
+      result,
+    };
   }
 }
