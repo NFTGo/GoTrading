@@ -10,7 +10,7 @@ export function createEnvTestSdk() {
 
   const sdk = init({
     apiKey,
-    baseUrl: 'https://data-api.nftgo.dev',
+    baseUrl: process.env.BASE_URL,
     web3Provider,
     walletConfig: {
       address,

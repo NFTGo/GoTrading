@@ -26,8 +26,8 @@ export function initConfig() {
   const provider = initWeb3Provider();
   const config: Config = {
     apiKey: process.env.API_KEY || '', // Replace with your own API Key.
-    baseUrl: 'https://data-api.nftgo.dev',
-    chain: EVMChain.ETH,
+    baseUrl: process.env.BASE_URL || '',
+    chain: EVMChain.ETHEREUM,
     web3Provider: provider,
     walletConfig: {
       address: process.env.ADDRESS || '',

@@ -37,6 +37,5 @@
     "__test__",
     "./node_modules/types-bn/index.d.ts",
     "./node_modules/types-ethereumjs-util/index.d.ts",
-    "./node_modules/https-proxy-agent/index.d.ts"
   ]
 }

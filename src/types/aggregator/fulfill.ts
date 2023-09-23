@@ -4,11 +4,12 @@
 export interface FulfillListingsReq {
   buyer: string;
   noDirect?: boolean;
-  orderIds: string[];
+  orderIds?: string[];
+  orderHashes?: string[];
   safeMode: boolean;
   extraArgs?: {
     blurAuth?: string;
-  }
+  };
 }
 
 /**
@@ -19,12 +20,13 @@ export interface FulfillOffersReq {
   sellerAddress: string;
   extraArgs?: {
     blurAuth?: string;
-  }
+  };
 }
 
 export interface OfferFulfillmentIntention {
   contractAddress: string;
-  orderId: string;
+  orderId?: string;
+  orderHash?: string;
   quantity: number;
   tokenId: string;
 }

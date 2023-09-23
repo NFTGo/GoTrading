@@ -9,7 +9,7 @@ export interface ActionProcessor {
   processPassThroughAction: (
     action: AggregatorAction<ActionKind.PassThrough>,
     params: ProcessPassThroughActionParams
-  ) => Promise<void>;
+  ) => Promise<SafeAny>;
 
   processControllerAction(action: AggregatorAction<ActionKind.Controller>): Promise<AggregatorAction<ActionKind>[]>;
 }

@@ -13,8 +13,7 @@ export class PassThroughActionTask extends ActionTaskTemplate<ActionKind.PassThr
         const result = pre.result as ProcessPassThroughActionParams;
         const needThisSignature = this.action.data.orderIndexes.every(index => orderIndexes.includes(index));
         if (needThisSignature) {
-          await this.processor.processPassThroughAction(this.action, result);
-          return null;
+          return await this.processor.processPassThroughAction(this.action, result);
         }
       }
       pre = pre.pre;

@@ -6,11 +6,12 @@ import * as Utils from './utils';
 
 import { OrderKind } from '@/types';
 import { ExternalServiceRateLimiter } from '@/common';
+import { SafeAny } from 'src/types/safe-any';
 
 export interface IPostOrderHandler {
   protocol: OrderKind;
   rateLimiter: ExternalServiceRateLimiter;
-  handle: (payload: any) => Promise<any>;
+  handle: (payload: SafeAny) => Promise<SafeAny>;
 }
 
 export { SeaportV1D5, LooksRare, LooksRareV2, X2Y2, Utils };

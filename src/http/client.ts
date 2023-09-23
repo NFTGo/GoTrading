@@ -1,10 +1,11 @@
-import { HttpsProxyAgent } from 'https-proxy-agent';
 import { AggregatorApiException } from '@/exceptions';
 
 import { HTTPClient } from '@/types';
+import { Agent } from 'https';
+import { SafeAny } from 'src/types/safe-any';
 
 export class HTTPClientStable implements HTTPClient {
-  constructor(private agent?: HttpsProxyAgent<string>) {}
+  constructor(private agent?: Agent) {}
   fetch<R>(input: RequestInfo | URL, init?: RequestInit | undefined) {
     const agentOption = this.agent ? { agent: this.agent } : {};
     return new Promise<R>((resolve, reject) => {
@@ -39,7 +40,7 @@ export class HTTPClientStable implements HTTPClient {
     let actualUrl = url;
     for (const key in query) {
       if (query[key] instanceof Array) {
-        for (const value of query[key] as unknown as Array<any>) {
+        for (const value of query[key] as unknown as Array<SafeAny>) {
           value !== null && value !== undefined && params.push(`${key}=${value}`);
         }
       } else {
