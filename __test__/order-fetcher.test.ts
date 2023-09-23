@@ -15,7 +15,7 @@ describe('Test order fetcher sdk', () => {
 
   const sdk = init({
     apiKey,
-    baseUrl: 'https://data-api.nftgo.dev',
+    baseUrl: process.env.BASE_URL,
     web3Provider,
     // agent:
     // walletConfig: {

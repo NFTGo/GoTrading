@@ -6,12 +6,13 @@ describe('create offer main process', () => {
     address = process.env.ADDRESS!,
     privateKey = process.env.PRIVATE_KEY!,
     apiKey = process.env.API_KEY!,
+    baseUrl = process.env.BASE_URL!,
     web3Provider = new Web3.providers.HttpProvider(endpoint);
 
   const sdk = init({
     apiKey,
     web3Provider,
-    baseUrl: 'https://data-api.nftgo.dev',
+    baseUrl,
     walletConfig: {
       address,
       privateKey,

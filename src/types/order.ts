@@ -1,5 +1,5 @@
 export interface Order {
-  orderId?: string;
+  orderId: string;
   orderType: OrderType;
 }
 
