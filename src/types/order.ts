@@ -1,6 +1,5 @@
 export interface Order {
   orderId?: string;
-  orderHash?: string;
   orderType: OrderType;
 }
 

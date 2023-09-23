@@ -26,7 +26,7 @@ export interface FulfillOffersReq {
 export interface OfferFulfillmentIntention {
   contractAddress: string;
   orderId?: string;
-  orderHashes?: string[];
+  orderHash?: string;
   quantity: number;
   tokenId: string;
 }

@@ -1,5 +1,4 @@
 import { OrderKind, Orderbook } from '../order';
-import { SafeAny } from '../safe-any';
 
 /**
  * create listings
@@ -15,7 +14,7 @@ export interface CreateListingsReq {
   params: CreateListingInput[];
   extraArgs?: {
     blurAuth?: string;
-  }
+  };
 }
 
 export interface CreateListingInput {
@@ -74,7 +73,7 @@ export interface CreateOffersReq {
   params: CreateOfferInput[];
   extraArgs?: {
     blurAuth?: string;
-  }
+  };
 }
 
 export interface CreateOfferInput {

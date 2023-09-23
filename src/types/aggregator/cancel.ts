@@ -10,5 +10,5 @@ export interface CancelOrdersReq {
     sign?: string;
     signMessage?: string;
   };
-  orders: Order[];
+  orders: (Order & { orderHash?: string })[];
 }
