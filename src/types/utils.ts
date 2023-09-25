@@ -1,7 +1,8 @@
-import { ActionKind, ActionTaskExecutor, AggregatorAction } from './action';
+import { ActionKind, ActionProcessor, ActionTaskExecutor, AggregatorAction } from './action';
 import { ethers } from 'ethers';
 import { Log, TransactionConfig, TransactionReceipt } from 'web3-core';
 import { BlurAuthenticator, X2Y2Authenticator } from './authenticator';
+import { SafeAny } from './safe-any';
 
 export interface InternalUtils {
   blurAuthenticator: BlurAuthenticator;
@@ -15,7 +16,7 @@ export interface InternalUtils {
    * @returns res {@link DecodeLogRes}
    */
   decodeLog(log: Log): DecodeLogRes | null;
-
+  processor?: ActionProcessor;
   /**
    * Send transaction with safe mode, using flash bot
    * - details: {@link }
@@ -42,11 +43,12 @@ export interface InternalUtils {
   signMessage(message: string): Promise<string>;
 
   // TODO: signer
-  getSigner(): any;
+  getSigner(): SafeAny;
 }
 
 export interface Utils extends InternalUtils {
   createActionExecutor(actions: AggregatorAction<ActionKind>[]): ActionTaskExecutor;
+  processor: ActionProcessor;
 }
 
 export interface DecodeLogRes {
