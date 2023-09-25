@@ -1,8 +1,9 @@
 import { Transaction } from '@/types';
+import { SafeAny } from 'src/types/safe-any';
 
-type SendTransactionFn = (params: any) => Transaction;
+type SendTransactionFn = (params: SafeAny) => Transaction;
 
-export async function signInfo(params: any, sendTransaction: SendTransactionFn): Promise<boolean> {
+export async function signInfo(params: SafeAny, sendTransaction: SendTransactionFn): Promise<boolean> {
   return new Promise((resolve, reject) => {
     sendTransaction(params)
       .on('error', err => {

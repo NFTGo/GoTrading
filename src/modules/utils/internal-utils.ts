@@ -17,20 +17,21 @@ import {
   Config,
   AggregatorAction,
   InternalUtils,
-  Authenticator,
   HTTPClient,
   BlurAuthenticator,
   X2Y2Authenticator,
+  ActionProcessor,
 } from '@/types';
 import { UtilsException } from '@/exceptions';
 import { BlurMarketAuthenticator } from './blur-auth';
 import { X2Y2MarketplaceAuthenticator } from './x2y2-auth';
+import { SafeAny } from 'src/types/safe-any';
 
 export class InternalAggregatorUtils implements InternalUtils {
   private provider?: provider;
   private walletConfig?: WalletConfig;
   public _ethersProvider: ethers.providers.Web3Provider;
-  public _ethersSigner: any;
+  public _ethersSigner: SafeAny;
   public _web3Instance: Web3;
   public account: string | undefined = this.walletConfig?.address;
   public blurAccessToken: string | undefined;
@@ -41,15 +42,15 @@ export class InternalAggregatorUtils implements InternalUtils {
   private PUNK_BOUGHT_TOPIC: string;
   public blurAuthenticator: BlurAuthenticator;
   public x2y2Authenticator: X2Y2Authenticator;
-
+  public processor?: ActionProcessor | undefined;
   constructor(config: Config, client: HTTPClient) {
     this.provider = config.web3Provider;
     this.walletConfig = config.walletConfig;
 
-    this._web3Instance = new Web3(this.provider || (globalThis as any)?.ethereum);
+    this._web3Instance = new Web3(this.provider || (globalThis as SafeAny)?.ethereum);
     this.x2y2Authenticator = new X2Y2MarketplaceAuthenticator(this._web3Instance);
 
-    this._ethersProvider = new ethers.providers.Web3Provider(this.provider || (globalThis as any)?.ethereum);
+    this._ethersProvider = new ethers.providers.Web3Provider(this.provider || (globalThis as SafeAny)?.ethereum);
     if (this.walletConfig) {
       if (typeof this.walletConfig?.address !== 'string') {
         throw UtilsException.invalidParamError('walletConfig.address');
@@ -61,7 +62,7 @@ export class InternalAggregatorUtils implements InternalUtils {
       this._ethersSigner = this.provider
         ? new ethers.Wallet(
             this.walletConfig.privateKey,
-            new ethers.providers.JsonRpcProvider((this.provider as any).host)
+            new ethers.providers.JsonRpcProvider((this.provider as SafeAny).host)
           )
         : this._ethersProvider.getSigner(this.walletConfig?.address);
 
@@ -196,7 +197,7 @@ export class InternalAggregatorUtils implements InternalUtils {
     this._web3Instance.eth.getTransactionCount(transactionConfig.from as string).then(nonce => {
       transactionConfig.value = BigNumber.isBigNumber(transactionConfig.value)
         ? transactionConfig.value
-        : (BigNumber.from(transactionConfig.value) as any);
+        : (BigNumber.from(transactionConfig.value) as SafeAny);
       transactionConfig.nonce = nonce;
       transactionConfig.type = 2;
       const priorityFee = BigNumber.from(transactionConfig?.maxPriorityFeePerGas || 2000000000);
@@ -223,7 +224,7 @@ export class InternalAggregatorUtils implements InternalUtils {
             });
         };
         // Client
-        if ((globalThis as any).ethereum) {
+        if ((globalThis as SafeAny).ethereum) {
           this._web3Instance.eth
             .sign(unsignedTransactionHash, transactionConfig.from as string)
             .then(async signedTransaction => {
@@ -246,7 +247,7 @@ export class InternalAggregatorUtils implements InternalUtils {
             const signedTrx = ethers.utils.serializeTransaction(transactionConfig, signedTransaction.signature);
             flashBotsSendTx(signedTrx);
           } catch (error) {
-            transactionInstance.errorHandler?.(error as any);
+            transactionInstance.errorHandler?.(error as SafeAny);
           } finally {
             transactionInstance.finallyHandler?.();
           }
@@ -274,9 +275,9 @@ export class InternalAggregatorUtils implements InternalUtils {
       .then(estimateGas => {
         // some wallet(eg: coinbase wallet) will inject providers object into window, which provide all providers available in current browser
         transactionConfig.gas = BigNumber.from(estimateGas).toHexString();
-        if (typeof (globalThis as any)?.ethereum === 'object') {
-          let finalProvider = (globalThis as any)?.ethereum as any;
-          if (finalProvider?.providers && (this._web3Instance.currentProvider as any)?.isMetaMask) {
+        if (typeof (globalThis as SafeAny)?.ethereum === 'object') {
+          let finalProvider = (globalThis as SafeAny)?.ethereum as SafeAny;
+          if (finalProvider?.providers && (this._web3Instance.currentProvider as SafeAny)?.isMetaMask) {
             finalProvider = finalProvider?.providers.filter(
               (provider: { isMetaMask: boolean }) => provider.isMetaMask
             )[0];
@@ -323,8 +324,8 @@ export class InternalAggregatorUtils implements InternalUtils {
   };
 
   signMessage = async (message: string): Promise<string> => {
-    if ((globalThis as any).ethereum) {
-      const provider = (globalThis as any).ethereum;
+    if ((globalThis as SafeAny).ethereum) {
+      const provider = (globalThis as SafeAny).ethereum;
       const accounts = await provider.request({ method: 'eth_requestAccounts' });
       const account = accounts[0];
       const signature = await this._web3Instance.eth.personal.sign(message, account, '');
