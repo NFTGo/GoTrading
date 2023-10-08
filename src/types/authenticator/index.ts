@@ -7,7 +7,22 @@ export type BlurAuthenticatorParams = {
   force?: boolean;
 };
 
-export type BlurAuthenticator = Authenticator<BlurAuthenticatorParams, string>;
+export interface BlurAuthChallenge {
+  expiresOn: string;
+  hmac: string;
+  message: string;
+  walletAddress: string;
+}
+
+export interface BlurAuthLoginParams extends BlurAuthChallenge {
+  signature: string;
+}
+
+export type BlurAuthenticator = Authenticator<BlurAuthenticatorParams, string> & {
+  signBlurAuthChallenge: (params: BlurAuthLoginParams) => Promise<string>;
+  getAuthChallenge(address: string): Promise<BlurAuthChallenge>;
+  getAuthSignature(message: string): Promise<string>;
+};
 
 export type X2Y2AuthenticatorParams = {
   address: string;

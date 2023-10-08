@@ -5,8 +5,8 @@ import { BlurAuthenticator, X2Y2Authenticator } from './authenticator';
 import { SafeAny } from './safe-any';
 
 export interface InternalUtils {
-  blurAuthenticator: BlurAuthenticator;
-  x2y2Authenticator: X2Y2Authenticator;
+  blurAuthenticator?: BlurAuthenticator;
+  x2y2Authenticator?: X2Y2Authenticator;
 
   createActionExecutor?: (actions: AggregatorAction[]) => ActionTaskExecutor;
   /**
@@ -40,7 +40,7 @@ export interface InternalUtils {
   inspectTransaction(params: InspectTransactionParams): Transaction;
 
   // standard sign message
-  signMessage(message: string): Promise<string>;
+  signMessage(message: string): Promise<string | undefined>;
 
   // TODO: signer
   getSigner(): SafeAny;

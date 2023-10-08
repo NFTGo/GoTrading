@@ -30,50 +30,53 @@ import { SafeAny } from 'src/types/safe-any';
 export class InternalAggregatorUtils implements InternalUtils {
   private provider?: provider;
   private walletConfig?: WalletConfig;
-  public _ethersProvider: ethers.providers.Web3Provider;
-  public _ethersSigner: SafeAny;
-  public _web3Instance: Web3;
+  public _ethersProvider?: ethers.providers.Web3Provider;
+  public _ethersSigner?: SafeAny;
+  public _web3Instance?: Web3;
   public account: string | undefined = this.walletConfig?.address;
   public blurAccessToken: string | undefined;
-  private TRANSFER_TOPIC: string;
-  private TRANSFER_BATCH_TOPIC: string;
-  private TRANSFER_SINGLE_TOPIC: string;
-  private PUNK_TRANSFER_TOPIC: string;
-  private PUNK_BOUGHT_TOPIC: string;
-  public blurAuthenticator: BlurAuthenticator;
-  public x2y2Authenticator: X2Y2Authenticator;
+  private TRANSFER_TOPIC?: string;
+  private TRANSFER_BATCH_TOPIC?: string;
+  private TRANSFER_SINGLE_TOPIC?: string;
+  private PUNK_TRANSFER_TOPIC?: string;
+  private PUNK_BOUGHT_TOPIC?: string;
+  public blurAuthenticator?: BlurAuthenticator;
+  public x2y2Authenticator?: X2Y2Authenticator;
   public processor?: ActionProcessor | undefined;
   constructor(config: Config, client: HTTPClient) {
     this.provider = config.web3Provider;
     this.walletConfig = config.walletConfig;
+    if (this.provider) {
+      this._web3Instance = new Web3(this.provider || (globalThis as SafeAny)?.ethereum);
+      this.x2y2Authenticator = new X2Y2MarketplaceAuthenticator(this._web3Instance);
 
-    this._web3Instance = new Web3(this.provider || (globalThis as SafeAny)?.ethereum);
-    this.x2y2Authenticator = new X2Y2MarketplaceAuthenticator(this._web3Instance);
-
-    this._ethersProvider = new ethers.providers.Web3Provider(this.provider || (globalThis as SafeAny)?.ethereum);
-    if (this.walletConfig) {
+      this._ethersProvider = new ethers.providers.Web3Provider(this.provider || (globalThis as SafeAny)?.ethereum);
+      this._web3Instance.eth.getAccounts().then(accounts => {
+        this._ethersSigner = this._ethersProvider?.getSigner(accounts[0]);
+        this.blurAuthenticator = new BlurMarketAuthenticator(this._ethersSigner, client, config);
+      });
+    } else if (this.walletConfig) {
       if (typeof this.walletConfig?.address !== 'string') {
         throw UtilsException.invalidParamError('walletConfig.address');
       }
       if (typeof this.walletConfig?.privateKey !== 'string') {
         throw UtilsException.invalidParamError('walletConfig.privateKey');
       }
+      this._ethersSigner = new ethers.Wallet(
+        this.walletConfig.privateKey,
+        new ethers.providers.JsonRpcProvider((this.provider as SafeAny).host)
+      );
 
-      this._ethersSigner = this.provider
-        ? new ethers.Wallet(
-            this.walletConfig.privateKey,
-            new ethers.providers.JsonRpcProvider((this.provider as SafeAny).host)
-          )
-        : this._ethersProvider.getSigner(this.walletConfig?.address);
-
-      this._web3Instance.eth.accounts.wallet.add(this.walletConfig as WalletConfig);
+      this._web3Instance?.eth.accounts.wallet.add(this.walletConfig as WalletConfig);
+      this.blurAuthenticator = new BlurMarketAuthenticator(this._ethersSigner, client, config);
+    } else {
+      this.blurAuthenticator = new BlurMarketAuthenticator(this._ethersSigner, client, config);
     }
-    this.blurAuthenticator = new BlurMarketAuthenticator(this._ethersSigner, client, config);
     this.TRANSFER_TOPIC = this._web3Instance?.eth.abi.encodeEventSignature(ERC721ABI.transfer);
-    this.TRANSFER_BATCH_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(ERC1155ABI.batchTransfer);
-    this.TRANSFER_SINGLE_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(ERC1155ABI.singleTransfer);
-    this.PUNK_TRANSFER_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(CryptoPunkABI.transfer);
-    this.PUNK_BOUGHT_TOPIC = this._web3Instance.eth.abi.encodeEventSignature(CryptoPunkABI.bought);
+    this.TRANSFER_BATCH_TOPIC = this._web3Instance?.eth.abi.encodeEventSignature(ERC1155ABI.batchTransfer);
+    this.TRANSFER_SINGLE_TOPIC = this._web3Instance?.eth.abi.encodeEventSignature(ERC1155ABI.singleTransfer);
+    this.PUNK_TRANSFER_TOPIC = this._web3Instance?.eth.abi.encodeEventSignature(CryptoPunkABI.transfer);
+    this.PUNK_BOUGHT_TOPIC = this._web3Instance?.eth.abi.encodeEventSignature(CryptoPunkABI.bought);
   }
 
   createActionExecutor?: (actions: AggregatorAction[]) => ActionTaskExecutor;
@@ -83,7 +86,7 @@ export class InternalAggregatorUtils implements InternalUtils {
     const intervalId = setInterval(async () => {
       try {
         const res = await this._web3Instance?.eth?.getTransactionReceipt(hash);
-        if (res === null) {
+        if (res === null || res === undefined) {
           return;
         }
         clearInterval(intervalId);
@@ -116,64 +119,64 @@ export class InternalAggregatorUtils implements InternalUtils {
             break;
           } else {
             // 721
-            decodedEventLog = this._web3Instance.eth.abi.decodeLog(
+            decodedEventLog = this._web3Instance?.eth.abi.decodeLog(
               ERC721ABI.transfer.inputs ?? [],
               log.data,
               log.topics.slice(1) // without the topic[0] if its a non-anonymous event, otherwise with topic[0].
             );
             contract = log.address;
-            tokenId = decodedEventLog.tokenId.toString();
-            to = decodedEventLog.to;
+            tokenId = decodedEventLog?.tokenId.toString();
+            to = decodedEventLog?.to;
             amount = 1;
           }
           break;
         case this.TRANSFER_BATCH_TOPIC:
           // batch 1155
-          decodedEventLog = this._web3Instance.eth.abi.decodeLog(
+          decodedEventLog = this._web3Instance?.eth.abi.decodeLog(
             ERC1155ABI.batchTransfer.inputs ?? [],
             log.data,
             log.topics.slice(1)
           );
           contract = log.address;
-          tokenId = decodedEventLog.ids[0];
-          amount = parseInt(decodedEventLog.value); // value代表成交的数量
-          to = decodedEventLog.to;
+          tokenId = decodedEventLog?.ids[0];
+          amount = parseInt(decodedEventLog?.value ?? '0'); // value代表成交的数量
+          to = decodedEventLog?.to;
           is1155 = true;
           break;
         case this.TRANSFER_SINGLE_TOPIC:
           // single 1155
-          decodedEventLog = this._web3Instance.eth.abi.decodeLog(
+          decodedEventLog = this._web3Instance?.eth.abi.decodeLog(
             ERC1155ABI.singleTransfer.inputs ?? [],
             log.data,
             log.topics.slice(1)
           );
           contract = log.address;
-          tokenId = decodedEventLog.id.toString();
-          to = decodedEventLog.to;
+          tokenId = decodedEventLog?.id.toString();
+          to = decodedEventLog?.to;
           is1155 = true;
           amount = 1;
           break;
         case this.PUNK_TRANSFER_TOPIC:
           // punk
-          decodedEventLog = this._web3Instance.eth.abi.decodeLog(
+          decodedEventLog = this._web3Instance?.eth.abi.decodeLog(
             CryptoPunkABI.transfer.inputs ?? [],
             log.data,
             log.topics.slice(1)
           );
           contract = log.address;
-          tokenId = decodedEventLog.punkIndex.toString();
-          to = decodedEventLog.to;
+          tokenId = decodedEventLog?.punkIndex.toString();
+          to = decodedEventLog?.to;
           amount = 1;
           break;
         case this.PUNK_BOUGHT_TOPIC:
-          decodedEventLog = this._web3Instance.eth.abi.decodeLog(
+          decodedEventLog = this._web3Instance?.eth.abi.decodeLog(
             CryptoPunkABI.bought.inputs ?? [],
             log.data,
             log.topics.slice(1)
           );
           contract = log.address;
-          tokenId = decodedEventLog.punkIndex.toString();
-          to = decodedEventLog.toAddress;
+          tokenId = decodedEventLog?.punkIndex.toString();
+          to = decodedEventLog?.toAddress;
           break;
         default:
           amount = 0;
@@ -194,18 +197,18 @@ export class InternalAggregatorUtils implements InternalUtils {
     const transactionInstance = new SendTransaction();
     // safe mode need more transaction detail than normal, including nonce, gasLimit, type and etc.
     // https://docs.ethers.io/v5/api/providers/types/#providers-TransactionRequest
-    this._web3Instance.eth.getTransactionCount(transactionConfig.from as string).then(nonce => {
+    this._web3Instance?.eth.getTransactionCount(transactionConfig.from as string).then(nonce => {
       transactionConfig.value = BigNumber.isBigNumber(transactionConfig.value)
         ? transactionConfig.value
         : (BigNumber.from(transactionConfig.value) as SafeAny);
       transactionConfig.nonce = nonce;
       transactionConfig.type = 2;
       const priorityFee = BigNumber.from(transactionConfig?.maxPriorityFeePerGas || 2000000000);
-      this._web3Instance.eth.getGasPrice().then(gasPrice => {
+      this._web3Instance?.eth.getGasPrice().then(gasPrice => {
         transactionConfig.maxFeePerGas = transactionConfig?.maxFeePerGas || priorityFee.add(BigNumber.from(gasPrice));
         transactionConfig.maxPriorityFeePerGas = transactionConfig?.maxPriorityFeePerGas || priorityFee;
         // eth_sign only accetp 32byte data
-        const unsignedTransactionHash = this._web3Instance.utils.keccak256(
+        const unsignedTransactionHash = this._web3Instance?.utils.keccak256(
           ethers.utils.serializeTransaction(transactionConfig)
         );
         const flashBotsSendTx = (signedTrx: string) => {
@@ -224,8 +227,8 @@ export class InternalAggregatorUtils implements InternalUtils {
             });
         };
         // Client
-        if ((globalThis as SafeAny).ethereum) {
-          this._web3Instance.eth
+        if ((globalThis as SafeAny).ethereum && unsignedTransactionHash) {
+          this._web3Instance?.eth
             .sign(unsignedTransactionHash, transactionConfig.from as string)
             .then(async signedTransaction => {
               const signedTrx = ethers.utils.serializeTransaction(transactionConfig, signedTransaction);
@@ -237,14 +240,14 @@ export class InternalAggregatorUtils implements InternalUtils {
             .finally(() => {
               transactionInstance.finallyHandler?.();
             });
-        } else {
+        } else if (unsignedTransactionHash) {
           // Server
           try {
-            const signedTransaction = this._web3Instance.eth.accounts.sign(
+            const signedTransaction = this._web3Instance?.eth.accounts.sign(
               unsignedTransactionHash,
               this.walletConfig?.privateKey as string
             );
-            const signedTrx = ethers.utils.serializeTransaction(transactionConfig, signedTransaction.signature);
+            const signedTrx = ethers.utils.serializeTransaction(transactionConfig, signedTransaction?.signature);
             flashBotsSendTx(signedTrx);
           } catch (error) {
             transactionInstance.errorHandler?.(error as SafeAny);
@@ -265,7 +268,7 @@ export class InternalAggregatorUtils implements InternalUtils {
       throw UtilsException.invalidParamError('transactionConfig.from', 'Buyer address must equal to wallet address');
     }
     const transactionInstance = new SendTransaction();
-    this._web3Instance.eth
+    this._web3Instance?.eth
       .estimateGas({
         data: transactionConfig.data,
         value: transactionConfig.value,
@@ -277,7 +280,7 @@ export class InternalAggregatorUtils implements InternalUtils {
         transactionConfig.gas = BigNumber.from(estimateGas).toHexString();
         if (typeof (globalThis as SafeAny)?.ethereum === 'object') {
           let finalProvider = (globalThis as SafeAny)?.ethereum as SafeAny;
-          if (finalProvider?.providers && (this._web3Instance.currentProvider as SafeAny)?.isMetaMask) {
+          if (finalProvider?.providers && (this._web3Instance?.currentProvider as SafeAny)?.isMetaMask) {
             finalProvider = finalProvider?.providers.filter(
               (provider: { isMetaMask: boolean }) => provider.isMetaMask
             )[0];
@@ -300,10 +303,10 @@ export class InternalAggregatorUtils implements InternalUtils {
               transactionInstance.finally();
             });
         } else {
-          this._web3Instance.eth.accounts
+          this._web3Instance?.eth.accounts
             .signTransaction(transactionConfig, this.walletConfig?.privateKey as string)
             .then(signedTransaction => {
-              this._web3Instance.eth
+              this._web3Instance?.eth
                 .sendSignedTransaction(signedTransaction.rawTransaction as string)
                 .on('transactionHash', hash => {
                   transactionInstance.transactionHashHandler?.(hash);
@@ -323,17 +326,16 @@ export class InternalAggregatorUtils implements InternalUtils {
     return transactionInstance;
   };
 
-  signMessage = async (message: string): Promise<string> => {
-    if ((globalThis as SafeAny).ethereum) {
-      const provider = (globalThis as SafeAny).ethereum;
-      const accounts = await provider.request({ method: 'eth_requestAccounts' });
-      const account = accounts[0];
+  signMessage = async (message: string): Promise<string | undefined> => {
+    if ((globalThis as SafeAny).ethereum && this._web3Instance) {
+      const accounts = await this._web3Instance.eth.getAccounts();
+      const account = accounts?.[0];
       const signature = await this._web3Instance.eth.personal.sign(message, account, '');
       return signature;
     } else {
       // server side
-      const signResult = this._web3Instance.eth.accounts.sign(message, this.walletConfig?.privateKey as string);
-      return signResult.signature;
+      const signResult = this._web3Instance?.eth.accounts.sign(message, this.walletConfig?.privateKey as string);
+      return signResult?.signature;
     }
   };
 

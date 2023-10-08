@@ -1,16 +1,13 @@
 import { BaseException } from '@/exceptions';
-import { HTTPClient, Config, AggregatorApiStatusResponse, BlurAuthenticator, BlurAuthenticatorParams } from '@/types';
-
-interface BlurAuthChallenge {
-  expiresOn: string;
-  hmac: string;
-  message: string;
-  walletAddress: string;
-}
-
-interface BlurAuthLoginParams extends BlurAuthChallenge {
-  signature: string;
-}
+import {
+  HTTPClient,
+  Config,
+  AggregatorApiStatusResponse,
+  BlurAuthenticator,
+  BlurAuthenticatorParams,
+  BlurAuthChallenge,
+  BlurAuthLoginParams,
+} from '@/types';
 
 interface Signer {
   signMessage: (message: string) => Promise<string>;
@@ -35,12 +32,12 @@ export class BlurMarketAuthenticator implements BlurAuthenticator {
     return this.config.baseUrl + '/utils/v1/blur';
   }
 
-  private async getAuthSignature(message: string) {
+  async getAuthSignature(message: string): Promise<string> {
     const signature = this.signer.signMessage(message);
     return signature;
   }
 
-  private async getAuthChallenge(address: string) {
+  async getAuthChallenge(address: string): Promise<BlurAuthChallenge> {
     const { code, msg, data } = await this.httpClient.post<
       AggregatorApiStatusResponse<BlurAuthChallenge>,
       { address: string }
@@ -57,7 +54,7 @@ export class BlurMarketAuthenticator implements BlurAuthenticator {
     return data;
   }
 
-  private async signBlurAuthChallenge(params: BlurAuthLoginParams): Promise<string> {
+  async signBlurAuthChallenge(params: BlurAuthLoginParams): Promise<string> {
     const { code, msg, data } = await this.httpClient.post<
       AggregatorApiStatusResponse<{ blurAuth: string }>,
       BlurAuthLoginParams
