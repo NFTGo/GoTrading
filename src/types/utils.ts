@@ -1,8 +1,10 @@
-import { ActionKind, ActionProcessor, ActionTaskExecutor, AggregatorAction } from './action';
 import { ethers } from 'ethers';
 import { Log, TransactionConfig, TransactionReceipt } from 'web3-core';
 import { BlurAuthenticator, X2Y2Authenticator } from './authenticator';
 import { SafeAny } from './safe-any';
+import { ActionKind, AggregatorAction } from './action/action';
+import { ActionTaskExecutor } from './action/executor';
+import { ActionProcessor } from './action/processor';
 
 export interface InternalUtils {
   blurAuthenticator?: BlurAuthenticator;

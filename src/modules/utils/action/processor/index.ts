@@ -9,9 +9,11 @@ import {
   HTTPClient,
   InternalUtils,
   ProcessPassThroughActionParams,
+  ProcessTransactionCallBacks,
 } from '@/types';
 import { signInfo, signOrderData } from './common';
 import { PostOrderHandler } from '../../post-order';
+import { SafeAny } from 'src/types/safe-any';
 
 export class AggregateActionProcessor implements ActionProcessor {
   private postOrderHandler: PostOrderHandler;
@@ -32,23 +34,46 @@ export class AggregateActionProcessor implements ActionProcessor {
     return Promise.reject(new Error('no match action name'));
   }
 
-  async processTransactionAction(action: AggregatorAction<ActionKind.Transaction>) {
+  async processTransactionAction(
+    action: AggregatorAction<ActionKind.Transaction>,
+    callBacks?: ProcessTransactionCallBacks
+  ) {
     const { name, data } = action;
     const { txData, safeMode } = data;
     if (!txData) {
       throw new Error('txData is required');
     }
     if (name === 'nft-approval') {
-      return await signInfo(txData, this.utils.sendTransaction);
+      return await signInfo(txData, this.utils.sendTransaction, callBacks);
     } else if (name === 'accept-listing') {
       if (safeMode) {
-        return await signInfo(txData, this.utils.sendSafeModeTransaction);
+        return await signInfo(txData, this.utils.sendSafeModeTransaction, callBacks);
       } else {
-        return await signInfo(txData, this.utils.sendTransaction);
+        return await signInfo(txData, this.utils.sendTransaction, callBacks);
       }
       // other name case: currency-wrapping currency-approval
     } else {
-      return await signInfo(txData, this.utils.sendTransaction);
+      return await signInfo(txData, this.utils.sendTransaction, callBacks);
+    }
+  }
+
+  processTransactionActionWithOriginResponse(action: AggregatorAction<ActionKind.Transaction>) {
+    const { name, data } = action;
+    const { txData, safeMode } = data;
+    if (!txData) {
+      throw new Error('txData is required');
+    }
+    if (name === 'nft-approval') {
+      return this.utils.sendTransaction(txData);
+    } else if (name === 'accept-listing') {
+      if (safeMode) {
+        return this.utils.sendSafeModeTransaction(txData as SafeAny);
+      } else {
+        return this.utils.sendTransaction(txData);
+      }
+      // other name case: currency-wrapping currency-approval
+    } else {
+      return this.utils.sendTransaction(txData);
     }
   }
 

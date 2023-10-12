@@ -268,61 +268,68 @@ export class InternalAggregatorUtils implements InternalUtils {
       throw UtilsException.invalidParamError('transactionConfig.from', 'Buyer address must equal to wallet address');
     }
     const transactionInstance = new SendTransaction();
-    this._web3Instance?.eth
-      .estimateGas({
-        data: transactionConfig.data,
-        value: transactionConfig.value,
-        from: transactionConfig.from,
-        to: transactionConfig.to,
-      })
-      .then(estimateGas => {
-        // some wallet(eg: coinbase wallet) will inject providers object into window, which provide all providers available in current browser
-        transactionConfig.gas = BigNumber.from(estimateGas).toHexString();
-        if (typeof (globalThis as SafeAny)?.ethereum === 'object') {
-          let finalProvider = (globalThis as SafeAny)?.ethereum as SafeAny;
-          if (finalProvider?.providers && (this._web3Instance?.currentProvider as SafeAny)?.isMetaMask) {
-            finalProvider = finalProvider?.providers.filter(
-              (provider: { isMetaMask: boolean }) => provider.isMetaMask
-            )[0];
-          }
-          finalProvider
-            ?.request({
-              method: 'eth_sendTransaction',
-              params: [transactionConfig],
-            })
-            .then((hash: string) => {
-              transactionInstance.transactionHashHandler?.(hash);
-              this.inspectTransaction({ hash }).on('receipt', receipt => {
-                transactionInstance.receiptHandler?.(receipt);
-              });
-            })
-            .catch((error: Error) => {
-              transactionInstance.errorHandler?.(error);
-            })
-            .finally(() => {
-              transactionInstance.finally();
-            });
-        } else {
-          this._web3Instance?.eth.accounts
-            .signTransaction(transactionConfig, this.walletConfig?.privateKey as string)
-            .then(signedTransaction => {
-              this._web3Instance?.eth
-                .sendSignedTransaction(signedTransaction.rawTransaction as string)
-                .on('transactionHash', hash => {
-                  transactionInstance.transactionHashHandler?.(hash);
-                })
-                .on('receipt', receipt => {
-                  transactionInstance.receiptHandler?.(receipt);
-                })
-                .on('error', error => {
-                  transactionInstance.errorHandler?.(error);
-                })
-                .finally(() => {
-                  transactionInstance.finallyHandler?.();
-                });
-            });
+    const send = () => {
+      // some wallet(eg: coinbase wallet) will inject providers object into window, which provide all providers available in current browser
+      if (typeof (globalThis as SafeAny)?.ethereum === 'object') {
+        let finalProvider = (globalThis as SafeAny)?.ethereum as SafeAny;
+        if (finalProvider?.providers && (this._web3Instance?.currentProvider as SafeAny)?.isMetaMask) {
+          finalProvider = finalProvider?.providers.filter(
+            (provider: { isMetaMask: boolean }) => provider.isMetaMask
+          )[0];
         }
-      });
+        finalProvider
+          ?.request({
+            method: 'eth_sendTransaction',
+            params: [transactionConfig],
+          })
+          .then((hash: string) => {
+            transactionInstance.transactionHashHandler?.(hash);
+            this.inspectTransaction({ hash }).on('receipt', receipt => {
+              transactionInstance.receiptHandler?.(receipt);
+            });
+          })
+          .catch((error: Error) => {
+            transactionInstance.errorHandler?.(error);
+          })
+          .finally(() => {
+            transactionInstance.finally();
+          });
+      } else {
+        this._web3Instance?.eth.accounts
+          .signTransaction(transactionConfig, this.walletConfig?.privateKey as string)
+          .then(signedTransaction => {
+            this._web3Instance?.eth
+              .sendSignedTransaction(signedTransaction.rawTransaction as string)
+              .on('transactionHash', hash => {
+                transactionInstance.transactionHashHandler?.(hash);
+              })
+              .on('receipt', receipt => {
+                transactionInstance.receiptHandler?.(receipt);
+              })
+              .on('error', error => {
+                transactionInstance.errorHandler?.(error);
+              })
+              .finally(() => {
+                transactionInstance.finallyHandler?.();
+              });
+          });
+      }
+    };
+    if (!transactionConfig?.gas) {
+      this._web3Instance?.eth
+        .estimateGas({
+          data: transactionConfig.data,
+          value: transactionConfig.value,
+          from: transactionConfig.from,
+          to: transactionConfig.to,
+        })
+        .then(estimateGas => {
+          transactionConfig.gas = BigNumber.from(estimateGas).toHexString();
+          send();
+        });
+    } else {
+      send();
+    }
     return transactionInstance;
   };
 
