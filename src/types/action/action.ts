@@ -1,7 +1,7 @@
 import { SafeAny } from '../safe-any';
 
 /**
- * actions witch trade aggregate response for frontend developer to process user interaction
+ * Actions which trade aggregate response for frontend developer to process user interaction
  */
 export type AggregatorAction<T = unknown> = T extends ActionKind
   ? {
@@ -61,6 +61,9 @@ export type SignatureActionInfo = {
   body: object;
 };
 
+/**
+ * Pass through means pass payload to a NFTGo data api endpoint
+ */
 export type PassThroughActionInfo = {
   orderIndexes: number[];
   endpoint: string;
@@ -68,6 +71,9 @@ export type PassThroughActionInfo = {
   payload: SafeAny;
 };
 
+/**
+ * All action can be divided into four action kinds {@link ActionKind}
+ */
 export enum ActionName {
   AcceptOffer = 'accept-offer',
   AcceptListing = 'accept-listing',

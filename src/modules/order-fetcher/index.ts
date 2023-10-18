@@ -10,6 +10,9 @@ import {
   OrderFetcherApiResponse,
 } from '@/types';
 
+/**
+ * Api sdk getting orders, including listings and offers
+ */
 export class OrderFetcher implements OrderFetcherInterface {
   constructor(private client: HTTPClient, private config: Config) {}
 

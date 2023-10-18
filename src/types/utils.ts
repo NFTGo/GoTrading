@@ -1,7 +1,6 @@
 import { ethers } from 'ethers';
 import { Log, TransactionConfig, TransactionReceipt } from 'web3-core';
 import { BlurAuthenticator, X2Y2Authenticator } from './authenticator';
-import { SafeAny } from './safe-any';
 import { ActionKind, AggregatorAction } from './action/action';
 import { ActionTaskExecutor } from './action/executor';
 import { ActionProcessor } from './action/processor';
@@ -13,7 +12,6 @@ export interface InternalUtils {
   createActionExecutor?: (actions: AggregatorAction[]) => ActionTaskExecutor;
   /**
    * Decode transaction log, return contract, token id, trading amount, buyer
-   * - details: {@link }
    * @param log {@link Log} single log returned by send transaction method
    * @returns res {@link DecodeLogRes}
    */
@@ -21,31 +19,35 @@ export interface InternalUtils {
   processor?: ActionProcessor;
   /**
    * Send transaction with safe mode, using flash bot
-   * - details: {@link }
    * @param transactionConfig {@link https://docs.ethers.io/v5/api/providers/types/#providers-TransactionRequest} transaction config
    * @returns transaction {@link Transaction}
    */
   sendSafeModeTransaction(transactionConfig: Partial<ethers.Transaction>): Transaction;
   /**
    * Send transaction
-   * - details: {@link }
    * @param transactionConfig {@link https://web3js.readthedocs.io/en/v1.8.2/web3-eth.html#sendtransaction} transaction config
    * @returns transaction {@link Transaction}
    */
   sendTransaction(transactionConfig: TransactionConfig): Transaction;
   /**
-   * inspect a transaction
-   * - details: {@link }
+   * Inspect a transaction
    * @param params {@link InspectTransactionParams} transaction hash, inspect interval
    * @returns transaction {@link Transaction}
    */
   inspectTransaction(params: InspectTransactionParams): Transaction;
 
-  // standard sign message
-  signMessage(message: string): Promise<string | undefined>;
+  /**
+   * Standard sign message
+   * @param message string
+   * @returns Promise<string | undefined>
+   */
+  signMessage: (message: string) => Promise<string | undefined>;
 
-  // TODO: signer
-  getSigner(): SafeAny;
+  /**
+   * Get ehters signer
+   * @returns ethers.providers.JsonRpcSigner | ethers.Wallet
+   */
+  getSigner: () => ethers.providers.JsonRpcSigner | ethers.Wallet;
 }
 
 export interface Utils extends InternalUtils {

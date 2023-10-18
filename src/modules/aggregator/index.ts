@@ -14,61 +14,34 @@ import {
   FulfillOffersReq,
 } from '@/types';
 
+/**
+ * Trading aggregator. Get actions you need to trade a NFT.
+ */
 export class Aggregator implements AggregatorInterface {
   constructor(private client: HTTPClient, private config: Config, private utils: Utils) {}
 
-  /**
-   *
-   * - details: {@link }
-   * @param params {@link }
-   * @returns Promise<{@link }>
-   */
   createOffers = async (params: CreateOffersReq): Promise<AggregatorResponse> => {
     const res = await this.post<AggregatorApiResponse, CreateOffersReq>('/create-offers', params);
     return this.response(res);
   };
 
-  /**
-   *
-   * - details: {@link }
-   * @param params {@link any}
-   * @returns Promise<{@link any}>
-   */
   fulfillOffers = async (params: FulfillOffersReq): Promise<AggregatorResponse> => {
     const res = await this.post<AggregatorApiResponse, FulfillOffersReq>('/fulfill-offers', params);
     return this.response(res);
   };
 
-  /**
-   *
-   * - details: {@link }
-   * @param params {@link any}
-   * @returns Promise<{@link any}>
-   */
   cancelOrders = async (params: CancelOrdersReq): Promise<AggregatorResponse> => {
     const res = await this.post<AggregatorApiResponse, CancelOrdersReq>('/cancel-orders', params);
 
     return this.response(res);
   };
 
-  /**
-   *
-   * - details: {@link }
-   * @param params {@link any}
-   * @returns Promise<{@link any}>
-   */
   createListings = async (params: CreateListingsReq): Promise<AggregatorResponse> => {
     const data = await this.post<AggregatorApiResponse, CreateListingsReq>('/create-listings', params);
 
     return this.response(data);
   };
 
-  /**
-   * buy nfts
-   * - details: {@link }
-   * @param params {@link FulfillListingsReq}
-   * @returns Promise<{@link }>
-   */
   fulfillListings = async (params: FulfillListingsReq): Promise<AggregatorResponse> => {
     const data = await this.post<AggregatorApiResponse, FulfillListingsReq>('/fulfill-listings', params);
     return this.response(data);

@@ -34,8 +34,5 @@
   },
   "include": [
     "src",
-    "__test__",
-    "./node_modules/types-bn/index.d.ts",
-    "./node_modules/types-ethereumjs-util/index.d.ts",
   ]
 }

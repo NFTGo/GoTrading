@@ -11,7 +11,7 @@ export abstract class ActionTaskTemplate<T extends ActionKind> implements Action
   status: ActionTaskStatus = 'ready';
   pre: ActionTask | null = null;
   error: Error | null = null;
-  result: ProcessPassThroughActionParams | null = null;
+  result: ProcessPassThroughActionParams | boolean | null = null;
   constructor(public action: AggregatorAction<T>, public index: number, protected processor: ActionProcessor) {}
   execute = async () => {
     try {
@@ -22,5 +22,5 @@ export abstract class ActionTaskTemplate<T extends ActionKind> implements Action
       this.status = 'fail';
     }
   };
-  protected abstract run(): Promise<null | ProcessPassThroughActionParams>;
+  protected abstract run(): Promise<null | ProcessPassThroughActionParams | boolean>;
 }

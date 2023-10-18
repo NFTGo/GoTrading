@@ -1,9 +1,6 @@
 import { OrderKind, Orderbook } from '../order';
 
 /**
- * create listings
- */
-/**
  * CreateListingV1RequestParam
  */
 export interface CreateListingsReq {
@@ -86,7 +83,7 @@ export interface CreateOfferInput {
    */
   token?: string;
   /**
-   * Bid on a particular collection with collection-id. Example:
+   * Bid on a particular collection with collection-contract. Example:
    * `0x8d04a8c79ceb0889bdd12acdf3fa9d207ed3ff63
    */
   collection?: string;

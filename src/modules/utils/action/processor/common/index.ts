@@ -1,2 +1,2 @@
-export * from './sign-info';
+export * from './promised-send-transaction';
 export * from './sign-order-data';
