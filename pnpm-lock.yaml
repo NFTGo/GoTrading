@@ -103,6 +103,12 @@ devDependencies:
   typedoc:
     specifier: ^0.25.2
     version: 0.25.2(typescript@5.1.6)
+  typedoc-github-wiki-theme:
+    specifier: 2.0.0-next.2
+    version: 2.0.0-next.2(typedoc-plugin-markdown@4.0.0-next.23)
+  typedoc-plugin-markdown:
+    specifier: 4.0.0-next.23
+    version: 4.0.0-next.23(typedoc@0.25.2)
   types-bn:
     specifier: ^0.0.1
     version: registry.npmmirror.com/types-bn@0.0.1
@@ -787,6 +793,22 @@ packages:
     dependencies:
       tslib: 1.14.1
       typescript: registry.npmmirror.com/typescript@5.1.6
+    dev: true
+
+  /typedoc-github-wiki-theme@2.0.0-next.2(typedoc-plugin-markdown@4.0.0-next.23):
+    resolution: {integrity: sha512-vPs10EvOOS6ZAixtEPtB71YvMnlY7J/UnMVIigU8xsau29+cX/NkMgXhYW7n34VKK57Sua8U3mSLesELA8K75Q==}
+    peerDependencies:
+      typedoc-plugin-markdown: '>=4.0.0-next.13'
+    dependencies:
+      typedoc-plugin-markdown: 4.0.0-next.23(typedoc@0.25.2)
+    dev: true
+
+  /typedoc-plugin-markdown@4.0.0-next.23(typedoc@0.25.2):
+    resolution: {integrity: sha512-bKD0LnrQxUTbuDRiJfCWYLlzyERuskWldJ5eWKKuNY38xBOyBhSN8P+vD5KxlJoAifTOm76MK58sNrl4wgOoWg==}
+    peerDependencies:
+      typedoc: '>=0.25.0'
+    dependencies:
+      typedoc: 0.25.2(typescript@5.1.6)
     dev: true
 
   /typedoc@0.25.2(typescript@5.1.6):
