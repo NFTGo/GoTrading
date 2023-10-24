@@ -48,6 +48,10 @@ export interface CreateListingInput {
    */
   marketplaceFeeBps?: number;
   /**
+   * Address of the wallet taking the private order, private orders are only supported for seaport-v1.5 and x2y2
+   */
+  taker?: string;
+  /**
    * Unix timestamp (seconds)
    */
   listingTime: string;

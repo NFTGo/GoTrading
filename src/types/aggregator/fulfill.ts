@@ -3,6 +3,7 @@
  */
 export interface FulfillListingsReq {
   buyer: string;
+  recipient?: string;
   noDirect?: boolean;
   orderIds?: string[];
   orderHashes?: string[];
