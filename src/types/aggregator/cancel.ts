@@ -1,7 +1,7 @@
 import { Order } from '../order';
 
 /**
- * cancel orders
+ * cancel orders request params
  */
 export interface CancelOrdersReq {
   callerAddress: string;

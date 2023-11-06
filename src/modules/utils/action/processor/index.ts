@@ -9,8 +9,9 @@ import {
   HTTPClient,
   InternalUtils,
   ProcessPassThroughActionParams,
+  ProcessTransactionCallBacks,
 } from '@/types';
-import { signInfo, signOrderData } from './common';
+import { promisedSendTransaction, signOrderData } from './common';
 import { PostOrderHandler } from '../../post-order';
 
 export class AggregateActionProcessor implements ActionProcessor {
@@ -32,23 +33,26 @@ export class AggregateActionProcessor implements ActionProcessor {
     return Promise.reject(new Error('no match action name'));
   }
 
-  async processTransactionAction(action: AggregatorAction<ActionKind.Transaction>) {
+  async processTransactionAction(
+    action: AggregatorAction<ActionKind.Transaction>,
+    callBacks?: ProcessTransactionCallBacks
+  ) {
     const { name, data } = action;
     const { txData, safeMode } = data;
     if (!txData) {
       throw new Error('txData is required');
     }
     if (name === 'nft-approval') {
-      return await signInfo(txData, this.utils.sendTransaction);
+      return await promisedSendTransaction(txData, this.utils.sendTransaction, callBacks);
     } else if (name === 'accept-listing') {
       if (safeMode) {
-        return await signInfo(txData, this.utils.sendSafeModeTransaction);
+        return await promisedSendTransaction(txData, this.utils.sendSafeModeTransaction, callBacks);
       } else {
-        return await signInfo(txData, this.utils.sendTransaction);
+        return await promisedSendTransaction(txData, this.utils.sendTransaction, callBacks);
       }
       // other name case: currency-wrapping currency-approval
     } else {
-      return await signInfo(txData, this.utils.sendTransaction);
+      return await promisedSendTransaction(txData, this.utils.sendTransaction, callBacks);
     }
   }
 
@@ -72,9 +76,7 @@ export class AggregateActionProcessor implements ActionProcessor {
     });
   }
 
-  async processControllerAction(
-    action: AggregatorAction<ActionKind.Controller>
-  ): Promise<AggregatorAction<ActionKind>[]> {
+  async processControllerAction(action: AggregatorAction<ActionKind.Controller>) {
     const { data } = action;
     const { payload, endpoint, method } = data;
 

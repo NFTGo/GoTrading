@@ -11,6 +11,11 @@ export type CreateTaskOption = {
   updateTask?: (actions: AggregatorAction<ActionKind>[]) => void;
 };
 
+/**
+ * Change actions to tasks with processor we provided
+ * @param option {@link CreateTaskOption}
+ * @returns task {@link SignatureActionTask}
+ */
 export function createTask(option: CreateTaskOption): ActionTask {
   const { action, index, processor } = option;
   switch (action.kind) {

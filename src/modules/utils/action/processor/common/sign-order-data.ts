@@ -3,6 +3,12 @@ import { arrayify } from 'ethers/lib/utils';
 import { Signer } from 'ethers';
 import { TypedDataSigner } from '@ethersproject/abstract-signer';
 
+/**
+ * sign order data
+ * @param data order data need to be signed {@link SignData}
+ * @param signer ethers signer
+ * @returns signature string
+ */
 export async function signOrderData(data: SignData, signer: Signer & TypedDataSigner): Promise<string> {
   const { domain, types, value } = data;
 
