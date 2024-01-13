@@ -2,20 +2,22 @@ import { splitSignature } from 'ethers/lib/utils';
 
 import { AggregatorApiException, BaseException } from '@/exceptions';
 
-import { IPostOrderHandler } from './utils';
 import * as Models from './utils';
+import { IPostOrderHandler } from './utils';
 
 import {
-  HTTPClient,
-  Config,
   AggregatorApiResponse,
   AggregatorApiStatusResponse,
-  PostOrderReq,
+  Config,
+  HTTPClient,
+  Orderbook,
   OrderKind,
+  PostOrderReq,
 } from '@/types';
-import { SeaportV1D5Handler, LooksRareV2Handler, X2Y2Handler } from './handler';
+import { LooksRareV2Handler, SeaportV1D5Handler, X2Y2Handler } from './handler';
 import { HTTPClientStable } from '@/http';
 import { SafeAny } from 'src/types/safe-any';
+
 export class PostOrderHandler {
   private handlers = new Map<OrderKind, IPostOrderHandler>();
   private client: HTTPClient = new HTTPClientStable();
@@ -37,7 +39,7 @@ export class PostOrderHandler {
 
   async handle(params: PostOrderReq, signature: string, endpoint: string): Promise<SafeAny> {
     // given the orderKind, invoke NFTGo developer API or directly post order to marketplace
-    if (params.order.kind === OrderKind.Blur) {
+    if (params.order.kind === OrderKind.Blur || params.orderbook === Orderbook.SELF) {
       const res = await this.post<AggregatorApiResponse, PostOrderReq & { signature: string }>(endpoint, {
         ...params,
         signature,
