@@ -39,7 +39,7 @@ export class PostOrderHandler {
 
   async handle(params: PostOrderReq, signature: string, endpoint: string): Promise<SafeAny> {
     // given the orderKind, invoke NFTGo developer API or directly post order to marketplace
-    if (params.order.kind === OrderKind.Blur || params.orderbook === Orderbook.SELF) {
+    if (params.order.kind === OrderKind.Blur || params.orderbook === Orderbook.SELF || params.orderbook === Orderbook.NftGo) {
       const res = await this.post<AggregatorApiResponse, PostOrderReq & { signature: string }>(endpoint, {
         ...params,
         signature,
