@@ -17,7 +17,7 @@ export enum OrderKind {
   SeaportV15 = 'seaport-v1.5',
   Sudoswap = 'sudoswap',
   X2Y2 = 'x2y2',
-  PaymentProcessorV2 = 'patment-processor-v2',
+  PaymentProcessorV2 = 'payment-processor-v2',
 }
 
 /**
