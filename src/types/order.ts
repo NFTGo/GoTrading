@@ -15,6 +15,7 @@ export enum OrderKind {
   Blur = 'blur',
   LooksRareV2 = 'looks-rare-v2',
   SeaportV15 = 'seaport-v1.5',
+  SeaportV16 = 'seaport-v1.5',
   Sudoswap = 'sudoswap',
   X2Y2 = 'x2y2',
 }
