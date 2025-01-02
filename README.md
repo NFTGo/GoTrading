@@ -486,8 +486,6 @@ const { offerDTOs } = await goTrading.orderFetcher.getOrdersByMaker(getOffersByM
 This project is licensed under the [BSD-3-Clause license](LICENSE).
 
 
-
-
 [discord-image]: https://img.shields.io/discord/1040195071401787413?color=brightgreen&label=Discord&logo=discord&logoColor=blue
 [discord-url]:  https://discord.gg/nftgo
 [twitter-image]: https://img.shields.io/twitter/follow/NFTGo?label=NFTGo&style=social
